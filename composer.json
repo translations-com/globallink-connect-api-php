@@ -1,5 +1,5 @@
 {
-    "name": "translations-com/globallink-tmgmt-drupal8",
+    "name": "translations-com/globallink-connect-api-php",
     "description": "GlobalLink module is a plugin for Translation Management Tool module (tmgmt)",
     "require": {
         "php": ">=5.5.9"
