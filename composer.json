@@ -1,6 +1,6 @@
 {
     "name": "translations-com/globallink-connect-api-php",
-    "description": "GlobalLink module is a plugin for Translation Management Tool module (tmgmt)",
+    "description": "GlobalLink Connect API for PHP",
     "homepage": "http://www.translations.com",
     "license": "Apache License 2.0",
     "authors": [
