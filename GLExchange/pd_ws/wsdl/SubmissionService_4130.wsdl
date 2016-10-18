@@ -5,13 +5,7 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
 	xmlns:xmime="http://www.w3.org/2005/05/xmlmime" targetNamespace="http://impl.services.service.ws.projectdirector.gs4tr.org">
-	<wsdl:documentation>SubmissionService_4110</wsdl:documentation>
-	<wsdl:documentation>
-		In order to append client application name in PD
-		log,
-		SOAP header has to contain "userAgent" property with client
-		application name.
-	</wsdl:documentation>
+	<wsdl:documentation>SubmissionService_4130</wsdl:documentation>
 	<!--SOAP header example - <commons:userAgent xmlns:commons="http://commons.ws.projectdirector.gs4tr.org">AppName</commons:userAgent> -->
 	<wsdl:types>
 		<xs:schema xmlns:ax234="http://dto.model.projectdirector.gs4tr.org/xsd"
@@ -199,6 +193,23 @@
 				</xs:complexType>
 			</xs:element>
 
+			<xs:element name="addOwner">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="submissionTicket" nillable="false"
+							type="xs:string" />
+						<xs:element name="username" nillable="false" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="addOwnerResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="return" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
 			<xs:element name="startSingleBatchSubmission">
 				<xs:complexType>
 					<xs:sequence>
@@ -329,6 +340,12 @@
 		<wsdl:part name="parameters" element="ns:searchSubmissionsResponse" />
 	</wsdl:message>
 
+	<wsdl:message name="addOwnerRequest">
+		<wsdl:part name="parameters" element="ns:addOwner" />
+	</wsdl:message>
+	<wsdl:message name="addOwnerResponse">
+		<wsdl:part name="parameters" element="ns:addOwnerResponse" />
+	</wsdl:message>
 	<wsdl:message name="startSingleBatchSubmissionRequest">
 		<wsdl:part name="parameters" element="ns:startSingleBatchSubmission" />
 	</wsdl:message>
@@ -374,7 +391,7 @@
 		</wsdl:operation>
 		<wsdl:operation name="checkDownloadDeliverableCollateral">
 			<wsdl:input message="ns:checkDownloadDeliverableCollateralRequest"
-				wsaw:Action="checkDownloadDeliverableCollateral" />
+				wsaw:Action="urn:checkDownloadDeliverableCollateral" />
 			<wsdl:output message="ns:checkDownloadDeliverableCollateralResponse"
 				wsaw:Action="urn:checkDownloadDeliverableCollateralResponse" />
 		</wsdl:operation>
@@ -421,6 +438,10 @@
 				wsaw:Action="urn:searchSubmissionsResponse" />
 		</wsdl:operation>
 
+		<wsdl:operation name="addOwner">
+			<wsdl:input message="ns:addOwnerRequest" wsaw:Action="urn:addOwner" />
+			<wsdl:output message="ns:addOwnerResponse" wsaw:Action="urn:addOwnerResponse" />
+		</wsdl:operation>
 		<wsdl:operation name="startSingleBatchSubmission">
 			<wsdl:input message="ns:startSingleBatchSubmissionRequest"
 				wsaw:Action="urn:startSingleBatchSubmission" />
@@ -436,7 +457,7 @@
 		</wsdl:operation>
 		<wsdl:operation name="uploadReference">
 			<wsdl:input message="ns:uploadReferenceRequest"
-				wsaw:Action="urn:uploadReferenceRequest" />
+				wsaw:Action="urn:uploadReference" />
 			<wsdl:output message="ns:uploadReferenceResponse"
 				wsaw:Action="urn:uploadReferenceResponse" />
 		</wsdl:operation>
@@ -546,6 +567,15 @@
 		<wsdl:operation name="searchSubmissions">
 			<soap:operation soapAction="urn:searchSubmissions"
 				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="addOwner">
+			<soap:operation soapAction="urn:addOwner" style="document" />
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
@@ -701,6 +731,15 @@
 				<soap12:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="addOwner">
+			<soap12:operation soapAction="urn:addOwner" style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
 
 		<wsdl:operation name="startSingleBatchSubmission">
 			<soap12:operation soapAction="urn:startSingleBatchSubmission"
@@ -737,7 +776,7 @@
 	<wsdl:binding name="SubmissionServiceHttpBinding" type="ns:SubmissionServicePortType">
 		<http:binding verb="POST" />
 		<wsdl:operation name="addReferenceAsText">
-			<http:operation location="SubmissionService_4110/addReferenceAsText" />
+			<http:operation location="SubmissionService_4130/addReferenceAsText" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="addReferenceAsText" />
 			</wsdl:input>
@@ -746,7 +785,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="addSubmitter">
-			<http:operation location="SubmissionService_4110/addSubmitter" />
+			<http:operation location="SubmissionService_4130/addSubmitter" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="addSubmitter" />
 			</wsdl:input>
@@ -755,7 +794,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="cancelSubmission">
-			<http:operation location="SubmissionService_4110/cancelSubmission" />
+			<http:operation location="SubmissionService_4130/cancelSubmission" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="cancelSubmission" />
 			</wsdl:input>
@@ -764,7 +803,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="cancelSubmissionWithComment">
-			<http:operation location="SubmissionService_4110/cancelSubmissionWithComment" />
+			<http:operation location="SubmissionService_4130/cancelSubmissionWithComment" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="cancelSubmissionWithComment" />
 			</wsdl:input>
@@ -774,7 +813,7 @@
 		</wsdl:operation>
 		<wsdl:operation name="checkDownloadDeliverableCollateral">
 			<http:operation
-				location="SubmissionService_4110/checkDownloadDeliverableCollateral" />
+				location="SubmissionService_4130/checkDownloadDeliverableCollateral" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="checkDownloadDeliverableCollateral" />
 			</wsdl:input>
@@ -784,7 +823,7 @@
 		</wsdl:operation>
 		<wsdl:operation name="downloadDeliverableCollateralBySubmissionTicket">
 			<http:operation
-				location="SubmissionService_4110/downloadDeliverableCollateralBySubmissionTicket" />
+				location="SubmissionService_4130/downloadDeliverableCollateralBySubmissionTicket" />
 			<wsdl:input>
 				<mime:content type="text/xml"
 					part="downloadDeliverableCollateralBySubmissionTicket" />
@@ -797,7 +836,7 @@
 		<wsdl:operation
 			name="downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages">
 			<http:operation
-				location="SubmissionService_4110/downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages" />
+				location="SubmissionService_4130/downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages" />
 			<wsdl:input>
 				<mime:content type="text/xml"
 					part="downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages" />
@@ -808,7 +847,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="findByTicket">
-			<http:operation location="SubmissionService_4110/findByTicket" />
+			<http:operation location="SubmissionService_4130/findByTicket" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findByTicket" />
 			</wsdl:input>
@@ -818,7 +857,7 @@
 		</wsdl:operation>
 		<wsdl:operation name="findCreatingSubmissionsByProjectShortCode">
 			<http:operation
-				location="SubmissionService_4110/findCreatingSubmissionsByProjectShortCode" />
+				location="SubmissionService_4130/findCreatingSubmissionsByProjectShortCode" />
 			<wsdl:input>
 				<mime:content type="text/xml"
 					part="findCreatingSubmissionsByProjectShortCode" />
@@ -829,7 +868,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="search">
-			<http:operation location="SubmissionService_4110/search" />
+			<http:operation location="SubmissionService_4130/search" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="search" />
 			</wsdl:input>
@@ -846,9 +885,18 @@
 				<mime:content type="text/xml" part="searchSubmissions" />
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="addOwner">
+			<http:operation location="SubmissionService_4130/addOwner" />
+			<wsdl:input>
+				<mime:content type="text/xml" part="addOwner" />
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content type="text/xml" part="addOwner" />
+			</wsdl:output>
+		</wsdl:operation>
 
 		<wsdl:operation name="startSingleBatchSubmission">
-			<http:operation location="SubmissionService_4110/startSingleBatchSubmission" />
+			<http:operation location="SubmissionService_4130/startSingleBatchSubmission" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="startSingleBatchSubmission" />
 			</wsdl:input>
@@ -858,7 +906,7 @@
 		</wsdl:operation>
 
 		<wsdl:operation name="startSubmission">
-			<http:operation location="SubmissionService_4110/startSubmission" />
+			<http:operation location="SubmissionService_4130/startSubmission" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="startSubmission" />
 			</wsdl:input>
@@ -867,7 +915,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="uploadReference">
-			<http:operation location="SubmissionService_4110/uploadReference" />
+			<http:operation location="SubmissionService_4130/uploadReference" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="startSubmission" />
 			</wsdl:input>
@@ -876,20 +924,20 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:service name="SubmissionService_4110">
+	<wsdl:service name="SubmissionService_4130">
 		<wsdl:port name="SubmissionServiceHttpSoap11Endpoint"
 			binding="ns:SubmissionServiceSoap11Binding">
 			<soap:address
-				location="http://localhost/services/SubmissionService_4110.SubmissionServiceHttpSoap11Endpoint" />
+				location="http://localhost/services/SubmissionService_4130.SubmissionServiceHttpSoap11Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="SubmissionServiceHttpSoap12Endpoint"
 			binding="ns:SubmissionServiceSoap12Binding">
 			<soap12:address
-				location="http://localhost/services/SubmissionService_4110.SubmissionServiceHttpSoap12Endpoint" />
+				location="http://localhost/services/SubmissionService_4130.SubmissionServiceHttpSoap12Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="SubmissionServiceHttpEndpoint" binding="ns:SubmissionServiceHttpBinding">
 			<http:address
-				location="http://localhost/services/SubmissionService_4110.SubmissionServiceHttpEndpoint" />
+				location="http://localhost/services/SubmissionService_4130.SubmissionServiceHttpEndpoint" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

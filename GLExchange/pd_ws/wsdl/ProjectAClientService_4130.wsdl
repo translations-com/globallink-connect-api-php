@@ -6,7 +6,7 @@
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
 	xmlns:ax21="http://dto.model.projectdirector.gs4tr.org/xsd"
 	targetNamespace="http://impl.services.service.ws.projectdirector.gs4tr.org">
-	<wsdl:documentation>ProjectAClientService_4110 - Do not use this, for TDC purporses only</wsdl:documentation>
+	<wsdl:documentation>ProjectAClientService_4130 - Do not use this, for TDC purporses only</wsdl:documentation>
 	<wsdl:documentation>
 		In order to append client application name in PD log,
 		SOAP header has to contain "userAgent" property with client
@@ -128,7 +128,7 @@
 		type="ns:ProjectAClientServicePortType">
 		<http:binding verb="POST" />
 		<wsdl:operation name="findByName">
-			<http:operation location="ProjectAClientService_4110/findByName" />
+			<http:operation location="ProjectAClientService_4130/findByName" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findByName" />
 			</wsdl:input>
@@ -137,7 +137,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="findByOrganizationName">
-			<http:operation location="ProjectAClientService_4110/findByOrganizationName" />
+			<http:operation location="ProjectAClientService_4130/findByOrganizationName" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findByOrganizationName" />
 			</wsdl:input>
@@ -146,20 +146,20 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:service name="ProjectAClientService_4110">
+	<wsdl:service name="ProjectAClientService_4130">
 		<wsdl:port name="ProjectAClientServiceHttpSoap11Endpoint"
 			binding="ns:ProjectAClientServiceSoap11Binding">
 			<soap:address
-				location="http://localhost/services/ProjectAClientService_4110.ProjectAClientServiceHttpSoap11Endpoint" />
+				location="http://localhost/services/ProjectAClientService_4130.ProjectAClientServiceHttpSoap11Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="ProjectAClientServiceHttpSoap12Endpoint"
 			binding="ns:ProjectAClientServiceSoap12Binding">
 			<soap:address
-				location="http://localhost/services/ProjectAClientService_4110.ProjectAClientServiceHttpSoap12Endpoint" />
+				location="http://localhost/services/ProjectAClientService_4130.ProjectAClientServiceHttpSoap12Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="ProjectAClientServiceHttpEndpoint" binding="ns:ProjectAClientServiceHttpBinding">
 			<soap:address
-				location="http://localhost/services/ProjectAClientService_4110.ProjectAClientServiceHttpEndpoint" />
+				location="http://localhost/services/ProjectAClientService_4130.ProjectAClientServiceHttpEndpoint" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

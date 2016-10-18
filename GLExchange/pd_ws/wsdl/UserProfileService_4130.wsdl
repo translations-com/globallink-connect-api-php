@@ -6,13 +6,7 @@
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
 	xmlns:ax21="http://dto.model.projectdirector.gs4tr.org/xsd"
 	targetNamespace="http://impl.services.service.ws.projectdirector.gs4tr.org">
-	<wsdl:documentation>UserProfileService_4110</wsdl:documentation>
-	<wsdl:documentation>
-		In order to append client application name in PD
-		log,
-		SOAP header has to contain "userAgent" property with client
-		application name.
-	</wsdl:documentation>
+	<wsdl:documentation>UserProfileService_4130</wsdl:documentation>
 	<!--SOAP header example - <commons:userAgent xmlns:commons="http://commons.ws.projectdirector.gs4tr.org">AppName</commons:userAgent> -->
 	<wsdl:types>
 		<xs:schema xmlns:ax22="http://dto.model.projectdirector.gs4tr.org/xsd"
@@ -256,7 +250,7 @@
 	<wsdl:binding name="UserProfileServiceHttpBinding" type="ns:UserProfileServicePortType">
 		<http:binding verb="POST" />
 		<wsdl:operation name="getSubmitters">
-			<http:operation location="UserProfileService_4110/getSubmitters" />
+			<http:operation location="UserProfileService_4130/getSubmitters" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getSubmitters" />
 			</wsdl:input>
@@ -265,7 +259,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="createUser">
-			<http:operation location="UserProfileService_4110/createUser" />
+			<http:operation location="UserProfileService_4130/createUser" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="createUser" />
 			</wsdl:input>
@@ -274,7 +268,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="findByTicket">
-			<http:operation location="UserProfileService_4110/findByTicket" />
+			<http:operation location="UserProfileService_4130/findByTicket" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findByTicket" />
 			</wsdl:input>
@@ -283,7 +277,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getCurrentUserLanguages">
-			<http:operation location="UserProfileService_4110/getCurrentUserLanguages" />
+			<http:operation location="UserProfileService_4130/getCurrentUserLanguages" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getCurrentUserLanguages" />
 			</wsdl:input>
@@ -292,7 +286,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getUserLanguages">
-			<http:operation location="UserProfileService_4110/getUserLanguages" />
+			<http:operation location="UserProfileService_4130/getUserLanguages" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getUserLanguages" />
 			</wsdl:input>
@@ -301,20 +295,20 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:service name="UserProfileService_4110">
+	<wsdl:service name="UserProfileService_4130">
 		<wsdl:port name="UserProfileServiceHttpSoap11Endpoint"
 			binding="ns:UserProfileServiceSoap11Binding">
 			<soap:address
-				location="http://localhost/services/UserProfileService_4110.UserProfileServiceHttpSoap11Endpoint" />
+				location="http://localhost/services/UserProfileService_4130.UserProfileServiceHttpSoap11Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="UserProfileServiceHttpSoap12Endpoint"
 			binding="ns:UserProfileServiceSoap12Binding">
 			<soap12:address
-				location="http://localhost/services/UserProfileService_4110.UserProfileServiceHttpSoap12Endpoint" />
+				location="http://localhost/services/UserProfileService_4130.UserProfileServiceHttpSoap12Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="UserProfileServiceHttpEndpoint" binding="ns:UserProfileServiceHttpBinding">
 			<http:address
-				location="http://localhost/services/UserProfileService_4110.UserProfileServiceHttpEndpoint" />
+				location="http://localhost/services/UserProfileService_4130.UserProfileServiceHttpEndpoint" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

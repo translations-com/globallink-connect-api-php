@@ -6,12 +6,7 @@
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
 	xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:ax225="http://dto.model.projectdirector.gs4tr.org/xsd"
 	targetNamespace="http://impl.services.service.ws.projectdirector.gs4tr.org">
-	<wsdl:documentation>DocumentService_4110</wsdl:documentation>
-	<wsdl:documentation>
-		In order to append client application name in PD log,
-		SOAP header has to contain "userAgent" property with client
-		application name.
-	</wsdl:documentation>
+	<wsdl:documentation>DocumentService_4130</wsdl:documentation>
 	<!--SOAP header example - <commons:userAgent xmlns:commons="http://commons.ws.projectdirector.gs4tr.org">AppName</commons:userAgent> -->
 	<wsdl:types>
 		<xs:schema xmlns:ax226="http://dto.model.projectdirector.gs4tr.org/xsd"
@@ -275,7 +270,7 @@
 	<wsdl:binding name="DocumentServiceHttpBinding" type="ns:DocumentServicePortType">
 		<http:binding verb="POST" />
 		<wsdl:operation name="findByTicket">
-			<http:operation location="DocumentService_4110/findByTicket" />
+			<http:operation location="DocumentService_4130/findByTicket" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findByTicket" />
 			</wsdl:input>
@@ -284,7 +279,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="submitDocumentWithTextResource">
-			<http:operation location="DocumentService_4110/submitDocumentWithTextResource" />
+			<http:operation location="DocumentService_4130/submitDocumentWithTextResource" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="submitDocumentWithTextResource" />
 			</wsdl:input>
@@ -294,7 +289,7 @@
 		</wsdl:operation>
 		<wsdl:operation name="submitDocumentWithBinaryResource">
 			<http:operation
-				location="DocumentService_4110/submitDocumentWithBinaryResource" />
+				location="DocumentService_4130/submitDocumentWithBinaryResource" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="submitDocumentWithBinaryResource" />
 			</wsdl:input>
@@ -303,7 +298,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="cancelDocument">
-			<http:operation location="DocumentService_4110/cancelDocument" />
+			<http:operation location="DocumentService_4130/cancelDocument" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="cancelDocument" />
 			</wsdl:input>
@@ -312,7 +307,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="search">
-			<http:operation location="DocumentService_4110/search" />
+			<http:operation location="DocumentService_4130/search" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="search" />
 			</wsdl:input>
@@ -321,18 +316,18 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:service name="DocumentService_4110">
+	<wsdl:service name="DocumentService_4130">
 		<wsdl:port name="DocumentServiceHttpSoap11Endpoint" binding="ns:DocumentServiceSoap11Binding">
 			<soap:address
-				location="http://localhost/services/DocumentService_4110.DocumentServiceHttpSoap11Endpoint" />
+				location="http://localhost/services/DocumentService_4130.DocumentServiceHttpSoap11Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="DocumentServiceHttpSoap12Endpoint" binding="ns:DocumentServiceSoap12Binding">
 			<soap12:address
-				location="http://localhost/services/DocumentService_4110.DocumentServiceHttpSoap12Endpoint" />
+				location="http://localhost/services/DocumentService_4130.DocumentServiceHttpSoap12Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="DocumentServiceHttpEndpoint" binding="ns:DocumentServiceHttpBinding">
 			<http:address
-				location="http://localhost/services/DocumentService_4110.DocumentServiceHttpEndpoint" />
+				location="http://localhost/services/DocumentService_4130.DocumentServiceHttpEndpoint" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

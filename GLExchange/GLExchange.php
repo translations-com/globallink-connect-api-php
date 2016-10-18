@@ -1,20 +1,20 @@
 <?php
-require_once 'pd_ws/client/ProjectService_4110.php';
-require_once 'pd_ws/client/SubmissionService_4110.php';
-require_once 'pd_ws/client/TargetService_4110.php';
-require_once 'pd_ws/client/DocumentService_4110.php';
-require_once 'pd_ws/client/UserProfileService_4110.php';
-require_once 'pd_ws/client/WorkflowService_4110.php';
+require_once 'pd_ws/client/ProjectService_4130.php';
+require_once 'pd_ws/client/SubmissionService_4130.php';
+require_once 'pd_ws/client/TargetService_4130.php';
+require_once 'pd_ws/client/DocumentService_4130.php';
+require_once 'pd_ws/client/UserProfileService_4130.php';
+require_once 'pd_ws/client/WorkflowService_4130.php';
 require_once 'model/Project.inc.php';
 require_once 'model/Submission.inc.php';
 require_once 'model/Target.inc.php';
 define ( 'GL_WSDL_PATH', 'phar://glexchange.phar/pd_ws/wsdl/' );
-define ( 'USER_PROFILE_SERVICE_WSDL', GL_WSDL_PATH . 'UserProfileService_4110.wsdl' );
-define ( 'SUBMISSION_SERVICE_WSDL', GL_WSDL_PATH . 'SubmissionService_4110.wsdl' );
-define ( 'WORKFLOW_SERVICE_WSDL', GL_WSDL_PATH . 'WorkflowService_4110.wsdl' );
-define ( 'DOCUMENT_SERVICE_WSDL', GL_WSDL_PATH . 'DocumentService_4110.wsdl' );
-define ( 'PROJECT_SERVICE_WSDL', GL_WSDL_PATH . 'ProjectService_4110.wsdl' );
-define ( 'TARGET_SERVICE_WSDL', GL_WSDL_PATH . 'TargetService_4110.wsdl' );
+define ( 'USER_PROFILE_SERVICE_WSDL', GL_WSDL_PATH . 'UserProfileService_4130.wsdl' );
+define ( 'SUBMISSION_SERVICE_WSDL', GL_WSDL_PATH . 'SubmissionService_4130.wsdl' );
+define ( 'WORKFLOW_SERVICE_WSDL', GL_WSDL_PATH . 'WorkflowService_4130.wsdl' );
+define ( 'DOCUMENT_SERVICE_WSDL', GL_WSDL_PATH . 'DocumentService_4130.wsdl' );
+define ( 'PROJECT_SERVICE_WSDL', GL_WSDL_PATH . 'ProjectService_4130.wsdl' );
+define ( 'TARGET_SERVICE_WSDL', GL_WSDL_PATH . 'TargetService_4130.wsdl' );
 define ( 'DELAY_TIME', 2 );
 class GLExchange {
 	private $pdConfig; // PDConfig
@@ -73,23 +73,23 @@ class GLExchange {
 		$header = array ();
 		$header [] = new SoapHeader ( "Security", 'Security', new SoapVar ( $security, XSD_ANYXML ), true );
 		$header [] = new SoapHeader ( "userAgent", 'userAgent', new SoapVar ( $userAgent, XSD_ANYXML ), true );
-		
-		$this->projectService = new ProjectService_4110 ( PROJECT_SERVICE_WSDL, array_merge ( array (
+
+		$this->projectService = new ProjectService_4130 ( PROJECT_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/ProjectService' 
 		), $proxyConfig ), $header );
-		$this->submissionService = new SubmissionService_4110 ( SUBMISSION_SERVICE_WSDL, array_merge ( array (
+		$this->submissionService = new SubmissionService_4130 ( SUBMISSION_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/SubmissionService' 
 		), $proxyConfig ), $header );
-		$this->workflowService = new WorkflowService_4110 ( WORKFLOW_SERVICE_WSDL, array_merge ( array (
+		$this->workflowService = new WorkflowService_4130 ( WORKFLOW_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/WorkflowService' 
 		), $proxyConfig ), $header );
-		$this->targetService = new TargetService_4110 ( TARGET_SERVICE_WSDL, array_merge ( array (
+		$this->targetService = new TargetService_4130 ( TARGET_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/TargetService' 
 		), $proxyConfig ), $header );
-		$this->documentService = new DocumentService_4110 ( DOCUMENT_SERVICE_WSDL, array_merge ( array (
+		$this->documentService = new DocumentService_4130 ( DOCUMENT_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/DocumentService' 
 		), $proxyConfig ), $header );
-		$this->userProfileService = new UserProfileService_4110 ( USER_PROFILE_SERVICE_WSDL, array_merge ( array (
+		$this->userProfileService = new UserProfileService_4130 ( USER_PROFILE_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/UserProfileService' 
 		), $proxyConfig ), $header );
 		
@@ -250,7 +250,7 @@ class GLExchange {
 		}
 		if (isset ( $submission->dueDate )) {
 			$today = date ( "m.d.y" );
-			if (strtotime ( $today ) > $submission->dueDate) {
+			if (strtotime ( $today )*1000 > $submission->dueDate) {
 				throw new Exception ( "Submission due date should be greater than current date" );
 			}
 		}
@@ -388,21 +388,29 @@ class GLExchange {
 	 *        	Document ticket to cancel
 	 * @param
 	 *        	$locale
-	 *        	[OPTIONAL] Target locale to cancel
+	 *        	Target locale to cancel
 	 */
-	function cancelDocument($documentTicket, $locale = NULL) {
-		if ($locale == NULL) {
-			$cancelTargetRequest = new cancelDocument ();
-			$cancelTargetRequest->documentTicket = $documentTicket;
-			return $this->targetService->cancelTarget ( $cancelTargetRequest );
-		} else {
+	function cancelTargetByDocumentTicket($documentTicket, $locale) {
 			$cancelDocumentRequest = new cancelTargetByDocumentId ();
 			$dticket = new DocumentTicket ();
 			$dticket->ticketId = $documentTicket;
 			$cancelDocumentRequest->documentId = $dticket;
 			$cancelDocumentRequest->targetLocale = $locale;
 			return $this->targetService->cancelTargetByDocumentId ( $cancelDocumentRequest );
-		}
+
+	}
+
+	/**
+	 * Cancel target
+	 *
+	 * @param
+	 *        	$targetTicket
+	 *        	Target ticket to cancel
+	 */
+	function cancelTarget($targetTicket) {
+		$cancelTargetRequest = new cancelTarget ();
+		$cancelTargetRequest->targetId = $targetTicket;
+		return $this->targetService->cancelTarget ( $cancelTargetRequest );
 	}
 	
 	/**
@@ -563,8 +571,8 @@ class GLExchange {
 	 */
 	function getCompletedTargetsBySubmission($submissionTickets, $maxResults) {
 		$getCompletedTargetsBySubmissionsRequest = new getCompletedTargetsBySubmissions ();
-		$getCompletedTargetsByProjectsRequest->submissionTickets = is_array($submissionTickets)?$submissionTickets:array($submissionTickets);
-		$getCompletedTargetsByProjectsRequest->maxResults = $maxResults;
+		$getCompletedTargetsBySubmissionsRequest->submissionTickets = is_array($submissionTickets)?$submissionTickets:array($submissionTickets);
+		$getCompletedTargetsBySubmissionsRequest->maxResults = $maxResults;
 		
 		$completedTargets = $this->targetService->getCompletedTargetsBySubmissions ( $getCompletedTargetsBySubmissionsRequest )->return;
 		
