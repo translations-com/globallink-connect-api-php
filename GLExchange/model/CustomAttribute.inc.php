@@ -16,7 +16,7 @@ class PDCustomAttribute {
          * Attribute value
          */
 	public $values;
-	function PDCustomAttribute($customAttribute = NULL) {
+	function __construct($customAttribute = NULL) {
 		if (isset ( $customAttribute )) {
 			$this->mandatory = $customAttribute->mandatory;
 			$this->name = $customAttribute->name;

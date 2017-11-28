@@ -35,7 +35,7 @@ class PDProject {
          * List of custom attributes configured for this project. Array of PDCustomAttribute
          */
 	public $customAttributes = array ();
-	function PDProject($externalProject) {
+	function __construct($externalProject) {
 		$this->name = $externalProject->projectInfo->name;
 		$this->shortcode = $externalProject->projectInfo->shortCode;
 		$this->ticket = $externalProject->ticket;
