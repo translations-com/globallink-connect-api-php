@@ -34,7 +34,7 @@ class GLExchange {
 	 *        	$connectionConfig
 	 *        	PDConfig - Project Director Connection Configuration
 	 */
-	function GLExchange($connectionConfig) {
+	function __construct($connectionConfig) {
 		$this->_setConnectionConfig ( $connectionConfig );
 	}
 	

@@ -8,7 +8,7 @@ class PDWorkflow {
          * Workflow ticket 
          */
 	public $ticket;
-	function PDWorkflow($externalWorkflow) {
+	function __construct($externalWorkflow) {
 		$this->name = $externalWorkflow->name;
 		$this->ticket = $externalWorkflow->ticket;
 	}
