@@ -33,7 +33,7 @@ class PDTarget {
          * PDWordCount of target 
          */
 	public $wordCount;
-	function PDTarget($externalTarget) {
+	function __construct($externalTarget) {
 		$this->documentName = $externalTarget->document->documentInfo->name;
 		$this->sourceLocale = $externalTarget->sourceLanguage->locale;
 		$this->targetLocale = $externalTarget->targetLanguage->locale;

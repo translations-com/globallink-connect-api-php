@@ -6,7 +6,7 @@ class WordCount {
 	public $repetitions; // int
 	public $nomatch; // int
 	public $total; // int
-	function WordCount($_golden, $_exact_100, $_repetitions, $_nomatch, $_total) {
+	function __construct($_golden, $_exact_100, $_repetitions, $_nomatch, $_total) {
 		$this->golden = $_golden;
 		$this->exact_100 = $_exact_100;
 		$this->fuzzy = $_total - $_golden - $_exact_100 - $_repetitions - $_nomatch;
