@@ -1,20 +1,20 @@
 <?php
-require_once 'pd_ws/client/ProjectService_4130.php';
-require_once 'pd_ws/client/SubmissionService_4130.php';
-require_once 'pd_ws/client/TargetService_4130.php';
-require_once 'pd_ws/client/DocumentService_4130.php';
-require_once 'pd_ws/client/UserProfileService_4130.php';
-require_once 'pd_ws/client/WorkflowService_4130.php';
+require_once 'pd_ws/client/ProjectService_4180.php';
+require_once 'pd_ws/client/SubmissionService_4180.php';
+require_once 'pd_ws/client/TargetService_4180.php';
+require_once 'pd_ws/client/DocumentService_4180.php';
+require_once 'pd_ws/client/UserProfileService_4180.php';
+require_once 'pd_ws/client/WorkflowService_4180.php';
 require_once 'model/Project.inc.php';
 require_once 'model/Submission.inc.php';
 require_once 'model/Target.inc.php';
-define ( 'GL_WSDL_PATH', __DIR__ . '/pd_ws/wsdl/' );
-define ( 'USER_PROFILE_SERVICE_WSDL', GL_WSDL_PATH . 'UserProfileService_4130.wsdl' );
-define ( 'SUBMISSION_SERVICE_WSDL', GL_WSDL_PATH . 'SubmissionService_4130.wsdl' );
-define ( 'WORKFLOW_SERVICE_WSDL', GL_WSDL_PATH . 'WorkflowService_4130.wsdl' );
-define ( 'DOCUMENT_SERVICE_WSDL', GL_WSDL_PATH . 'DocumentService_4130.wsdl' );
-define ( 'PROJECT_SERVICE_WSDL', GL_WSDL_PATH . 'ProjectService_4130.wsdl' );
-define ( 'TARGET_SERVICE_WSDL', GL_WSDL_PATH . 'TargetService_4130.wsdl' );
+define ( 'GL_WSDL_PATH', 'phar://glexchange.phar/pd_ws/wsdl/' );
+define ( 'USER_PROFILE_SERVICE_WSDL', GL_WSDL_PATH . 'UserProfileService_4180.wsdl' );
+define ( 'SUBMISSION_SERVICE_WSDL', GL_WSDL_PATH . 'SubmissionService_4180.wsdl' );
+define ( 'WORKFLOW_SERVICE_WSDL', GL_WSDL_PATH . 'WorkflowService_4180.wsdl' );
+define ( 'DOCUMENT_SERVICE_WSDL', GL_WSDL_PATH . 'DocumentService_4180.wsdl' );
+define ( 'PROJECT_SERVICE_WSDL', GL_WSDL_PATH . 'ProjectService_4180.wsdl' );
+define ( 'TARGET_SERVICE_WSDL', GL_WSDL_PATH . 'TargetService_4180.wsdl' );
 define ( 'DELAY_TIME', 2 );
 class GLExchange {
 	private $pdConfig; // PDConfig
@@ -74,22 +74,22 @@ class GLExchange {
 		$header [] = new SoapHeader ( "Security", 'Security', new SoapVar ( $security, XSD_ANYXML ), true );
 		$header [] = new SoapHeader ( "userAgent", 'userAgent', new SoapVar ( $userAgent, XSD_ANYXML ), true );
 
-		$this->projectService = new ProjectService_4130 ( PROJECT_SERVICE_WSDL, array_merge ( array (
+		$this->projectService = new ProjectService_4180 ( PROJECT_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/ProjectService' 
 		), $proxyConfig ), $header );
-		$this->submissionService = new SubmissionService_4130 ( SUBMISSION_SERVICE_WSDL, array_merge ( array (
+		$this->submissionService = new SubmissionService_4180 ( SUBMISSION_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/SubmissionService' 
 		), $proxyConfig ), $header );
-		$this->workflowService = new WorkflowService_4130 ( WORKFLOW_SERVICE_WSDL, array_merge ( array (
+		$this->workflowService = new WorkflowService_4180 ( WORKFLOW_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/WorkflowService' 
 		), $proxyConfig ), $header );
-		$this->targetService = new TargetService_4130 ( TARGET_SERVICE_WSDL, array_merge ( array (
+		$this->targetService = new TargetService_4180 ( TARGET_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/TargetService' 
 		), $proxyConfig ), $header );
-		$this->documentService = new DocumentService_4130 ( DOCUMENT_SERVICE_WSDL, array_merge ( array (
+		$this->documentService = new DocumentService_4180 ( DOCUMENT_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/DocumentService' 
 		), $proxyConfig ), $header );
-		$this->userProfileService = new UserProfileService_4130 ( USER_PROFILE_SERVICE_WSDL, array_merge ( array (
+		$this->userProfileService = new UserProfileService_4180 ( USER_PROFILE_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/UserProfileService' 
 		), $proxyConfig ), $header );
 		
@@ -460,11 +460,11 @@ class GLExchange {
 	}
 	
 	/**
-	 * Get cancelled targets for a submission
+	 * Get cancelled targets for submission(s)
 	 *
 	 * @param
-	 *        	$submissionTicket
-	 *        	Submission ticket
+	 *        	$submissionTickets
+	 *        	Submission ticket or array of submission tickets
 	 * @param
 	 *        	$maxResults
 	 *        	Maximum number of cancelled targets to return. This
@@ -472,7 +472,7 @@ class GLExchange {
 	 *        	targets is very large.
 	 * @return Array of cancelled PDTarget
 	 */
-	function getCancelledTargetsBySubmission($submissionTickets, $maxResults) {
+	function getCancelledTargetsBySubmissions($submissionTickets, $maxResults) {
 		$getCancelledTargetsBySubmissionRequest = new getCanceledTargetsBySubmissions ();
 		$getCancelledTargetsBySubmissionRequest->maxResults = $maxResults;
 		$getCancelledTargetsBySubmissionRequest->submissionTickets = is_array($submissionTickets)?$submissionTickets:array($submissionTickets);
@@ -509,7 +509,74 @@ class GLExchange {
 	}
 	
 	/**
-	 * Get completed targets for specified project
+	 * Get cancelled targets for document(s)
+	 *
+	 * @param
+	 *        	$documentTickets
+	 *        	Document ticket or array of document tickets
+	 * @param
+	 *        	$maxResults
+	 *        	Maximum number of cancelled targets to return. This
+	 *        	configuration is to avoid time-outs in case the number of
+	 *        	targets is very large.
+	 * @return Array of cancelled PDTarget
+	 */
+	function getCancelledTargetsByDocuments($documentTickets, $maxResults) {
+		$getCancelledTargetsByDocumentRequest = new getCanceledTargetsByDocuments ();
+		$getCancelledTargetsByDocumentRequest->maxResults = $maxResults;
+		$getCancelledTargetsByDocumentRequest->documentTickets = is_array($documentTickets)?$documentTickets:array($documentTickets);
+		
+		$cancelledTargets = $this->targetService->getCanceledTargetsByDocuments ( $getCancelledTargetsByDocumentRequest )->return;
+		
+		return $this->_convertTargetsToInternal ( $cancelledTargets );
+	}
+	
+	/**
+	 * Get cancelled targets for project(s)
+	 *
+	 * @param
+	 *        	$projectTickets
+	 *        	PDProject tickets or array of PDProject tickets for which cancelled targets are requested
+	 * @param
+	 *        	$maxResults
+	 *        	Maximum number of completed targets to return in this call
+	 * @return Array of cancelled PDTarget
+	 */
+	function getCancelledTargetsByProjects($projectTickets, $maxResults) {
+		$getCancelledTargetsByProjectsRequest = new getCancelledTargetsByProjects ();
+		
+		$getCancelledTargetsByProjectsRequest->projectTickets = is_array($projectTickets)?$projectTickets:array($projectTickets);;
+		$getCancelledTargetsByProjectsRequest->maxResults = $maxResults;
+		
+		$cancelledTargets = $this->targetService->getCancelledTargetsByProjects ( $getCancelledTargetsByProjectsRequest )->return;
+		
+		return $this->_convertTargetsToInternal ( $cancelledTargets );
+	}
+	
+	/**
+	 * Get completed targets for project(s)
+	 *
+	 * @param
+	 *        	$projectTickets
+	 *        	PDProject tickets or array of PDProject tickets for which completed targets are requested
+	 * @param
+	 *        	$maxResults
+	 *        	Maximum number of completed targets to return in this call
+	 * @return Array of completed PDTarget
+	 */
+	function getCompletedTargetsByProjects($projectTickets, $maxResults) {
+		$getCompletedTargetsByProjectsRequest = new getCompletedTargetsByProjects ();
+		
+		$getCompletedTargetsByProjectsRequest->projectTickets = is_array($projectTickets)?$projectTickets:array($projectTickets);;
+		$getCompletedTargetsByProjectsRequest->maxResults = $maxResults;
+		
+		$completedTargets = $this->targetService->getCompletedTargetsByProjects ( $getCompletedTargetsByProjectsRequest )->return;
+		
+		return $this->_convertTargetsToInternal ( $completedTargets );
+	}
+
+	/**
+	 * Get completed targets for specified PDProject
 	 *
 	 * @param
 	 *        	$project
@@ -520,16 +587,7 @@ class GLExchange {
 	 * @return Array of completed PDTarget
 	 */
 	function getCompletedTargetsByProject($project, $maxResults) {
-		$getCompletedTargetsByProjectsRequest = new getCompletedTargetsByProjects ();
-		
-		$getCompletedTargetsByProjectsRequest->projectTickets = array (
-				$project->ticket 
-		);
-		$getCompletedTargetsByProjectsRequest->maxResults = $maxResults;
-		
-		$completedTargets = $this->targetService->getCompletedTargetsByProjects ( $getCompletedTargetsByProjectsRequest )->return;
-		
-		return $this->_convertTargetsToInternal ( $completedTargets );
+		return $this->getCompletedTargetsByProjects(array ($project->ticket), $maxResults);
 	}
 	
 	/**
@@ -559,11 +617,11 @@ class GLExchange {
 	}
 	
 	/**
-	 * Get completed targets for submission
+	 * Get completed targets for submission(s)
 	 *
 	 * @param
 	 *        	$submissionTicket
-	 *        	Submission ticket for which completed targets are requested
+	 *        	Submission ticket or array of tickets for which completed targets are requested
 	 * @param
 	 *        	$maxResults
 	 *        	Maximum number of completed targets to return in this call
@@ -575,6 +633,27 @@ class GLExchange {
 		$getCompletedTargetsBySubmissionsRequest->maxResults = $maxResults;
 		
 		$completedTargets = $this->targetService->getCompletedTargetsBySubmissions ( $getCompletedTargetsBySubmissionsRequest )->return;
+		
+		return $this->_convertTargetsToInternal ( $completedTargets );
+	}
+
+	/**
+	 * Get completed targets by document ticket(s)
+	 *
+	 * @param
+	 *        	$documentTickets
+	 *        	Document ticket or array of tickets for which completed targets are requested
+	 * @param
+	 *        	$maxResults
+	 *        	Maximum number of completed targets to return in this call
+	 * @return Array of completed PDTarget
+	 */
+	function getCompletedTargetsByDocument($documentTickets, $maxResults) {
+		$getCompletedTargetsByDocumentsRequest = new getCompletedTargetsByDocuments ();
+		$getCompletedTargetsByDocumentsRequest->documentTickets = is_array($documentTickets)?$documentTickets:array($documentTickets);
+		$getCompletedTargetsByDocumentsRequest->maxResults = $maxResults;
+		
+		$completedTargets = $this->targetService->getCompletedTargetsByDocuments ( $getCompletedTargetsByDocumentsRequest )->return;
 		
 		return $this->_convertTargetsToInternal ( $completedTargets );
 	}

@@ -34,6 +34,7 @@ class PDTarget {
          */
 	public $wordCount;
 	function __construct($externalTarget) {
+		
 		$this->documentName = $externalTarget->document->documentInfo->name;
 		$this->sourceLocale = $externalTarget->sourceLanguage->locale;
 		$this->targetLocale = $externalTarget->targetLanguage->locale;
@@ -43,12 +44,20 @@ class PDTarget {
 		$this->clientIdentifier = $externalTarget->document->documentInfo->clientIdentifier;
 		
 		if (isset ( $externalTarget->tmStatistics )) {
-			$this->wordCount = new WordCount ( $externalTarget->tmStatistics->goldWordCount, $externalTarget->tmStatistics->oneHundredMatchWordCount, $externalTarget->tmStatistics->repetitionWordCount, $externalTarget->tmStatistics->noMatchWordCount, $externalTarget->tmStatistics->totalWordCount );
+			$this->wordCount = new WordCount ( $externalTarget->tmStatistics->inContextMatchWordCount, $externalTarget->tmStatistics->oneHundredMatchWordCount, $externalTarget->tmStatistics->repetitionWordCount, $externalTarget->tmStatistics->noMatchWordCount, $externalTarget->tmStatistics->totalWordCount );
 		}
 		
 		if (isset ( $externalTarget->targetInfo->metadata ) && is_array ( $externalTarget->targetInfo->metadata )) {
 			foreach ( $externalTarget->targetInfo->metadata as $k => $v ) {
 				$this->metadata [$k] = $v;
+			}
+		}
+
+		if (isset ( $externalTarget->document->documentInfo->metadata )) {
+			$this->metadata = array ();
+			$metadatas = is_array($externalTarget->document->documentInfo->metadata)?$externalTarget->document->documentInfo->metadata:array($externalTarget->document->documentInfo->metadata);
+			foreach ( $metadatas as $meta ) {
+				$this->metadata [$meta->key] = $meta->value;
 			}
 		}
 	}
