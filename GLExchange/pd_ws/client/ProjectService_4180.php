@@ -2586,12 +2586,12 @@ class getUserProjectsResponse {
 	public $return;
 }}
 
-if (!class_exists("ProjectService_4130")) {
+if (!class_exists("ProjectService_4180")) {
 /**
- * ProjectService_4130
+ * ProjectService_4180
  * @author WSDLInterpreter
  */
-class ProjectService_4130 extends SoapClient {
+class ProjectService_4180 extends SoapClient {
 	/**
 	 * Default class map for wsdl=>php
 	 * @access private
@@ -2683,7 +2683,7 @@ class ProjectService_4130 extends SoapClient {
 	 * @param string $wsdl WSDL location for this service
 	 * @param array $options Options for the SoapClient
 	 */
-	public function __construct($wsdl="http://gl-connect2.translations.com/PD/services/ProjectService_4130.wsdl", $options=array(), $headers = NULL) {
+	public function __construct($wsdl="https://gl-connect2.translations.com/PD/services/ProjectService_4180.wsdl", $options=array(), $headers = NULL) {
 		foreach(self::$classmap as $wsdlClassName => $phpClassName) {
 		    if(!isset($options['classmap'][$wsdlClassName])) {
 		        $options['classmap'][$wsdlClassName] = $phpClassName;

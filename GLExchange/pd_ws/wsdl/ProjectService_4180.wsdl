@@ -5,8 +5,7 @@
 	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax21="http://dto.model.projectdirector.gs4tr.org/xsd"
 	targetNamespace="http://impl.services.service.ws.projectdirector.gs4tr.org">
-	<wsdl:documentation>ProjectService_4130</wsdl:documentation>
-	<!--SOAP header example - <commons:userAgent xmlns:commons="http://commons.ws.projectdirector.gs4tr.org">AppName</commons:userAgent> -->
+	<wsdl:documentation>ProjectService_4180</wsdl:documentation>
 	<wsdl:types>
 		<xs:schema xmlns:ax22="http://dto.model.projectdirector.gs4tr.org/xsd"
 			attributeFormDefault="qualified" elementFormDefault="qualified"
@@ -212,7 +211,7 @@
 	<wsdl:binding name="ProjectServiceHttpBinding" type="ns:ProjectServicePortType">
 		<http:binding verb="POST" />
 		<wsdl:operation name="findByTicket">
-			<http:operation location="ProjectService_4130/findByTicket" />
+			<http:operation location="ProjectService_4180/findByTicket" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findByTicket" />
 			</wsdl:input>
@@ -221,7 +220,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="findProjectByName">
-			<http:operation location="ProjectService_4130/findProjectByName" />
+			<http:operation location="ProjectService_4180/findProjectByName" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findProjectByName" />
 			</wsdl:input>
@@ -230,7 +229,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="findProjectByShortCode">
-			<http:operation location="ProjectService_4130/findProjectByShortCode" />
+			<http:operation location="ProjectService_4180/findProjectByShortCode" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findProjectByShortCode" />
 			</wsdl:input>
@@ -239,7 +238,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getUserProjects">
-			<http:operation location="ProjectService_4130/getUserProjects" />
+			<http:operation location="ProjectService_4180/getUserProjects" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getUserProjects" />
 			</wsdl:input>
@@ -248,18 +247,18 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:service name="ProjectService_4130">
+	<wsdl:service name="ProjectService_4180">
 		<wsdl:port name="ProjectServiceHttpSoap11Endpoint" binding="ns:ProjectServiceSoap11Binding">
 			<soap:address
-				location="http://localhost/services/ProjectService_4130.ProjectServiceHttpSoap11Endpoint" />
+				location="http://localhost/services/ProjectService_4180.ProjectServiceHttpSoap11Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="ProjectServiceHttpSoap12Endpoint" binding="ns:ProjectServiceSoap12Binding">
 			<soap12:address
-				location="http://localhost/services/ProjectService_4130.ProjectServiceHttpSoap12Endpoint" />
+				location="http://localhost/services/ProjectService_4180.ProjectServiceHttpSoap12Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="ProjectServiceHttpEndpoint" binding="ns:ProjectServiceHttpBinding">
 			<http:address
-				location="http://localhost/services/ProjectService_4130.ProjectServiceHttpEndpoint" />
+				location="http://localhost/services/ProjectService_4180.ProjectServiceHttpEndpoint" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

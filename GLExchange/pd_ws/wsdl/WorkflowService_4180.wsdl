@@ -6,8 +6,7 @@
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
 	xmlns:ax21="http://dto.model.projectdirector.gs4tr.org/xsd"
 	xmlns:xmime="http://www.w3.org/2005/05/xmlmime" targetNamespace="http://impl.services.service.ws.projectdirector.gs4tr.org">
-	<wsdl:documentation>WorkflowService_4130</wsdl:documentation>
-	<!--SOAP header example - <commons:userAgent xmlns:commons="http://commons.ws.projectdirector.gs4tr.org">AppName</commons:userAgent> -->
+	<wsdl:documentation>WorkflowService_4180</wsdl:documentation>
 	<wsdl:types>
 		<xs:schema xmlns:ax22="http://dto.model.projectdirector.gs4tr.org/xsd"
 			attributeFormDefault="qualified" elementFormDefault="qualified"
@@ -464,7 +463,7 @@
 	<wsdl:binding name="WorkflowServiceHttpBinding" type="ns:WorkflowServicePortType">
 		<http:binding verb="POST" />
 		<wsdl:operation name="checkDownloadAction">
-			<http:operation location="WorkflowService_4130/checkDownloadAction" />
+			<http:operation location="WorkflowService_4180/checkDownloadAction" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="checkDownloadAction" />
 			</wsdl:input>
@@ -473,7 +472,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="checkUploadAction">
-			<http:operation location="WorkflowService_4130/checkUploadAction" />
+			<http:operation location="WorkflowService_4180/checkUploadAction" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="checkUploadAction" />
 			</wsdl:input>
@@ -482,7 +481,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="claim">
-			<http:operation location="WorkflowService_4130/claim" />
+			<http:operation location="WorkflowService_4180/claim" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="claim" />
 			</wsdl:input>
@@ -491,7 +490,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="download">
-			<http:operation location="WorkflowService_4130/download" />
+			<http:operation location="WorkflowService_4180/download" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="download" />
 			</wsdl:input>
@@ -500,7 +499,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="downloadPreview">
-			<http:operation location="WorkflowService_4130/downloadPreview" />
+			<http:operation location="WorkflowService_4180/downloadPreview" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="downloadPreview" />
 			</wsdl:input>
@@ -510,7 +509,7 @@
 		</wsdl:operation>
 		<wsdl:operation name="findAvailableWorkflowInfosForClaim">
 			<http:operation
-				location="WorkflowService_4130/findAvailableWorkflowInfosForClaim" />
+				location="WorkflowService_4180/findAvailableWorkflowInfosForClaim" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findAvailableWorkflowInfosForClaim" />
 			</wsdl:input>
@@ -520,7 +519,7 @@
 		</wsdl:operation>
 		<wsdl:operation name="findAvailableWorkflowInfosForDownload">
 			<http:operation
-				location="WorkflowService_4130/findAvailableWorkflowInfosForDownload" />
+				location="WorkflowService_4180/findAvailableWorkflowInfosForDownload" />
 			<wsdl:input>
 				<mime:content type="text/xml"
 					part="findAvailableWorkflowInfosForDownload" />
@@ -533,7 +532,7 @@
 		<wsdl:operation
 			name="findAvailableWorkflowInfosForDownloadBySubmissionTickets">
 			<http:operation
-				location="WorkflowService_4130/findAvailableWorkflowInfosForDownloadBySubmissionTickets" />
+				location="WorkflowService_4180/findAvailableWorkflowInfosForDownloadBySubmissionTickets" />
 			<wsdl:input>
 				<mime:content type="text/xml"
 					part="findAvailableWorkflowInfosForDownloadBySubmissionTickets" />
@@ -544,7 +543,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="upload">
-			<http:operation location="WorkflowService_4130/upload" />
+			<http:operation location="WorkflowService_4180/upload" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="upload" />
 			</wsdl:input>
@@ -553,18 +552,18 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:service name="WorkflowService_4130">
+	<wsdl:service name="WorkflowService_4180">
 		<wsdl:port name="WorkflowServiceHttpSoap11Endpoint" binding="ns:WorkflowServiceSoap11Binding">
 			<soap:address
-				location="http://localhost/services/WorkflowService_4130.WorkflowServiceHttpSoap11Endpoint" />
+				location="http://localhost/services/WorkflowService_4180.WorkflowServiceHttpSoap11Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="WorkflowServiceHttpSoap12Endpoint" binding="ns:WorkflowServiceSoap12Binding">
 			<soap:address
-				location="http://localhost/services/WorkflowService_4130.WorkflowServiceHttpSoap12Endpoint" />
+				location="http://localhost/services/WorkflowService_4180.WorkflowServiceHttpSoap12Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="WorkflowServiceHttpEndpoint" binding="ns:WorkflowServiceHttpBinding">
 			<http:address
-				location="http://localhost/services/WorkflowService_4130.WorkflowServiceHttpEndpoint" />
+				location="http://localhost/services/WorkflowService_4180.WorkflowServiceHttpEndpoint" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

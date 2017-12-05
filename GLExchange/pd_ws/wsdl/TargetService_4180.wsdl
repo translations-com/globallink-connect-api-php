@@ -6,8 +6,7 @@
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
 	xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:ax241="http://dto.model.projectdirector.gs4tr.org/xsd"
 	targetNamespace="http://impl.services.service.ws.projectdirector.gs4tr.org">
-	<wsdl:documentation>TargetService_4130</wsdl:documentation>
-	<!--SOAP header example - <commons:userAgent xmlns:commons="http://commons.ws.projectdirector.gs4tr.org">AppName</commons:userAgent> -->
+	<wsdl:documentation>TargetService_4180</wsdl:documentation>
 	<wsdl:types>
 		<xs:schema xmlns:ax242="http://dto.model.projectdirector.gs4tr.org/xsd"
 			attributeFormDefault="qualified" elementFormDefault="qualified"
@@ -139,7 +138,26 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-
+			<xs:element name="getLanguagePhaseInfo">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="submissionTicket" nillable="false"
+							type="xs:string" />
+						<xs:element name="batchName" nillable="false" type="xs:string" />
+						<xs:element name="targetLanguage" nillable="false"
+							type="xs:string" />
+						<xs:element name="phaseName" nillable="false" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getLanguagePhaseInfoResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="return" nillable="true"
+							type="ax241:LanguagePhaseInfo" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="getPagedCompletedTargetsByProjects">
 				<xs:complexType>
 					<xs:sequence>
@@ -322,10 +340,14 @@
 	<wsdl:message name="getCompletedTargetsByProjectsResponse">
 		<wsdl:part name="parameters" element="ns:getCompletedTargetsByProjectsResponse" />
 	</wsdl:message>
-
+	<wsdl:message name="getLanguagePhaseInfoRequest">
+		<wsdl:part name="parameters" element="ns:getLanguagePhaseInfo" />
+	</wsdl:message>
+	<wsdl:message name="getLanguagePhaseInfoResponse">
+		<wsdl:part name="parameters" element="ns:getLanguagePhaseInfoResponse" />
+	</wsdl:message>
 	<wsdl:message name="getPagedCompletedTargetsBySubmissionsRequest">
-		<wsdl:part name="parameters"
-			element="ns:getPagedCompletedTargetsBySubmissions" />
+		<wsdl:part name="parameters" element="ns:getPagedCompletedTargetsBySubmissions" />
 	</wsdl:message>
 	<wsdl:message name="getPagedCompletedTargetsBySubmissionsResponse">
 		<wsdl:part name="parameters"
@@ -338,7 +360,6 @@
 		<wsdl:part name="parameters"
 			element="ns:getPagedCompletedTargetsByProjectsResponse" />
 	</wsdl:message>
-
 	<wsdl:message name="downloadTargetResourceRequest">
 		<wsdl:part name="parameters" element="ns:downloadTargetResource" />
 	</wsdl:message>
@@ -428,7 +449,12 @@
 			<wsdl:output message="ns:getCompletedTargetsByProjectsResponse"
 				wsaw:Action="urn:getCompletedTargetsByProjectsResponse" />
 		</wsdl:operation>
-
+		<wsdl:operation name="getLanguagePhaseInfo">
+			<wsdl:input message="ns:getLanguagePhaseInfoRequest"
+				wsaw:Action="urn:getLanguagePhaseInfo" />
+			<wsdl:output message="ns:getLanguagePhaseInfoResponse"
+				wsaw:Action="urn:getLanguagePhaseInfoResponse" />
+		</wsdl:operation>
 		<wsdl:operation name="getPagedCompletedTargetsBySubmissions">
 			<wsdl:input message="ns:getPagedCompletedTargetsBySubmissionsRequest"
 				wsaw:Action="urn:getPagedCompletedTargetsBySubmissions" />
@@ -553,7 +579,16 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
-
+		<wsdl:operation name="getLanguagePhaseInfo">
+			<soap:operation soapAction="urn:getLanguagePhaseInfo"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
 		<wsdl:operation name="getPagedCompletedTargetsBySubmissions">
 			<soap:operation soapAction="urn:getPagedCompletedTargetsBySubmissions"
 				style="document" />
@@ -727,6 +762,16 @@
 				<soap12:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="getLanguagePhaseInfo">
+			<soap12:operation soapAction="urn:getLanguagePhaseInfo"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
 
 		<wsdl:operation name="getPagedCompletedTargetsBySubmissions">
 			<soap12:operation soapAction="urn:getPagedCompletedTargetsBySubmissions"
@@ -851,7 +896,7 @@
 	<wsdl:binding name="TargetServiceHttpBinding" type="ns:TargetServicePortType">
 		<http:binding verb="POST" />
 		<wsdl:operation name="findByTicket">
-			<http:operation location="TargetService_4130/findByTicket" />
+			<http:operation location="TargetService_4180/findByTicket" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="findByTicket" />
 			</wsdl:input>
@@ -860,7 +905,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="cancelTarget">
-			<http:operation location="TargetService_4130/cancelTarget" />
+			<http:operation location="TargetService_4180/cancelTarget" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="cancelTarget" />
 			</wsdl:input>
@@ -869,7 +914,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="cancelTargetByDocumentId">
-			<http:operation location="TargetService_4130/cancelTargetByDocumentId" />
+			<http:operation location="TargetService_4180/cancelTargetByDocumentId" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="cancelTargetByDocumentId" />
 			</wsdl:input>
@@ -878,7 +923,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getCompletedTargetsBySubmissions">
-			<http:operation location="TargetService_4130/getCompletedTargetsBySubmissions" />
+			<http:operation location="TargetService_4180/getCompletedTargetsBySubmissions" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getCompletedTargetsBySubmissions" />
 			</wsdl:input>
@@ -887,7 +932,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getCompletedTargetsByProjects">
-			<http:operation location="TargetService_4130/getCompletedTargetsByProjects" />
+			<http:operation location="TargetService_4180/getCompletedTargetsByProjects" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getCompletedTargetsByProjects" />
 			</wsdl:input>
@@ -895,10 +940,18 @@
 				<mime:content type="text/xml" part="getCompletedTargetsByProjects" />
 			</wsdl:output>
 		</wsdl:operation>
-
+		<wsdl:operation name="getLanguagePhaseInfo">
+			<http:operation location="TargetService_4180/getLanguagePhaseInfo" />
+			<wsdl:input>
+				<mime:content type="text/xml" part="getLanguagePhaseInfo" />
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content type="text/xml" part="getLanguagePhaseInfo" />
+			</wsdl:output>
+		</wsdl:operation>
 		<wsdl:operation name="getPagedCompletedTargetsBySubmissions">
 			<http:operation
-				location="TargetService_4130/getPagedCompletedTargetsBySubmissions" />
+				location="TargetService_4180/getPagedCompletedTargetsBySubmissions" />
 			<wsdl:input>
 				<mime:content type="text/xml"
 					part="getPagedCompletedTargetsBySubmissions" />
@@ -910,19 +963,17 @@
 		</wsdl:operation>
 		<wsdl:operation name="getPagedCompletedTargetsByProjects">
 			<http:operation
-				location="TargetService_4130/getPagedCompletedTargetsByProjects" />
+				location="TargetService_4180/getPagedCompletedTargetsByProjects" />
 			<wsdl:input>
-				<mime:content type="text/xml"
-					part="getPagedCompletedTargetsByProjects" />
+				<mime:content type="text/xml" part="getPagedCompletedTargetsByProjects" />
 			</wsdl:input>
 			<wsdl:output>
-				<mime:content type="text/xml"
-					part="getPagedCompletedTargetsByProjects" />
+				<mime:content type="text/xml" part="getPagedCompletedTargetsByProjects" />
 			</wsdl:output>
 		</wsdl:operation>
 
 		<wsdl:operation name="downloadTargetResource">
-			<http:operation location="TargetService_4130/downloadTargetResource" />
+			<http:operation location="TargetService_4180/downloadTargetResource" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="downloadTargetResource" />
 			</wsdl:input>
@@ -931,7 +982,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="downloadTranslationPreview">
-			<http:operation location="TargetService_4130/downloadTranslationPreview" />
+			<http:operation location="TargetService_4180/downloadTranslationPreview" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="downloadTranslationPreview" />
 			</wsdl:input>
@@ -940,7 +991,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="sendDownloadConfirmation">
-			<http:operation location="TargetService_4130/sendDownloadConfirmation" />
+			<http:operation location="TargetService_4180/sendDownloadConfirmation" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="sendDownloadConfirmation" />
 			</wsdl:input>
@@ -949,7 +1000,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getCompletedTargetsByDocuments">
-			<http:operation location="TargetService_4130/getCompletedTargetsByDocuments" />
+			<http:operation location="TargetService_4180/getCompletedTargetsByDocuments" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getCompletedTargetsByDocuments" />
 			</wsdl:input>
@@ -958,7 +1009,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="requestTranslationPreview">
-			<http:operation location="TargetService_4130/requestTranslationPreview" />
+			<http:operation location="TargetService_4180/requestTranslationPreview" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="requestTranslationPreview" />
 			</wsdl:input>
@@ -967,7 +1018,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="search">
-			<http:operation location="TargetService_4130/search" />
+			<http:operation location="TargetService_4180/search" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="search" />
 			</wsdl:input>
@@ -976,7 +1027,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="browseTargetsByDocuments">
-			<http:operation location="TargetService_4130/browseTargetsByDocuments" />
+			<http:operation location="TargetService_4180/browseTargetsByDocuments" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="browseTargetsByDocuments" />
 			</wsdl:input>
@@ -985,7 +1036,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getCanceledTargetsByDocuments">
-			<http:operation location="TargetService_4130/getCanceledTargetsByDocuments" />
+			<http:operation location="TargetService_4180/getCanceledTargetsByDocuments" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getCanceledTargetsByDocuments" />
 			</wsdl:input>
@@ -994,7 +1045,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getCanceledTargetsByProjects">
-			<http:operation location="TargetService_4130/getCanceledTargetsByProjects" />
+			<http:operation location="TargetService_4180/getCanceledTargetsByProjects" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getCanceledTargetsByProjects" />
 			</wsdl:input>
@@ -1003,7 +1054,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getCanceledTargetsBySubmissions">
-			<http:operation location="TargetService_4130/getCanceledTargetsBySubmissions" />
+			<http:operation location="TargetService_4180/getCanceledTargetsBySubmissions" />
 			<wsdl:input>
 				<mime:content type="text/xml" part="getCanceledTargetsBySubmissions" />
 			</wsdl:input>
@@ -1012,18 +1063,18 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:service name="TargetService_4130">
+	<wsdl:service name="TargetService_4180">
 		<wsdl:port name="TargetServiceHttpSoap11Endpoint" binding="ns:TargetServiceSoap11Binding">
 			<soap:address
-				location="http://localhost/services/TargetService_4130.TargetServiceHttpSoap11Endpoint" />
+				location="http://localhost/services/TargetService_4180.TargetServiceHttpSoap11Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="TargetServiceHttpSoap12Endpoint" binding="ns:TargetServiceSoap12Binding">
 			<soap12:address
-				location="http://localhost/services/TargetService_4130.TargetServiceHttpSoap12Endpoint" />
+				location="http://localhost/services/TargetService_4180.TargetServiceHttpSoap12Endpoint" />
 		</wsdl:port>
 		<wsdl:port name="TargetServiceHttpEndpoint" binding="ns:TargetServiceHttpBinding">
 			<http:address
-				location="http://localhost/services/TargetService_4130.TargetServiceHttpEndpoint" />
+				location="http://localhost/services/TargetService_4180.TargetServiceHttpEndpoint" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

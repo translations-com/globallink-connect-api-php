@@ -56,6 +56,28 @@ class Announcement {
 	public $date;
 }}
 
+if (!class_exists("Batch")) {
+/**
+ * Batch
+ */
+class Batch {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $name;
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $targetLanguages;
+	/**
+	 * @access public
+	 * @var WorkflowDefinition
+	 */
+	public $workflowDefinition;
+}}
+
 if (!class_exists("ContentMonitorPluginInfo")) {
 /**
  * ContentMonitorPluginInfo
@@ -574,6 +596,28 @@ class LanguageDirectionModel {
 	public $workflowStatus;
 }}
 
+if (!class_exists("LanguagePhaseInfo")) {
+/**
+ * LanguagePhaseInfo
+ */
+class LanguagePhaseInfo {
+	/**
+	 * @access public
+	 * @var Date
+	 */
+	public $phaseStartDate;
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $sourceFileList;
+	/**
+	 * @access public
+	 * @var TmStatistics
+	 */
+	public $tmStatistics;
+}}
+
 if (!class_exists("Organization")) {
 /**
  * Organization
@@ -901,24 +945,24 @@ if (!class_exists("ProjectAClient")) {
 class ProjectAClient {
 	/**
 	 * @access public
-	 * @var string
-	 */
-	public $name;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $ticket;
-	/**
-	 * @access public
 	 * @var boolean
 	 */
 	public $enabled;
 	/**
 	 * @access public
+	 * @var string
+	 */
+	public $name;
+	/**
+	 * @access public
 	 * @var Organization
 	 */
 	public $parentOrganization;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $ticket;
 }}
 
 if (!class_exists("RepositoryItem")) {
@@ -1029,6 +1073,11 @@ class Submission {
 	public $availableTasks;
 	/**
 	 * @access public
+	 * @var Batch[]
+	 */
+	public $batches;
+	/**
+	 * @access public
 	 * @var Date
 	 */
 	public $dateArchived;
@@ -1077,6 +1126,11 @@ class Submission {
 	 * @var ItemStatusEnum
 	 */
 	public $status;
+	/**
+	 * @access public
+	 * @var integer
+	 */
+	public $submissionId;
 	/**
 	 * @access public
 	 * @var SubmissionInfo
@@ -1823,7 +1877,7 @@ class TmStatistics {
 	 * @access public
 	 * @var integer
 	 */
-	public $goldWordCount;
+	public $inContextMatchWordCount;
 	/**
 	 * @access public
 	 * @var integer
@@ -1899,17 +1953,17 @@ class UserInfo {
 	 * @access public
 	 * @var boolean
 	 */
-	public $accountNonExpired;
+	public $accountLocked;
 	/**
 	 * @access public
 	 * @var boolean
 	 */
-	public $accountNonLocked;
+	public $accountNonExpired;
 	/**
 	 * @access public
 	 * @var string
 	 */
-	public $adress;
+	public $address;
 	/**
 	 * @access public
 	 * @var boolean
@@ -2058,6 +2112,11 @@ if (!class_exists("ProjectCustomFieldConfiguration")) {
 class ProjectCustomFieldConfiguration {
 	/**
 	 * @access public
+	 * @var string
+	 */
+	public $description;
+	/**
+	 * @access public
 	 * @var boolean
 	 */
 	public $mandatory;
@@ -2203,6 +2262,323 @@ class Policy {
 	public $policyType;
 }}
 
+if (!class_exists("LanguageWorkflowInfo")) {
+/**
+ * LanguageWorkflowInfo
+ */
+class LanguageWorkflowInfo {
+	/**
+	 * @access public
+	 * @var Language
+	 */
+	public $sourceLanguage;
+	/**
+	 * @access public
+	 * @var Language
+	 */
+	public $targetLanguage;
+}}
+
+if (!class_exists("BatchWorkflowInfo")) {
+/**
+ * BatchWorkflowInfo
+ */
+class BatchWorkflowInfo {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $batchName;
+	/**
+	 * @access public
+	 * @var LanguageWorkflowInfo
+	 */
+	public $languageWorkflowInfo;
+}}
+
+if (!class_exists("TargetWorkflowInfo")) {
+/**
+ * TargetWorkflowInfo
+ */
+class TargetWorkflowInfo {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $batchName;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $documentName;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $fileName;
+	/**
+	 * @access public
+	 * @var Language
+	 */
+	public $sourceLanguage;
+	/**
+	 * @access public
+	 * @var Language
+	 */
+	public $targetLanguage;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $targetTicket;
+}}
+
+if (!class_exists("SubmissionWorkflowInfo")) {
+/**
+ * SubmissionWorkflowInfo
+ */
+class SubmissionWorkflowInfo {
+	/**
+	 * @access public
+	 * @var BatchWorkflowInfo[]
+	 */
+	public $batchWorkflowInfos;
+	/**
+	 * @access public
+	 * @var LanguageWorkflowInfo[]
+	 */
+	public $languageWorkflowInfos;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $phaseName;
+	/**
+	 * @access public
+	 * @var integer
+	 */
+	public $submissionId;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $submissionName;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $submissionTicket;
+	/**
+	 * @access public
+	 * @var TargetWorkflowInfo[]
+	 */
+	public $targetWorkflowInfos;
+}}
+
+if (!class_exists("WorkflowRequest")) {
+/**
+ * WorkflowRequest
+ */
+class WorkflowRequest {
+	/**
+	 * @access public
+	 * @var BatchWorkflowInfo[]
+	 */
+	public $batchWorkflowInfos;
+	/**
+	 * @access public
+	 * @var LanguageWorkflowInfo[]
+	 */
+	public $languageWorkflowInfos;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $phaseName;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $submissionTicket;
+	/**
+	 * @access public
+	 * @var TargetWorkflowInfo[]
+	 */
+	public $targetWorkflowInfos;
+}}
+
+if (!class_exists("WorkflowRequestTicket")) {
+/**
+ * WorkflowRequestTicket
+ */
+class WorkflowRequestTicket {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $message;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $processTicket;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $submissionTicket;
+}}
+
+if (!class_exists("DownloadActionResult")) {
+/**
+ * DownloadActionResult
+ */
+class DownloadActionResult {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $message;
+	/**
+	 * @access public
+	 * @var boolean
+	 */
+	public $processingFinished;
+	/**
+	 * @access public
+	 * @var RepositoryItem
+	 */
+	public $repositoryItem;
+}}
+
+if (!class_exists("UploadActionResult")) {
+/**
+ * UploadActionResult
+ */
+class UploadActionResult {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $messages;
+	/**
+	 * @access public
+	 * @var boolean
+	 */
+	public $processingFinished;
+}}
+
+if (!class_exists("DownloadCollateralResult")) {
+/**
+ * DownloadCollateralResult
+ */
+class DownloadCollateralResult {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $errorMessages;
+	/**
+	 * @access public
+	 * @var boolean
+	 */
+	public $processingFinished;
+	/**
+	 * @access public
+	 * @var RepositoryItem
+	 */
+	public $repositoryItem;
+}}
+
+if (!class_exists("getSubmitters")) {
+/**
+ * getSubmitters
+ */
+class getSubmitters {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $projectShortCode;
+}}
+
+if (!class_exists("getSubmittersResponse")) {
+/**
+ * getSubmittersResponse
+ */
+class getSubmittersResponse {
+	/**
+	 * @access public
+	 * @var UserProfile[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("createUser")) {
+/**
+ * createUser
+ */
+class createUser {
+	/**
+	 * @access public
+	 * @var UserInfo
+	 */
+	public $userInfo;
+	/**
+	 * @access public
+	 * @var TiUserInfo
+	 */
+	public $tiUserInfo;
+}}
+
+if (!class_exists("createUserResponse")) {
+/**
+ * createUserResponse
+ */
+class createUserResponse {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("getCurrentUserLanguagesResponse")) {
+/**
+ * getCurrentUserLanguagesResponse
+ */
+class getCurrentUserLanguagesResponse {
+	/**
+	 * @access public
+	 * @var Language[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("getUserLanguages")) {
+/**
+ * getUserLanguages
+ */
+class getUserLanguages {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $userTicket;
+}}
+
+if (!class_exists("getUserLanguagesResponse")) {
+/**
+ * getUserLanguagesResponse
+ */
+class getUserLanguagesResponse {
+	/**
+	 * @access public
+	 * @var Language[]
+	 */
+	public $return;
+}}
+
 if (!class_exists("findByTicket")) {
 /**
  * findByTicket
@@ -2222,89 +2598,17 @@ if (!class_exists("findByTicketResponse")) {
 class findByTicketResponse {
 	/**
 	 * @access public
-	 * @var Project
+	 * @var UserProfile
 	 */
 	public $return;
 }}
 
-if (!class_exists("findProjectByName")) {
+if (!class_exists("UserProfileService_4180")) {
 /**
- * findProjectByName
- */
-class findProjectByName {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $projectName;
-}}
-
-if (!class_exists("findProjectByNameResponse")) {
-/**
- * findProjectByNameResponse
- */
-class findProjectByNameResponse {
-	/**
-	 * @access public
-	 * @var Project
-	 */
-	public $return;
-}}
-
-if (!class_exists("findProjectByShortCode")) {
-/**
- * findProjectByShortCode
- */
-class findProjectByShortCode {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $projectShortCode;
-}}
-
-if (!class_exists("findProjectByShortCodeResponse")) {
-/**
- * findProjectByShortCodeResponse
- */
-class findProjectByShortCodeResponse {
-	/**
-	 * @access public
-	 * @var Project
-	 */
-	public $return;
-}}
-
-if (!class_exists("getUserProjects")) {
-/**
- * getUserProjects
- */
-class getUserProjects {
-	/**
-	 * @access public
-	 * @var boolean
-	 */
-	public $isSubProjectIncluded;
-}}
-
-if (!class_exists("getUserProjectsResponse")) {
-/**
- * getUserProjectsResponse
- */
-class getUserProjectsResponse {
-	/**
-	 * @access public
-	 * @var Project[]
-	 */
-	public $return;
-}}
-
-if (!class_exists("ProjectService_4110")) {
-/**
- * ProjectService_4110
+ * UserProfileService_4180
  * @author WSDLInterpreter
  */
-class ProjectService_4110 extends SoapClient {
+class UserProfileService_4180 extends SoapClient {
 	/**
 	 * Default class map for wsdl=>php
 	 * @access private
@@ -2314,6 +2618,7 @@ class ProjectService_4110 extends SoapClient {
 		"Notification" => "Notification",
 		"NotificationPriority" => "NotificationPriority",
 		"Announcement" => "Announcement",
+		"Batch" => "Batch",
 		"ContentMonitorPluginInfo" => "ContentMonitorPluginInfo",
 		"Date" => "Date",
 		"Document" => "Document",
@@ -2333,6 +2638,7 @@ class ProjectService_4110 extends SoapClient {
 		"Language" => "Language",
 		"LanguageDirection" => "LanguageDirection",
 		"LanguageDirectionModel" => "LanguageDirectionModel",
+		"LanguagePhaseInfo" => "LanguagePhaseInfo",
 		"Organization" => "Organization",
 		"OrganizationInfo" => "OrganizationInfo",
 		"PagedListInfo" => "PagedListInfo",
@@ -2370,14 +2676,24 @@ class ProjectService_4110 extends SoapClient {
 		"Role" => "Role",
 		"RoleTypeEnum" => "RoleTypeEnum",
 		"Policy" => "Policy",
+		"LanguageWorkflowInfo" => "LanguageWorkflowInfo",
+		"BatchWorkflowInfo" => "BatchWorkflowInfo",
+		"TargetWorkflowInfo" => "TargetWorkflowInfo",
+		"SubmissionWorkflowInfo" => "SubmissionWorkflowInfo",
+		"WorkflowRequest" => "WorkflowRequest",
+		"WorkflowRequestTicket" => "WorkflowRequestTicket",
+		"DownloadActionResult" => "DownloadActionResult",
+		"UploadActionResult" => "UploadActionResult",
+		"DownloadCollateralResult" => "DownloadCollateralResult",
+		"getSubmitters" => "getSubmitters",
+		"getSubmittersResponse" => "getSubmittersResponse",
+		"createUser" => "createUser",
+		"createUserResponse" => "createUserResponse",
+		"getCurrentUserLanguagesResponse" => "getCurrentUserLanguagesResponse",
+		"getUserLanguages" => "getUserLanguages",
+		"getUserLanguagesResponse" => "getUserLanguagesResponse",
 		"findByTicket" => "findByTicket",
 		"findByTicketResponse" => "findByTicketResponse",
-		"findProjectByName" => "findProjectByName",
-		"findProjectByNameResponse" => "findProjectByNameResponse",
-		"findProjectByShortCode" => "findProjectByShortCode",
-		"findProjectByShortCodeResponse" => "findProjectByShortCodeResponse",
-		"getUserProjects" => "getUserProjects",
-		"getUserProjectsResponse" => "getUserProjectsResponse",
 	);
 
 	/**
@@ -2385,7 +2701,7 @@ class ProjectService_4110 extends SoapClient {
 	 * @param string $wsdl WSDL location for this service
 	 * @param array $options Options for the SoapClient
 	 */
-	public function __construct($wsdl="http://stg-emc1.translations.com/PD/services/ProjectService_4110.wsdl", $options=array(), $headers = NULL) {
+	public function __construct($wsdl="https://gl-connect2.translations.com/PD/services/UserProfileService_4180.wsdl", $options=array(), $headers = NULL) {
 		foreach(self::$classmap as $wsdlClassName => $phpClassName) {
 		    if(!isset($options['classmap'][$wsdlClassName])) {
 		        $options['classmap'][$wsdlClassName] = $phpClassName;
@@ -2418,6 +2734,50 @@ class ProjectService_4110 extends SoapClient {
 	}
 
 	/**
+	 * Service Call: getSubmitters
+	 * Parameter options:
+	 * (getSubmitters) parameters
+	 * (getSubmitters) parameters
+	 * (getSubmitters) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getSubmittersResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getSubmitters($mixed = null) {
+		$validParameters = array(
+			"(getSubmitters)",
+			"(getSubmitters)",
+			"(getSubmitters)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getSubmitters", $args);
+	}
+
+
+	/**
+	 * Service Call: createUser
+	 * Parameter options:
+	 * (createUser) parameters
+	 * (createUser) parameters
+	 * (createUser) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return createUserResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function createUser($mixed = null) {
+		$validParameters = array(
+			"(createUser)",
+			"(createUser)",
+			"(createUser)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("createUser", $args);
+	}
+
+
+	/**
 	 * Service Call: findByTicket
 	 * Parameter options:
 	 * (findByTicket) parameters
@@ -2440,68 +2800,41 @@ class ProjectService_4110 extends SoapClient {
 
 
 	/**
-	 * Service Call: findProjectByName
+	 * Service Call: getUserLanguages
 	 * Parameter options:
-	 * (findProjectByName) parameters
-	 * (findProjectByName) parameters
-	 * (findProjectByName) parameters
+	 * (getUserLanguages) parameters
+	 * (getUserLanguages) parameters
+	 * (getUserLanguages) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return findProjectByNameResponse
+	 * @return getUserLanguagesResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function findProjectByName($mixed = null) {
+	public function getUserLanguages($mixed = null) {
 		$validParameters = array(
-			"(findProjectByName)",
-			"(findProjectByName)",
-			"(findProjectByName)",
+			"(getUserLanguages)",
+			"(getUserLanguages)",
+			"(getUserLanguages)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("findProjectByName", $args);
+		return $this->__soapCall("getUserLanguages", $args);
 	}
 
 
 	/**
-	 * Service Call: findProjectByShortCode
+	 * Service Call: getCurrentUserLanguages
 	 * Parameter options:
-	 * (findProjectByShortCode) parameters
-	 * (findProjectByShortCode) parameters
-	 * (findProjectByShortCode) parameters
+
 	 * @param mixed,... See function description for parameter options
-	 * @return findProjectByShortCodeResponse
+	 * @return getCurrentUserLanguagesResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function findProjectByShortCode($mixed = null) {
+	public function getCurrentUserLanguages($mixed = null) {
 		$validParameters = array(
-			"(findProjectByShortCode)",
-			"(findProjectByShortCode)",
-			"(findProjectByShortCode)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("findProjectByShortCode", $args);
-	}
-
-
-	/**
-	 * Service Call: getUserProjects
-	 * Parameter options:
-	 * (getUserProjects) parameters
-	 * (getUserProjects) parameters
-	 * (getUserProjects) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return getUserProjectsResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function getUserProjects($mixed = null) {
-		$validParameters = array(
-			"(getUserProjects)",
-			"(getUserProjects)",
-			"(getUserProjects)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("getUserProjects", $args);
+		return $this->__soapCall("getCurrentUserLanguages", $args);
 	}
 
 

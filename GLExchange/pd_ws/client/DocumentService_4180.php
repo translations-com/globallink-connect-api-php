@@ -2497,71 +2497,23 @@ if (!class_exists("contentType")) {
 class contentType {
 }}
 
-if (!class_exists("checkDownloadAction")) {
+if (!class_exists("cancelDocument")) {
 /**
- * checkDownloadAction
+ * cancelDocument
  */
-class checkDownloadAction {
+class cancelDocument {
 	/**
 	 * @access public
-	 * @var WorkflowRequestTicket
+	 * @var DocumentTicket
 	 */
-	public $workflowRequestTicket;
+	public $documentTicket;
 }}
 
-if (!class_exists("checkDownloadActionResponse")) {
+if (!class_exists("cancelDocumentResponse")) {
 /**
- * checkDownloadActionResponse
+ * cancelDocumentResponse
  */
-class checkDownloadActionResponse {
-	/**
-	 * @access public
-	 * @var DownloadActionResult
-	 */
-	public $return;
-}}
-
-if (!class_exists("checkUploadAction")) {
-/**
- * checkUploadAction
- */
-class checkUploadAction {
-	/**
-	 * @access public
-	 * @var WorkflowRequestTicket
-	 */
-	public $workflowRequestTicket;
-}}
-
-if (!class_exists("checkUploadActionResponse")) {
-/**
- * checkUploadActionResponse
- */
-class checkUploadActionResponse {
-	/**
-	 * @access public
-	 * @var UploadActionResult
-	 */
-	public $return;
-}}
-
-if (!class_exists("claim")) {
-/**
- * claim
- */
-class claim {
-	/**
-	 * @access public
-	 * @var WorkflowRequest
-	 */
-	public $workflowRequest;
-}}
-
-if (!class_exists("claimResponse")) {
-/**
- * claimResponse
- */
-class claimResponse {
+class cancelDocumentResponse {
 	/**
 	 * @access public
 	 * @var string
@@ -2569,131 +2521,69 @@ class claimResponse {
 	public $return;
 }}
 
-if (!class_exists("download")) {
+if (!class_exists("findByTicket")) {
 /**
- * download
+ * findByTicket
  */
-class download {
+class findByTicket {
 	/**
 	 * @access public
-	 * @var WorkflowRequest
+	 * @var string
 	 */
-	public $workflowRequest;
+	public $ticket;
 }}
 
-if (!class_exists("downloadResponse")) {
+if (!class_exists("findByTicketResponse")) {
 /**
- * downloadResponse
+ * findByTicketResponse
  */
-class downloadResponse {
+class findByTicketResponse {
 	/**
 	 * @access public
-	 * @var WorkflowRequestTicket
-	 */
-	public $return;
-}}
-
-if (!class_exists("downloadPreview")) {
-/**
- * downloadPreview
- */
-class downloadPreview {
-	/**
-	 * @access public
-	 * @var WorkflowRequest
-	 */
-	public $workflowRequest;
-}}
-
-if (!class_exists("downloadPreviewResponse")) {
-/**
- * downloadPreviewResponse
- */
-class downloadPreviewResponse {
-	/**
-	 * @access public
-	 * @var WorkflowRequestTicket
+	 * @var Document
 	 */
 	public $return;
 }}
 
-if (!class_exists("findAvailableWorkflowInfosForClaim")) {
+if (!class_exists("search")) {
 /**
- * findAvailableWorkflowInfosForClaim
+ * search
  */
-class findAvailableWorkflowInfosForClaim {
+class search {
 	/**
 	 * @access public
-	 * @var integer
+	 * @var DocumentSearchRequest
 	 */
-	public $limit;
+	public $command;
+	/**
+	 * @access public
+	 * @var PagedListInfo
+	 */
+	public $info;
 }}
 
-if (!class_exists("findAvailableWorkflowInfosForClaimResponse")) {
+if (!class_exists("searchResponse")) {
 /**
- * findAvailableWorkflowInfosForClaimResponse
+ * searchResponse
  */
-class findAvailableWorkflowInfosForClaimResponse {
+class searchResponse {
 	/**
 	 * @access public
-	 * @var SubmissionWorkflowInfo[]
-	 */
-	public $return;
-}}
-
-if (!class_exists("findAvailableWorkflowInfosForDownload")) {
-/**
- * findAvailableWorkflowInfosForDownload
- */
-class findAvailableWorkflowInfosForDownload {
-	/**
-	 * @access public
-	 * @var integer
-	 */
-	public $limit;
-}}
-
-if (!class_exists("findAvailableWorkflowInfosForDownloadResponse")) {
-/**
- * findAvailableWorkflowInfosForDownloadResponse
- */
-class findAvailableWorkflowInfosForDownloadResponse {
-	/**
-	 * @access public
-	 * @var SubmissionWorkflowInfo[]
+	 * @var DocumentPagedList
 	 */
 	public $return;
 }}
 
-if (!class_exists("findAvailableWorkflowInfosForDownloadBySubmissionTickets")) {
+if (!class_exists("submitDocumentWithBinaryResource")) {
 /**
- * findAvailableWorkflowInfosForDownloadBySubmissionTickets
+ * submitDocumentWithBinaryResource
  */
-class findAvailableWorkflowInfosForDownloadBySubmissionTickets {
+class submitDocumentWithBinaryResource {
 	/**
 	 * @access public
-	 * @var string[]
+	 * @var DocumentInfo
 	 */
-	public $submissionTickets;
-}}
-
-if (!class_exists("findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse")) {
-/**
- * findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse
- */
-class findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse {
-	/**
-	 * @access public
-	 * @var SubmissionWorkflowInfo[]
-	 */
-	public $return;
-}}
-
-if (!class_exists("upload")) {
-/**
- * upload
- */
-class upload {
+	public $documentInfo;
 	/**
 	 * @access public
 	 * @var ResourceInfo
@@ -2706,24 +2596,58 @@ class upload {
 	public $data;
 }}
 
-if (!class_exists("uploadResponse")) {
+if (!class_exists("submitDocumentWithBinaryResourceResponse")) {
 /**
- * uploadResponse
+ * submitDocumentWithBinaryResourceResponse
  */
-class uploadResponse {
+class submitDocumentWithBinaryResourceResponse {
 	/**
 	 * @access public
-	 * @var WorkflowRequestTicket
+	 * @var DocumentTicket
 	 */
 	public $return;
 }}
 
-if (!class_exists("WorkflowService_4130")) {
+if (!class_exists("submitDocumentWithTextResource")) {
 /**
- * WorkflowService_4130
+ * submitDocumentWithTextResource
+ */
+class submitDocumentWithTextResource {
+	/**
+	 * @access public
+	 * @var DocumentInfo
+	 */
+	public $documentInfo;
+	/**
+	 * @access public
+	 * @var ResourceInfo
+	 */
+	public $resourceInfo;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $data;
+}}
+
+if (!class_exists("submitDocumentWithTextResourceResponse")) {
+/**
+ * submitDocumentWithTextResourceResponse
+ */
+class submitDocumentWithTextResourceResponse {
+	/**
+	 * @access public
+	 * @var DocumentTicket
+	 */
+	public $return;
+}}
+
+if (!class_exists("DocumentService_4180")) {
+/**
+ * DocumentService_4180
  * @author WSDLInterpreter
  */
-class WorkflowService_4130 extends SoapClient {
+class DocumentService_4180 extends SoapClient {
 	/**
 	 * Default class map for wsdl=>php
 	 * @access private
@@ -2803,24 +2727,16 @@ class WorkflowService_4130 extends SoapClient {
 		"contentType" => "contentType",
 		"base64Binary" => "base64Binary",
 		"hexBinary" => "hexBinary",
-		"checkDownloadAction" => "checkDownloadAction",
-		"checkDownloadActionResponse" => "checkDownloadActionResponse",
-		"checkUploadAction" => "checkUploadAction",
-		"checkUploadActionResponse" => "checkUploadActionResponse",
-		"claim" => "claim",
-		"claimResponse" => "claimResponse",
-		"download" => "download",
-		"downloadResponse" => "downloadResponse",
-		"downloadPreview" => "downloadPreview",
-		"downloadPreviewResponse" => "downloadPreviewResponse",
-		"findAvailableWorkflowInfosForClaim" => "findAvailableWorkflowInfosForClaim",
-		"findAvailableWorkflowInfosForClaimResponse" => "findAvailableWorkflowInfosForClaimResponse",
-		"findAvailableWorkflowInfosForDownload" => "findAvailableWorkflowInfosForDownload",
-		"findAvailableWorkflowInfosForDownloadResponse" => "findAvailableWorkflowInfosForDownloadResponse",
-		"findAvailableWorkflowInfosForDownloadBySubmissionTickets" => "findAvailableWorkflowInfosForDownloadBySubmissionTickets",
-		"findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse" => "findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse",
-		"upload" => "upload",
-		"uploadResponse" => "uploadResponse",
+		"cancelDocument" => "cancelDocument",
+		"cancelDocumentResponse" => "cancelDocumentResponse",
+		"findByTicket" => "findByTicket",
+		"findByTicketResponse" => "findByTicketResponse",
+		"search" => "search",
+		"searchResponse" => "searchResponse",
+		"submitDocumentWithBinaryResource" => "submitDocumentWithBinaryResource",
+		"submitDocumentWithBinaryResourceResponse" => "submitDocumentWithBinaryResourceResponse",
+		"submitDocumentWithTextResource" => "submitDocumentWithTextResource",
+		"submitDocumentWithTextResourceResponse" => "submitDocumentWithTextResourceResponse",
 	);
 
 	/**
@@ -2828,7 +2744,7 @@ class WorkflowService_4130 extends SoapClient {
 	 * @param string $wsdl WSDL location for this service
 	 * @param array $options Options for the SoapClient
 	 */
-	public function __construct($wsdl="http://gl-connect2.translations.com/PD/services/WorkflowService_4130.wsdl", $options=array(), $headers = NULL) {
+	public function __construct($wsdl="https://gl-connect2.translations.com/PD/services/DocumentService_4180.wsdl", $options=array(), $headers = NULL) {
 		foreach(self::$classmap as $wsdlClassName => $phpClassName) {
 		    if(!isset($options['classmap'][$wsdlClassName])) {
 		        $options['classmap'][$wsdlClassName] = $phpClassName;
@@ -2861,200 +2777,112 @@ class WorkflowService_4130 extends SoapClient {
 	}
 
 	/**
-	 * Service Call: checkDownloadAction
+	 * Service Call: findByTicket
 	 * Parameter options:
-	 * (checkDownloadAction) parameters
-	 * (checkDownloadAction) parameters
-	 * (checkDownloadAction) parameters
+	 * (findByTicket) parameters
+	 * (findByTicket) parameters
+	 * (findByTicket) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return checkDownloadActionResponse
+	 * @return findByTicketResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function checkDownloadAction($mixed = null) {
+	public function findByTicket($mixed = null) {
 		$validParameters = array(
-			"(checkDownloadAction)",
-			"(checkDownloadAction)",
-			"(checkDownloadAction)",
+			"(findByTicket)",
+			"(findByTicket)",
+			"(findByTicket)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("checkDownloadAction", $args);
+		return $this->__soapCall("findByTicket", $args);
 	}
 
 
 	/**
-	 * Service Call: checkUploadAction
+	 * Service Call: submitDocumentWithTextResource
 	 * Parameter options:
-	 * (checkUploadAction) parameters
-	 * (checkUploadAction) parameters
-	 * (checkUploadAction) parameters
+	 * (submitDocumentWithTextResource) parameters
+	 * (submitDocumentWithTextResource) parameters
+	 * (submitDocumentWithTextResource) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return checkUploadActionResponse
+	 * @return submitDocumentWithTextResourceResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function checkUploadAction($mixed = null) {
+	public function submitDocumentWithTextResource($mixed = null) {
 		$validParameters = array(
-			"(checkUploadAction)",
-			"(checkUploadAction)",
-			"(checkUploadAction)",
+			"(submitDocumentWithTextResource)",
+			"(submitDocumentWithTextResource)",
+			"(submitDocumentWithTextResource)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("checkUploadAction", $args);
+		return $this->__soapCall("submitDocumentWithTextResource", $args);
 	}
 
 
 	/**
-	 * Service Call: claim
+	 * Service Call: cancelDocument
 	 * Parameter options:
-	 * (claim) parameters
-	 * (claim) parameters
-	 * (claim) parameters
+	 * (cancelDocument) parameters
+	 * (cancelDocument) parameters
+	 * (cancelDocument) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return claimResponse
+	 * @return cancelDocumentResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function claim($mixed = null) {
+	public function cancelDocument($mixed = null) {
 		$validParameters = array(
-			"(claim)",
-			"(claim)",
-			"(claim)",
+			"(cancelDocument)",
+			"(cancelDocument)",
+			"(cancelDocument)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("claim", $args);
+		return $this->__soapCall("cancelDocument", $args);
 	}
 
 
 	/**
-	 * Service Call: download
+	 * Service Call: submitDocumentWithBinaryResource
 	 * Parameter options:
-	 * (download) parameters
-	 * (download) parameters
-	 * (download) parameters
+	 * (submitDocumentWithBinaryResource) parameters
+	 * (submitDocumentWithBinaryResource) parameters
+	 * (submitDocumentWithBinaryResource) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return downloadResponse
+	 * @return submitDocumentWithBinaryResourceResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function download($mixed = null) {
+	public function submitDocumentWithBinaryResource($mixed = null) {
 		$validParameters = array(
-			"(download)",
-			"(download)",
-			"(download)",
+			"(submitDocumentWithBinaryResource)",
+			"(submitDocumentWithBinaryResource)",
+			"(submitDocumentWithBinaryResource)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("download", $args);
+		return $this->__soapCall("submitDocumentWithBinaryResource", $args);
 	}
 
 
 	/**
-	 * Service Call: downloadPreview
+	 * Service Call: search
 	 * Parameter options:
-	 * (downloadPreview) parameters
-	 * (downloadPreview) parameters
-	 * (downloadPreview) parameters
+	 * (search) parameters
+	 * (search) parameters
+	 * (search) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return downloadPreviewResponse
+	 * @return searchResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function downloadPreview($mixed = null) {
+	public function search($mixed = null) {
 		$validParameters = array(
-			"(downloadPreview)",
-			"(downloadPreview)",
-			"(downloadPreview)",
+			"(search)",
+			"(search)",
+			"(search)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("downloadPreview", $args);
-	}
-
-
-	/**
-	 * Service Call: findAvailableWorkflowInfosForClaim
-	 * Parameter options:
-	 * (findAvailableWorkflowInfosForClaim) parameters
-	 * (findAvailableWorkflowInfosForClaim) parameters
-	 * (findAvailableWorkflowInfosForClaim) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return findAvailableWorkflowInfosForClaimResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function findAvailableWorkflowInfosForClaim($mixed = null) {
-		$validParameters = array(
-			"(findAvailableWorkflowInfosForClaim)",
-			"(findAvailableWorkflowInfosForClaim)",
-			"(findAvailableWorkflowInfosForClaim)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("findAvailableWorkflowInfosForClaim", $args);
-	}
-
-
-	/**
-	 * Service Call: findAvailableWorkflowInfosForDownload
-	 * Parameter options:
-	 * (findAvailableWorkflowInfosForDownload) parameters
-	 * (findAvailableWorkflowInfosForDownload) parameters
-	 * (findAvailableWorkflowInfosForDownload) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return findAvailableWorkflowInfosForDownloadResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function findAvailableWorkflowInfosForDownload($mixed = null) {
-		$validParameters = array(
-			"(findAvailableWorkflowInfosForDownload)",
-			"(findAvailableWorkflowInfosForDownload)",
-			"(findAvailableWorkflowInfosForDownload)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("findAvailableWorkflowInfosForDownload", $args);
-	}
-
-
-	/**
-	 * Service Call: findAvailableWorkflowInfosForDownloadBySubmissionTickets
-	 * Parameter options:
-	 * (findAvailableWorkflowInfosForDownloadBySubmissionTickets) parameters
-	 * (findAvailableWorkflowInfosForDownloadBySubmissionTickets) parameters
-	 * (findAvailableWorkflowInfosForDownloadBySubmissionTickets) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function findAvailableWorkflowInfosForDownloadBySubmissionTickets($mixed = null) {
-		$validParameters = array(
-			"(findAvailableWorkflowInfosForDownloadBySubmissionTickets)",
-			"(findAvailableWorkflowInfosForDownloadBySubmissionTickets)",
-			"(findAvailableWorkflowInfosForDownloadBySubmissionTickets)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("findAvailableWorkflowInfosForDownloadBySubmissionTickets", $args);
-	}
-
-
-	/**
-	 * Service Call: upload
-	 * Parameter options:
-	 * (upload) parameters
-	 * (upload) parameters
-	 * (upload) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return uploadResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function upload($mixed = null) {
-		$validParameters = array(
-			"(upload)",
-			"(upload)",
-			"(upload)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("upload", $args);
+		return $this->__soapCall("search", $args);
 	}
 
 

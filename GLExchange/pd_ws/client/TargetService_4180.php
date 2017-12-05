@@ -2490,91 +2490,103 @@ class DownloadCollateralResult {
 	public $repositoryItem;
 }}
 
-if (!class_exists("getSubmitters")) {
+if (!class_exists("cancelTargetByDocumentId")) {
 /**
- * getSubmitters
+ * cancelTargetByDocumentId
  */
-class getSubmitters {
+class cancelTargetByDocumentId {
+	/**
+	 * @access public
+	 * @var DocumentTicket
+	 */
+	public $documentId;
 	/**
 	 * @access public
 	 * @var string
 	 */
-	public $projectShortCode;
+	public $targetLocale;
 }}
 
-if (!class_exists("getSubmittersResponse")) {
+if (!class_exists("cancelTargetByDocumentIdResponse")) {
 /**
- * getSubmittersResponse
+ * cancelTargetByDocumentIdResponse
  */
-class getSubmittersResponse {
-	/**
-	 * @access public
-	 * @var UserProfile[]
-	 */
-	public $return;
-}}
-
-if (!class_exists("createUser")) {
-/**
- * createUser
- */
-class createUser {
-	/**
-	 * @access public
-	 * @var UserInfo
-	 */
-	public $userInfo;
-	/**
-	 * @access public
-	 * @var TiUserInfo
-	 */
-	public $tiUserInfo;
-}}
-
-if (!class_exists("createUserResponse")) {
-/**
- * createUserResponse
- */
-class createUserResponse {
-	/**
-	 * @access public
-	 * @var string[]
-	 */
-	public $return;
-}}
-
-if (!class_exists("getCurrentUserLanguagesResponse")) {
-/**
- * getCurrentUserLanguagesResponse
- */
-class getCurrentUserLanguagesResponse {
-	/**
-	 * @access public
-	 * @var Language[]
-	 */
-	public $return;
-}}
-
-if (!class_exists("getUserLanguages")) {
-/**
- * getUserLanguages
- */
-class getUserLanguages {
+class cancelTargetByDocumentIdResponse {
 	/**
 	 * @access public
 	 * @var string
 	 */
-	public $userTicket;
+	public $return;
 }}
 
-if (!class_exists("getUserLanguagesResponse")) {
+if (!class_exists("cancelTarget")) {
 /**
- * getUserLanguagesResponse
+ * cancelTarget
  */
-class getUserLanguagesResponse {
+class cancelTarget {
 	/**
 	 * @access public
-	 * @var Language[]
+	 * @var string
+	 */
+	public $targetId;
+}}
+
+if (!class_exists("cancelTargetResponse")) {
+/**
+ * cancelTargetResponse
+ */
+class cancelTargetResponse {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $return;
+}}
+
+if (!class_exists("downloadTargetResource")) {
+/**
+ * downloadTargetResource
+ */
+class downloadTargetResource {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $targetId;
+}}
+
+if (!class_exists("downloadTargetResourceResponse")) {
+/**
+ * downloadTargetResourceResponse
+ */
+class downloadTargetResourceResponse {
+	/**
+	 * @access public
+	 * @var RepositoryItem
+	 */
+	public $return;
+}}
+
+if (!class_exists("downloadTranslationPreview")) {
+/**
+ * downloadTranslationPreview
+ */
+class downloadTranslationPreview {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $uuid;
+}}
+
+if (!class_exists("downloadTranslationPreviewResponse")) {
+/**
+ * downloadTranslationPreviewResponse
+ */
+class downloadTranslationPreviewResponse {
+	/**
+	 * @access public
+	 * @var PreviewResult
 	 */
 	public $return;
 }}
@@ -2598,17 +2610,394 @@ if (!class_exists("findByTicketResponse")) {
 class findByTicketResponse {
 	/**
 	 * @access public
-	 * @var UserProfile
+	 * @var Target
 	 */
 	public $return;
 }}
 
-if (!class_exists("UserProfileService_4130")) {
+if (!class_exists("getCompletedTargetsByDocuments")) {
 /**
- * UserProfileService_4130
+ * getCompletedTargetsByDocuments
+ */
+class getCompletedTargetsByDocuments {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $documentTickets;
+	/**
+	 * @access public
+	 * @var integer
+	 */
+	public $maxResults;
+}}
+
+if (!class_exists("getCompletedTargetsByDocumentsResponse")) {
+/**
+ * getCompletedTargetsByDocumentsResponse
+ */
+class getCompletedTargetsByDocumentsResponse {
+	/**
+	 * @access public
+	 * @var Target[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("getCompletedTargetsByProjects")) {
+/**
+ * getCompletedTargetsByProjects
+ */
+class getCompletedTargetsByProjects {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $projectTickets;
+	/**
+	 * @access public
+	 * @var integer
+	 */
+	public $maxResults;
+}}
+
+if (!class_exists("getCompletedTargetsByProjectsResponse")) {
+/**
+ * getCompletedTargetsByProjectsResponse
+ */
+class getCompletedTargetsByProjectsResponse {
+	/**
+	 * @access public
+	 * @var Target[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("getCompletedTargetsBySubmissions")) {
+/**
+ * getCompletedTargetsBySubmissions
+ */
+class getCompletedTargetsBySubmissions {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $submissionTickets;
+	/**
+	 * @access public
+	 * @var integer
+	 */
+	public $maxResults;
+}}
+
+if (!class_exists("getCompletedTargetsBySubmissionsResponse")) {
+/**
+ * getCompletedTargetsBySubmissionsResponse
+ */
+class getCompletedTargetsBySubmissionsResponse {
+	/**
+	 * @access public
+	 * @var Target[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("getLanguagePhaseInfo")) {
+/**
+ * getLanguagePhaseInfo
+ */
+class getLanguagePhaseInfo {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $submissionTicket;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $batchName;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $targetLanguage;
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $phaseName;
+}}
+
+if (!class_exists("getLanguagePhaseInfoResponse")) {
+/**
+ * getLanguagePhaseInfoResponse
+ */
+class getLanguagePhaseInfoResponse {
+	/**
+	 * @access public
+	 * @var LanguagePhaseInfo
+	 */
+	public $return;
+}}
+
+if (!class_exists("getPagedCompletedTargetsByProjects")) {
+/**
+ * getPagedCompletedTargetsByProjects
+ */
+class getPagedCompletedTargetsByProjects {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $projectTickets;
+	/**
+	 * @access public
+	 * @var PagedListInfo
+	 */
+	public $info;
+}}
+
+if (!class_exists("getPagedCompletedTargetsByProjectsResponse")) {
+/**
+ * getPagedCompletedTargetsByProjectsResponse
+ */
+class getPagedCompletedTargetsByProjectsResponse {
+	/**
+	 * @access public
+	 * @var TargetPagedList
+	 */
+	public $return;
+}}
+
+if (!class_exists("getPagedCompletedTargetsBySubmissions")) {
+/**
+ * getPagedCompletedTargetsBySubmissions
+ */
+class getPagedCompletedTargetsBySubmissions {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $submissionTickets;
+	/**
+	 * @access public
+	 * @var PagedListInfo
+	 */
+	public $info;
+}}
+
+if (!class_exists("getPagedCompletedTargetsBySubmissionsResponse")) {
+/**
+ * getPagedCompletedTargetsBySubmissionsResponse
+ */
+class getPagedCompletedTargetsBySubmissionsResponse {
+	/**
+	 * @access public
+	 * @var TargetPagedList
+	 */
+	public $return;
+}}
+
+if (!class_exists("requestTranslationPreview")) {
+/**
+ * requestTranslationPreview
+ */
+class requestTranslationPreview {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $targetId;
+}}
+
+if (!class_exists("requestTranslationPreviewResponse")) {
+/**
+ * requestTranslationPreviewResponse
+ */
+class requestTranslationPreviewResponse {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $return;
+}}
+
+if (!class_exists("search")) {
+/**
+ * search
+ */
+class search {
+	/**
+	 * @access public
+	 * @var TargetSearchRequest
+	 */
+	public $command;
+	/**
+	 * @access public
+	 * @var PagedListInfo
+	 */
+	public $info;
+}}
+
+if (!class_exists("searchResponse")) {
+/**
+ * searchResponse
+ */
+class searchResponse {
+	/**
+	 * @access public
+	 * @var TargetPagedList
+	 */
+	public $return;
+}}
+
+if (!class_exists("browseTargetsByDocuments")) {
+/**
+ * browseTargetsByDocuments
+ */
+class browseTargetsByDocuments {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $documentTickets;
+	/**
+	 * @access public
+	 * @var PagedListInfo
+	 */
+	public $info;
+}}
+
+if (!class_exists("browseTargetsByDocumentsResponse")) {
+/**
+ * browseTargetsByDocumentsResponse
+ */
+class browseTargetsByDocumentsResponse {
+	/**
+	 * @access public
+	 * @var Target[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("sendDownloadConfirmation")) {
+/**
+ * sendDownloadConfirmation
+ */
+class sendDownloadConfirmation {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $targetId;
+}}
+
+if (!class_exists("sendDownloadConfirmationResponse")) {
+/**
+ * sendDownloadConfirmationResponse
+ */
+class sendDownloadConfirmationResponse {
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $return;
+}}
+
+if (!class_exists("getCanceledTargetsByDocuments")) {
+/**
+ * getCanceledTargetsByDocuments
+ */
+class getCanceledTargetsByDocuments {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $documentTickets;
+	/**
+	 * @access public
+	 * @var integer
+	 */
+	public $maxResults;
+}}
+
+if (!class_exists("getCanceledTargetsByDocumentsResponse")) {
+/**
+ * getCanceledTargetsByDocumentsResponse
+ */
+class getCanceledTargetsByDocumentsResponse {
+	/**
+	 * @access public
+	 * @var Target[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("getCanceledTargetsByProjects")) {
+/**
+ * getCanceledTargetsByProjects
+ */
+class getCanceledTargetsByProjects {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $projectTickets;
+	/**
+	 * @access public
+	 * @var integer
+	 */
+	public $maxResults;
+}}
+
+if (!class_exists("getCanceledTargetsByProjectsResponse")) {
+/**
+ * getCanceledTargetsByProjectsResponse
+ */
+class getCanceledTargetsByProjectsResponse {
+	/**
+	 * @access public
+	 * @var Target[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("getCanceledTargetsBySubmissions")) {
+/**
+ * getCanceledTargetsBySubmissions
+ */
+class getCanceledTargetsBySubmissions {
+	/**
+	 * @access public
+	 * @var string[]
+	 */
+	public $submissionTickets;
+	/**
+	 * @access public
+	 * @var integer
+	 */
+	public $maxResults;
+}}
+
+if (!class_exists("getCanceledTargetsBySubmissionsResponse")) {
+/**
+ * getCanceledTargetsBySubmissionsResponse
+ */
+class getCanceledTargetsBySubmissionsResponse {
+	/**
+	 * @access public
+	 * @var Target[]
+	 */
+	public $return;
+}}
+
+if (!class_exists("TargetService_4180")) {
+/**
+ * TargetService_4180
  * @author WSDLInterpreter
  */
-class UserProfileService_4130 extends SoapClient {
+class TargetService_4180 extends SoapClient {
 	/**
 	 * Default class map for wsdl=>php
 	 * @access private
@@ -2685,15 +3074,42 @@ class UserProfileService_4130 extends SoapClient {
 		"DownloadActionResult" => "DownloadActionResult",
 		"UploadActionResult" => "UploadActionResult",
 		"DownloadCollateralResult" => "DownloadCollateralResult",
-		"getSubmitters" => "getSubmitters",
-		"getSubmittersResponse" => "getSubmittersResponse",
-		"createUser" => "createUser",
-		"createUserResponse" => "createUserResponse",
-		"getCurrentUserLanguagesResponse" => "getCurrentUserLanguagesResponse",
-		"getUserLanguages" => "getUserLanguages",
-		"getUserLanguagesResponse" => "getUserLanguagesResponse",
+		"cancelTargetByDocumentId" => "cancelTargetByDocumentId",
+		"cancelTargetByDocumentIdResponse" => "cancelTargetByDocumentIdResponse",
+		"cancelTarget" => "cancelTarget",
+		"cancelTargetResponse" => "cancelTargetResponse",
+		"downloadTargetResource" => "downloadTargetResource",
+		"downloadTargetResourceResponse" => "downloadTargetResourceResponse",
+		"downloadTranslationPreview" => "downloadTranslationPreview",
+		"downloadTranslationPreviewResponse" => "downloadTranslationPreviewResponse",
 		"findByTicket" => "findByTicket",
 		"findByTicketResponse" => "findByTicketResponse",
+		"getCompletedTargetsByDocuments" => "getCompletedTargetsByDocuments",
+		"getCompletedTargetsByDocumentsResponse" => "getCompletedTargetsByDocumentsResponse",
+		"getCompletedTargetsByProjects" => "getCompletedTargetsByProjects",
+		"getCompletedTargetsByProjectsResponse" => "getCompletedTargetsByProjectsResponse",
+		"getCompletedTargetsBySubmissions" => "getCompletedTargetsBySubmissions",
+		"getCompletedTargetsBySubmissionsResponse" => "getCompletedTargetsBySubmissionsResponse",
+		"getLanguagePhaseInfo" => "getLanguagePhaseInfo",
+		"getLanguagePhaseInfoResponse" => "getLanguagePhaseInfoResponse",
+		"getPagedCompletedTargetsByProjects" => "getPagedCompletedTargetsByProjects",
+		"getPagedCompletedTargetsByProjectsResponse" => "getPagedCompletedTargetsByProjectsResponse",
+		"getPagedCompletedTargetsBySubmissions" => "getPagedCompletedTargetsBySubmissions",
+		"getPagedCompletedTargetsBySubmissionsResponse" => "getPagedCompletedTargetsBySubmissionsResponse",
+		"requestTranslationPreview" => "requestTranslationPreview",
+		"requestTranslationPreviewResponse" => "requestTranslationPreviewResponse",
+		"search" => "search",
+		"searchResponse" => "searchResponse",
+		"browseTargetsByDocuments" => "browseTargetsByDocuments",
+		"browseTargetsByDocumentsResponse" => "browseTargetsByDocumentsResponse",
+		"sendDownloadConfirmation" => "sendDownloadConfirmation",
+		"sendDownloadConfirmationResponse" => "sendDownloadConfirmationResponse",
+		"getCanceledTargetsByDocuments" => "getCanceledTargetsByDocuments",
+		"getCanceledTargetsByDocumentsResponse" => "getCanceledTargetsByDocumentsResponse",
+		"getCanceledTargetsByProjects" => "getCanceledTargetsByProjects",
+		"getCanceledTargetsByProjectsResponse" => "getCanceledTargetsByProjectsResponse",
+		"getCanceledTargetsBySubmissions" => "getCanceledTargetsBySubmissions",
+		"getCanceledTargetsBySubmissionsResponse" => "getCanceledTargetsBySubmissionsResponse",
 	);
 
 	/**
@@ -2701,7 +3117,7 @@ class UserProfileService_4130 extends SoapClient {
 	 * @param string $wsdl WSDL location for this service
 	 * @param array $options Options for the SoapClient
 	 */
-	public function __construct($wsdl="http://gl-connect2.translations.com/PD/services/UserProfileService_4130.wsdl", $options=array(), $headers = NULL) {
+	public function __construct($wsdl="https://gl-connect2.translations.com/PD/services/TargetService_4180.wsdl", $options=array(), $headers = NULL) {
 		foreach(self::$classmap as $wsdlClassName => $phpClassName) {
 		    if(!isset($options['classmap'][$wsdlClassName])) {
 		        $options['classmap'][$wsdlClassName] = $phpClassName;
@@ -2734,50 +3150,6 @@ class UserProfileService_4130 extends SoapClient {
 	}
 
 	/**
-	 * Service Call: getSubmitters
-	 * Parameter options:
-	 * (getSubmitters) parameters
-	 * (getSubmitters) parameters
-	 * (getSubmitters) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return getSubmittersResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function getSubmitters($mixed = null) {
-		$validParameters = array(
-			"(getSubmitters)",
-			"(getSubmitters)",
-			"(getSubmitters)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("getSubmitters", $args);
-	}
-
-
-	/**
-	 * Service Call: createUser
-	 * Parameter options:
-	 * (createUser) parameters
-	 * (createUser) parameters
-	 * (createUser) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return createUserResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function createUser($mixed = null) {
-		$validParameters = array(
-			"(createUser)",
-			"(createUser)",
-			"(createUser)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("createUser", $args);
-	}
-
-
-	/**
 	 * Service Call: findByTicket
 	 * Parameter options:
 	 * (findByTicket) parameters
@@ -2800,41 +3172,376 @@ class UserProfileService_4130 extends SoapClient {
 
 
 	/**
-	 * Service Call: getUserLanguages
+	 * Service Call: cancelTarget
 	 * Parameter options:
-	 * (getUserLanguages) parameters
-	 * (getUserLanguages) parameters
-	 * (getUserLanguages) parameters
+	 * (cancelTarget) parameters
+	 * (cancelTarget) parameters
+	 * (cancelTarget) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return getUserLanguagesResponse
+	 * @return cancelTargetResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function getUserLanguages($mixed = null) {
+	public function cancelTarget($mixed = null) {
 		$validParameters = array(
-			"(getUserLanguages)",
-			"(getUserLanguages)",
-			"(getUserLanguages)",
+			"(cancelTarget)",
+			"(cancelTarget)",
+			"(cancelTarget)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("getUserLanguages", $args);
+		return $this->__soapCall("cancelTarget", $args);
 	}
 
 
 	/**
-	 * Service Call: getCurrentUserLanguages
+	 * Service Call: cancelTargetByDocumentId
 	 * Parameter options:
-
+	 * (cancelTargetByDocumentId) parameters
+	 * (cancelTargetByDocumentId) parameters
+	 * (cancelTargetByDocumentId) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return getCurrentUserLanguagesResponse
+	 * @return cancelTargetByDocumentIdResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function getCurrentUserLanguages($mixed = null) {
+	public function cancelTargetByDocumentId($mixed = null) {
 		$validParameters = array(
+			"(cancelTargetByDocumentId)",
+			"(cancelTargetByDocumentId)",
+			"(cancelTargetByDocumentId)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("getCurrentUserLanguages", $args);
+		return $this->__soapCall("cancelTargetByDocumentId", $args);
+	}
+
+
+	/**
+	 * Service Call: getCompletedTargetsBySubmissions
+	 * Parameter options:
+	 * (getCompletedTargetsBySubmissions) parameters
+	 * (getCompletedTargetsBySubmissions) parameters
+	 * (getCompletedTargetsBySubmissions) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getCompletedTargetsBySubmissionsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getCompletedTargetsBySubmissions($mixed = null) {
+		$validParameters = array(
+			"(getCompletedTargetsBySubmissions)",
+			"(getCompletedTargetsBySubmissions)",
+			"(getCompletedTargetsBySubmissions)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getCompletedTargetsBySubmissions", $args);
+	}
+
+
+	/**
+	 * Service Call: getCompletedTargetsByProjects
+	 * Parameter options:
+	 * (getCompletedTargetsByProjects) parameters
+	 * (getCompletedTargetsByProjects) parameters
+	 * (getCompletedTargetsByProjects) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getCompletedTargetsByProjectsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getCompletedTargetsByProjects($mixed = null) {
+		$validParameters = array(
+			"(getCompletedTargetsByProjects)",
+			"(getCompletedTargetsByProjects)",
+			"(getCompletedTargetsByProjects)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getCompletedTargetsByProjects", $args);
+	}
+
+
+	/**
+	 * Service Call: getLanguagePhaseInfo
+	 * Parameter options:
+	 * (getLanguagePhaseInfo) parameters
+	 * (getLanguagePhaseInfo) parameters
+	 * (getLanguagePhaseInfo) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getLanguagePhaseInfoResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getLanguagePhaseInfo($mixed = null) {
+		$validParameters = array(
+			"(getLanguagePhaseInfo)",
+			"(getLanguagePhaseInfo)",
+			"(getLanguagePhaseInfo)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getLanguagePhaseInfo", $args);
+	}
+
+
+	/**
+	 * Service Call: getPagedCompletedTargetsBySubmissions
+	 * Parameter options:
+	 * (getPagedCompletedTargetsBySubmissions) parameters
+	 * (getPagedCompletedTargetsBySubmissions) parameters
+	 * (getPagedCompletedTargetsBySubmissions) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getPagedCompletedTargetsBySubmissionsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getPagedCompletedTargetsBySubmissions($mixed = null) {
+		$validParameters = array(
+			"(getPagedCompletedTargetsBySubmissions)",
+			"(getPagedCompletedTargetsBySubmissions)",
+			"(getPagedCompletedTargetsBySubmissions)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getPagedCompletedTargetsBySubmissions", $args);
+	}
+
+
+	/**
+	 * Service Call: getPagedCompletedTargetsByProjects
+	 * Parameter options:
+	 * (getPagedCompletedTargetsByProjects) parameters
+	 * (getPagedCompletedTargetsByProjects) parameters
+	 * (getPagedCompletedTargetsByProjects) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getPagedCompletedTargetsByProjectsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getPagedCompletedTargetsByProjects($mixed = null) {
+		$validParameters = array(
+			"(getPagedCompletedTargetsByProjects)",
+			"(getPagedCompletedTargetsByProjects)",
+			"(getPagedCompletedTargetsByProjects)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getPagedCompletedTargetsByProjects", $args);
+	}
+
+
+	/**
+	 * Service Call: downloadTargetResource
+	 * Parameter options:
+	 * (downloadTargetResource) parameters
+	 * (downloadTargetResource) parameters
+	 * (downloadTargetResource) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return downloadTargetResourceResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function downloadTargetResource($mixed = null) {
+		$validParameters = array(
+			"(downloadTargetResource)",
+			"(downloadTargetResource)",
+			"(downloadTargetResource)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("downloadTargetResource", $args);
+	}
+
+
+	/**
+	 * Service Call: downloadTranslationPreview
+	 * Parameter options:
+	 * (downloadTranslationPreview) parameters
+	 * (downloadTranslationPreview) parameters
+	 * (downloadTranslationPreview) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return downloadTranslationPreviewResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function downloadTranslationPreview($mixed = null) {
+		$validParameters = array(
+			"(downloadTranslationPreview)",
+			"(downloadTranslationPreview)",
+			"(downloadTranslationPreview)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("downloadTranslationPreview", $args);
+	}
+
+
+	/**
+	 * Service Call: sendDownloadConfirmation
+	 * Parameter options:
+	 * (sendDownloadConfirmation) parameters
+	 * (sendDownloadConfirmation) parameters
+	 * (sendDownloadConfirmation) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return sendDownloadConfirmationResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function sendDownloadConfirmation($mixed = null) {
+		$validParameters = array(
+			"(sendDownloadConfirmation)",
+			"(sendDownloadConfirmation)",
+			"(sendDownloadConfirmation)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("sendDownloadConfirmation", $args);
+	}
+
+
+	/**
+	 * Service Call: getCompletedTargetsByDocuments
+	 * Parameter options:
+	 * (getCompletedTargetsByDocuments) parameters
+	 * (getCompletedTargetsByDocuments) parameters
+	 * (getCompletedTargetsByDocuments) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getCompletedTargetsByDocumentsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getCompletedTargetsByDocuments($mixed = null) {
+		$validParameters = array(
+			"(getCompletedTargetsByDocuments)",
+			"(getCompletedTargetsByDocuments)",
+			"(getCompletedTargetsByDocuments)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getCompletedTargetsByDocuments", $args);
+	}
+
+
+	/**
+	 * Service Call: requestTranslationPreview
+	 * Parameter options:
+	 * (requestTranslationPreview) parameters
+	 * (requestTranslationPreview) parameters
+	 * (requestTranslationPreview) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return requestTranslationPreviewResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function requestTranslationPreview($mixed = null) {
+		$validParameters = array(
+			"(requestTranslationPreview)",
+			"(requestTranslationPreview)",
+			"(requestTranslationPreview)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("requestTranslationPreview", $args);
+	}
+
+
+	/**
+	 * Service Call: search
+	 * Parameter options:
+	 * (search) parameters
+	 * (search) parameters
+	 * (search) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return searchResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function search($mixed = null) {
+		$validParameters = array(
+			"(search)",
+			"(search)",
+			"(search)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("search", $args);
+	}
+
+
+	/**
+	 * Service Call: browseTargetsByDocuments
+	 * Parameter options:
+	 * (browseTargetsByDocuments) parameters
+	 * (browseTargetsByDocuments) parameters
+	 * (browseTargetsByDocuments) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return browseTargetsByDocumentsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function browseTargetsByDocuments($mixed = null) {
+		$validParameters = array(
+			"(browseTargetsByDocuments)",
+			"(browseTargetsByDocuments)",
+			"(browseTargetsByDocuments)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("browseTargetsByDocuments", $args);
+	}
+
+
+	/**
+	 * Service Call: getCanceledTargetsByDocuments
+	 * Parameter options:
+	 * (getCanceledTargetsByDocuments) parameters
+	 * (getCanceledTargetsByDocuments) parameters
+	 * (getCanceledTargetsByDocuments) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getCanceledTargetsByDocumentsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getCanceledTargetsByDocuments($mixed = null) {
+		$validParameters = array(
+			"(getCanceledTargetsByDocuments)",
+			"(getCanceledTargetsByDocuments)",
+			"(getCanceledTargetsByDocuments)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getCanceledTargetsByDocuments", $args);
+	}
+
+
+	/**
+	 * Service Call: getCanceledTargetsByProjects
+	 * Parameter options:
+	 * (getCanceledTargetsByProjects) parameters
+	 * (getCanceledTargetsByProjects) parameters
+	 * (getCanceledTargetsByProjects) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getCanceledTargetsByProjectsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getCanceledTargetsByProjects($mixed = null) {
+		$validParameters = array(
+			"(getCanceledTargetsByProjects)",
+			"(getCanceledTargetsByProjects)",
+			"(getCanceledTargetsByProjects)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getCanceledTargetsByProjects", $args);
+	}
+
+
+	/**
+	 * Service Call: getCanceledTargetsBySubmissions
+	 * Parameter options:
+	 * (getCanceledTargetsBySubmissions) parameters
+	 * (getCanceledTargetsBySubmissions) parameters
+	 * (getCanceledTargetsBySubmissions) parameters
+	 * @param mixed,... See function description for parameter options
+	 * @return getCanceledTargetsBySubmissionsResponse
+	 * @throws Exception invalid function signature message
+	 */
+	public function getCanceledTargetsBySubmissions($mixed = null) {
+		$validParameters = array(
+			"(getCanceledTargetsBySubmissions)",
+			"(getCanceledTargetsBySubmissions)",
+			"(getCanceledTargetsBySubmissions)",
+		);
+		$args = func_get_args();
+		$this->_checkArguments($args, $validParameters);
+		return $this->__soapCall("getCanceledTargetsBySubmissions", $args);
 	}
 
 

@@ -2497,38 +2497,71 @@ if (!class_exists("contentType")) {
 class contentType {
 }}
 
-if (!class_exists("addReferenceAsText")) {
+if (!class_exists("checkDownloadAction")) {
 /**
- * addReferenceAsText
+ * checkDownloadAction
  */
-class addReferenceAsText {
+class checkDownloadAction {
 	/**
 	 * @access public
-	 * @var string
+	 * @var WorkflowRequestTicket
 	 */
-	public $referenceText;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $referenceDocumentName;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $encoding;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $submissionTicket;
+	public $workflowRequestTicket;
 }}
 
-if (!class_exists("addReferenceAsTextResponse")) {
+if (!class_exists("checkDownloadActionResponse")) {
 /**
- * addReferenceAsTextResponse
+ * checkDownloadActionResponse
  */
-class addReferenceAsTextResponse {
+class checkDownloadActionResponse {
+	/**
+	 * @access public
+	 * @var DownloadActionResult
+	 */
+	public $return;
+}}
+
+if (!class_exists("checkUploadAction")) {
+/**
+ * checkUploadAction
+ */
+class checkUploadAction {
+	/**
+	 * @access public
+	 * @var WorkflowRequestTicket
+	 */
+	public $workflowRequestTicket;
+}}
+
+if (!class_exists("checkUploadActionResponse")) {
+/**
+ * checkUploadActionResponse
+ */
+class checkUploadActionResponse {
+	/**
+	 * @access public
+	 * @var UploadActionResult
+	 */
+	public $return;
+}}
+
+if (!class_exists("claim")) {
+/**
+ * claim
+ */
+class claim {
+	/**
+	 * @access public
+	 * @var WorkflowRequest
+	 */
+	public $workflowRequest;
+}}
+
+if (!class_exists("claimResponse")) {
+/**
+ * claimResponse
+ */
+class claimResponse {
 	/**
 	 * @access public
 	 * @var string
@@ -2536,368 +2569,131 @@ class addReferenceAsTextResponse {
 	public $return;
 }}
 
-if (!class_exists("addSubmitter")) {
+if (!class_exists("download")) {
 /**
- * addSubmitter
+ * download
  */
-class addSubmitter {
+class download {
 	/**
 	 * @access public
-	 * @var string
+	 * @var WorkflowRequest
 	 */
-	public $submissionTicket;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $username;
+	public $workflowRequest;
 }}
 
-if (!class_exists("addSubmitterResponse")) {
+if (!class_exists("downloadResponse")) {
 /**
- * addSubmitterResponse
+ * downloadResponse
  */
-class addSubmitterResponse {
+class downloadResponse {
 	/**
 	 * @access public
-	 * @var string
+	 * @var WorkflowRequestTicket
 	 */
 	public $return;
 }}
 
-if (!class_exists("cancelSubmission")) {
+if (!class_exists("downloadPreview")) {
 /**
- * cancelSubmission
+ * downloadPreview
  */
-class cancelSubmission {
+class downloadPreview {
 	/**
 	 * @access public
-	 * @var string
+	 * @var WorkflowRequest
 	 */
-	public $submissionId;
+	public $workflowRequest;
 }}
 
-if (!class_exists("cancelSubmissionResponse")) {
+if (!class_exists("downloadPreviewResponse")) {
 /**
- * cancelSubmissionResponse
+ * downloadPreviewResponse
  */
-class cancelSubmissionResponse {
+class downloadPreviewResponse {
 	/**
 	 * @access public
-	 * @var string
+	 * @var WorkflowRequestTicket
 	 */
 	public $return;
 }}
 
-if (!class_exists("cancelSubmissionWithComment")) {
+if (!class_exists("findAvailableWorkflowInfosForClaim")) {
 /**
- * cancelSubmissionWithComment
+ * findAvailableWorkflowInfosForClaim
  */
-class cancelSubmissionWithComment {
+class findAvailableWorkflowInfosForClaim {
 	/**
 	 * @access public
-	 * @var string
+	 * @var integer
 	 */
-	public $submissionId;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $comment;
+	public $limit;
 }}
 
-if (!class_exists("cancelSubmissionWithCommentResponse")) {
+if (!class_exists("findAvailableWorkflowInfosForClaimResponse")) {
 /**
- * cancelSubmissionWithCommentResponse
+ * findAvailableWorkflowInfosForClaimResponse
  */
-class cancelSubmissionWithCommentResponse {
+class findAvailableWorkflowInfosForClaimResponse {
 	/**
 	 * @access public
-	 * @var string
+	 * @var SubmissionWorkflowInfo[]
 	 */
 	public $return;
 }}
 
-if (!class_exists("checkDownloadDeliverableCollateral")) {
+if (!class_exists("findAvailableWorkflowInfosForDownload")) {
 /**
- * checkDownloadDeliverableCollateral
+ * findAvailableWorkflowInfosForDownload
  */
-class checkDownloadDeliverableCollateral {
+class findAvailableWorkflowInfosForDownload {
 	/**
 	 * @access public
-	 * @var string
+	 * @var integer
 	 */
-	public $uuid;
+	public $limit;
 }}
 
-if (!class_exists("checkDownloadDeliverableCollateralResponse")) {
+if (!class_exists("findAvailableWorkflowInfosForDownloadResponse")) {
 /**
- * checkDownloadDeliverableCollateralResponse
+ * findAvailableWorkflowInfosForDownloadResponse
  */
-class checkDownloadDeliverableCollateralResponse {
+class findAvailableWorkflowInfosForDownloadResponse {
 	/**
 	 * @access public
-	 * @var DownloadCollateralResult
+	 * @var SubmissionWorkflowInfo[]
 	 */
 	public $return;
 }}
 
-if (!class_exists("downloadDeliverableCollateralBySubmissionTicket")) {
+if (!class_exists("findAvailableWorkflowInfosForDownloadBySubmissionTickets")) {
 /**
- * downloadDeliverableCollateralBySubmissionTicket
+ * findAvailableWorkflowInfosForDownloadBySubmissionTickets
  */
-class downloadDeliverableCollateralBySubmissionTicket {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $submissionTicket;
-}}
-
-if (!class_exists("downloadDeliverableCollateralBySubmissionTicketResponse")) {
-/**
- * downloadDeliverableCollateralBySubmissionTicketResponse
- */
-class downloadDeliverableCollateralBySubmissionTicketResponse {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $return;
-}}
-
-if (!class_exists("downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages")) {
-/**
- * downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages
- */
-class downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $submissionTicket;
+class findAvailableWorkflowInfosForDownloadBySubmissionTickets {
 	/**
 	 * @access public
 	 * @var string[]
 	 */
-	public $targetLanguages;
+	public $submissionTickets;
 }}
 
-if (!class_exists("downloadDeliverableCollateralBySubmissionTicketAndTargetLanguagesResponse")) {
+if (!class_exists("findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse")) {
 /**
- * downloadDeliverableCollateralBySubmissionTicketAndTargetLanguagesResponse
+ * findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse
  */
-class downloadDeliverableCollateralBySubmissionTicketAndTargetLanguagesResponse {
+class findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse {
 	/**
 	 * @access public
-	 * @var string
+	 * @var SubmissionWorkflowInfo[]
 	 */
 	public $return;
 }}
 
-if (!class_exists("findByTicket")) {
+if (!class_exists("upload")) {
 /**
- * findByTicket
+ * upload
  */
-class findByTicket {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $ticket;
-}}
-
-if (!class_exists("findByTicketResponse")) {
-/**
- * findByTicketResponse
- */
-class findByTicketResponse {
-	/**
-	 * @access public
-	 * @var Submission
-	 */
-	public $return;
-}}
-
-if (!class_exists("findCreatingSubmissionsByProjectShortCode")) {
-/**
- * findCreatingSubmissionsByProjectShortCode
- */
-class findCreatingSubmissionsByProjectShortCode {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $projectShortCode;
-}}
-
-if (!class_exists("findCreatingSubmissionsByProjectShortCodeResponse")) {
-/**
- * findCreatingSubmissionsByProjectShortCodeResponse
- */
-class findCreatingSubmissionsByProjectShortCodeResponse {
-	/**
-	 * @access public
-	 * @var Submission[]
-	 */
-	public $return;
-}}
-
-if (!class_exists("search")) {
-/**
- * search
- */
-class search {
-	/**
-	 * @access public
-	 * @var SubmissionSearchRequest
-	 */
-	public $command;
-	/**
-	 * @access public
-	 * @var PagedListInfo
-	 */
-	public $info;
-}}
-
-if (!class_exists("searchResponse")) {
-/**
- * searchResponse
- */
-class searchResponse {
-	/**
-	 * @access public
-	 * @var SubmissionPagedList
-	 */
-	public $return;
-}}
-
-if (!class_exists("searchSubmissions")) {
-/**
- * searchSubmissions
- */
-class searchSubmissions {
-	/**
-	 * @access public
-	 * @var SubmissionSearchRequest
-	 */
-	public $submissionSearchRequest;
-	/**
-	 * @access public
-	 * @var PagedListInfo
-	 */
-	public $info;
-}}
-
-if (!class_exists("searchSubmissionsResponse")) {
-/**
- * searchSubmissionsResponse
- */
-class searchSubmissionsResponse {
-	/**
-	 * @access public
-	 * @var SubmissionSearchModelPagedList
-	 */
-	public $return;
-}}
-
-if (!class_exists("addOwner")) {
-/**
- * addOwner
- */
-class addOwner {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $submissionTicket;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $username;
-}}
-
-if (!class_exists("addOwnerResponse")) {
-/**
- * addOwnerResponse
- */
-class addOwnerResponse {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $return;
-}}
-
-if (!class_exists("startSingleBatchSubmission")) {
-/**
- * startSingleBatchSubmission
- */
-class startSingleBatchSubmission {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $submissionId;
-	/**
-	 * @access public
-	 * @var SubmissionInfo
-	 */
-	public $submissionInfo;
-}}
-
-if (!class_exists("startSingleBatchSubmissionResponse")) {
-/**
- * startSingleBatchSubmissionResponse
- */
-class startSingleBatchSubmissionResponse {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $return;
-}}
-
-if (!class_exists("startSubmission")) {
-/**
- * startSubmission
- */
-class startSubmission {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $submissionId;
-	/**
-	 * @access public
-	 * @var SubmissionInfo
-	 */
-	public $submissionInfo;
-}}
-
-if (!class_exists("startSubmissionResponse")) {
-/**
- * startSubmissionResponse
- */
-class startSubmissionResponse {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $return;
-}}
-
-if (!class_exists("uploadReference")) {
-/**
- * uploadReference
- */
-class uploadReference {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $submissionId;
+class upload {
 	/**
 	 * @access public
 	 * @var ResourceInfo
@@ -2910,24 +2706,24 @@ class uploadReference {
 	public $data;
 }}
 
-if (!class_exists("uploadReferenceResponse")) {
+if (!class_exists("uploadResponse")) {
 /**
- * uploadReferenceResponse
+ * uploadResponse
  */
-class uploadReferenceResponse {
+class uploadResponse {
 	/**
 	 * @access public
-	 * @var string
+	 * @var WorkflowRequestTicket
 	 */
 	public $return;
 }}
 
-if (!class_exists("SubmissionService_4130")) {
+if (!class_exists("WorkflowService_4180")) {
 /**
- * SubmissionService_4130
+ * WorkflowService_4180
  * @author WSDLInterpreter
  */
-class SubmissionService_4130 extends SoapClient {
+class WorkflowService_4180 extends SoapClient {
 	/**
 	 * Default class map for wsdl=>php
 	 * @access private
@@ -3007,36 +2803,24 @@ class SubmissionService_4130 extends SoapClient {
 		"contentType" => "contentType",
 		"base64Binary" => "base64Binary",
 		"hexBinary" => "hexBinary",
-		"addReferenceAsText" => "addReferenceAsText",
-		"addReferenceAsTextResponse" => "addReferenceAsTextResponse",
-		"addSubmitter" => "addSubmitter",
-		"addSubmitterResponse" => "addSubmitterResponse",
-		"cancelSubmission" => "cancelSubmission",
-		"cancelSubmissionResponse" => "cancelSubmissionResponse",
-		"cancelSubmissionWithComment" => "cancelSubmissionWithComment",
-		"cancelSubmissionWithCommentResponse" => "cancelSubmissionWithCommentResponse",
-		"checkDownloadDeliverableCollateral" => "checkDownloadDeliverableCollateral",
-		"checkDownloadDeliverableCollateralResponse" => "checkDownloadDeliverableCollateralResponse",
-		"downloadDeliverableCollateralBySubmissionTicket" => "downloadDeliverableCollateralBySubmissionTicket",
-		"downloadDeliverableCollateralBySubmissionTicketResponse" => "downloadDeliverableCollateralBySubmissionTicketResponse",
-		"downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages" => "downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages",
-		"downloadDeliverableCollateralBySubmissionTicketAndTargetLanguagesResponse" => "downloadDeliverableCollateralBySubmissionTicketAndTargetLanguagesResponse",
-		"findByTicket" => "findByTicket",
-		"findByTicketResponse" => "findByTicketResponse",
-		"findCreatingSubmissionsByProjectShortCode" => "findCreatingSubmissionsByProjectShortCode",
-		"findCreatingSubmissionsByProjectShortCodeResponse" => "findCreatingSubmissionsByProjectShortCodeResponse",
-		"search" => "search",
-		"searchResponse" => "searchResponse",
-		"searchSubmissions" => "searchSubmissions",
-		"searchSubmissionsResponse" => "searchSubmissionsResponse",
-		"addOwner" => "addOwner",
-		"addOwnerResponse" => "addOwnerResponse",
-		"startSingleBatchSubmission" => "startSingleBatchSubmission",
-		"startSingleBatchSubmissionResponse" => "startSingleBatchSubmissionResponse",
-		"startSubmission" => "startSubmission",
-		"startSubmissionResponse" => "startSubmissionResponse",
-		"uploadReference" => "uploadReference",
-		"uploadReferenceResponse" => "uploadReferenceResponse",
+		"checkDownloadAction" => "checkDownloadAction",
+		"checkDownloadActionResponse" => "checkDownloadActionResponse",
+		"checkUploadAction" => "checkUploadAction",
+		"checkUploadActionResponse" => "checkUploadActionResponse",
+		"claim" => "claim",
+		"claimResponse" => "claimResponse",
+		"download" => "download",
+		"downloadResponse" => "downloadResponse",
+		"downloadPreview" => "downloadPreview",
+		"downloadPreviewResponse" => "downloadPreviewResponse",
+		"findAvailableWorkflowInfosForClaim" => "findAvailableWorkflowInfosForClaim",
+		"findAvailableWorkflowInfosForClaimResponse" => "findAvailableWorkflowInfosForClaimResponse",
+		"findAvailableWorkflowInfosForDownload" => "findAvailableWorkflowInfosForDownload",
+		"findAvailableWorkflowInfosForDownloadResponse" => "findAvailableWorkflowInfosForDownloadResponse",
+		"findAvailableWorkflowInfosForDownloadBySubmissionTickets" => "findAvailableWorkflowInfosForDownloadBySubmissionTickets",
+		"findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse" => "findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse",
+		"upload" => "upload",
+		"uploadResponse" => "uploadResponse",
 	);
 
 	/**
@@ -3044,7 +2828,7 @@ class SubmissionService_4130 extends SoapClient {
 	 * @param string $wsdl WSDL location for this service
 	 * @param array $options Options for the SoapClient
 	 */
-	public function __construct($wsdl="http://gl-connect2.translations.com/PD/services/SubmissionService_4130.wsdl", $options=array(), $headers = NULL) {
+	public function __construct($wsdl="https://gl-connect2.translations.com/PD/services/WorkflowService_4180.wsdl", $options=array(), $headers = NULL) {
 		foreach(self::$classmap as $wsdlClassName => $phpClassName) {
 		    if(!isset($options['classmap'][$wsdlClassName])) {
 		        $options['classmap'][$wsdlClassName] = $phpClassName;
@@ -3077,332 +2861,200 @@ class SubmissionService_4130 extends SoapClient {
 	}
 
 	/**
-	 * Service Call: addReferenceAsText
+	 * Service Call: checkDownloadAction
 	 * Parameter options:
-	 * (addReferenceAsText) parameters
-	 * (addReferenceAsText) parameters
-	 * (addReferenceAsText) parameters
+	 * (checkDownloadAction) parameters
+	 * (checkDownloadAction) parameters
+	 * (checkDownloadAction) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return addReferenceAsTextResponse
+	 * @return checkDownloadActionResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function addReferenceAsText($mixed = null) {
+	public function checkDownloadAction($mixed = null) {
 		$validParameters = array(
-			"(addReferenceAsText)",
-			"(addReferenceAsText)",
-			"(addReferenceAsText)",
+			"(checkDownloadAction)",
+			"(checkDownloadAction)",
+			"(checkDownloadAction)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("addReferenceAsText", $args);
+		return $this->__soapCall("checkDownloadAction", $args);
 	}
 
 
 	/**
-	 * Service Call: addSubmitter
+	 * Service Call: checkUploadAction
 	 * Parameter options:
-	 * (addSubmitter) parameters
-	 * (addSubmitter) parameters
-	 * (addSubmitter) parameters
+	 * (checkUploadAction) parameters
+	 * (checkUploadAction) parameters
+	 * (checkUploadAction) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return addSubmitterResponse
+	 * @return checkUploadActionResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function addSubmitter($mixed = null) {
+	public function checkUploadAction($mixed = null) {
 		$validParameters = array(
-			"(addSubmitter)",
-			"(addSubmitter)",
-			"(addSubmitter)",
+			"(checkUploadAction)",
+			"(checkUploadAction)",
+			"(checkUploadAction)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("addSubmitter", $args);
+		return $this->__soapCall("checkUploadAction", $args);
 	}
 
 
 	/**
-	 * Service Call: cancelSubmission
+	 * Service Call: claim
 	 * Parameter options:
-	 * (cancelSubmission) parameters
-	 * (cancelSubmission) parameters
-	 * (cancelSubmission) parameters
+	 * (claim) parameters
+	 * (claim) parameters
+	 * (claim) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return cancelSubmissionResponse
+	 * @return claimResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function cancelSubmission($mixed = null) {
+	public function claim($mixed = null) {
 		$validParameters = array(
-			"(cancelSubmission)",
-			"(cancelSubmission)",
-			"(cancelSubmission)",
+			"(claim)",
+			"(claim)",
+			"(claim)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("cancelSubmission", $args);
+		return $this->__soapCall("claim", $args);
 	}
 
 
 	/**
-	 * Service Call: cancelSubmissionWithComment
+	 * Service Call: download
 	 * Parameter options:
-	 * (cancelSubmissionWithComment) parameters
-	 * (cancelSubmissionWithComment) parameters
-	 * (cancelSubmissionWithComment) parameters
+	 * (download) parameters
+	 * (download) parameters
+	 * (download) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return cancelSubmissionWithCommentResponse
+	 * @return downloadResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function cancelSubmissionWithComment($mixed = null) {
+	public function download($mixed = null) {
 		$validParameters = array(
-			"(cancelSubmissionWithComment)",
-			"(cancelSubmissionWithComment)",
-			"(cancelSubmissionWithComment)",
+			"(download)",
+			"(download)",
+			"(download)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("cancelSubmissionWithComment", $args);
+		return $this->__soapCall("download", $args);
 	}
 
 
 	/**
-	 * Service Call: checkDownloadDeliverableCollateral
+	 * Service Call: downloadPreview
 	 * Parameter options:
-	 * (checkDownloadDeliverableCollateral) parameters
-	 * (checkDownloadDeliverableCollateral) parameters
-	 * (checkDownloadDeliverableCollateral) parameters
+	 * (downloadPreview) parameters
+	 * (downloadPreview) parameters
+	 * (downloadPreview) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return checkDownloadDeliverableCollateralResponse
+	 * @return downloadPreviewResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function checkDownloadDeliverableCollateral($mixed = null) {
+	public function downloadPreview($mixed = null) {
 		$validParameters = array(
-			"(checkDownloadDeliverableCollateral)",
-			"(checkDownloadDeliverableCollateral)",
-			"(checkDownloadDeliverableCollateral)",
+			"(downloadPreview)",
+			"(downloadPreview)",
+			"(downloadPreview)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("checkDownloadDeliverableCollateral", $args);
+		return $this->__soapCall("downloadPreview", $args);
 	}
 
 
 	/**
-	 * Service Call: downloadDeliverableCollateralBySubmissionTicket
+	 * Service Call: findAvailableWorkflowInfosForClaim
 	 * Parameter options:
-	 * (downloadDeliverableCollateralBySubmissionTicket) parameters
-	 * (downloadDeliverableCollateralBySubmissionTicket) parameters
-	 * (downloadDeliverableCollateralBySubmissionTicket) parameters
+	 * (findAvailableWorkflowInfosForClaim) parameters
+	 * (findAvailableWorkflowInfosForClaim) parameters
+	 * (findAvailableWorkflowInfosForClaim) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return downloadDeliverableCollateralBySubmissionTicketResponse
+	 * @return findAvailableWorkflowInfosForClaimResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function downloadDeliverableCollateralBySubmissionTicket($mixed = null) {
+	public function findAvailableWorkflowInfosForClaim($mixed = null) {
 		$validParameters = array(
-			"(downloadDeliverableCollateralBySubmissionTicket)",
-			"(downloadDeliverableCollateralBySubmissionTicket)",
-			"(downloadDeliverableCollateralBySubmissionTicket)",
+			"(findAvailableWorkflowInfosForClaim)",
+			"(findAvailableWorkflowInfosForClaim)",
+			"(findAvailableWorkflowInfosForClaim)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("downloadDeliverableCollateralBySubmissionTicket", $args);
+		return $this->__soapCall("findAvailableWorkflowInfosForClaim", $args);
 	}
 
 
 	/**
-	 * Service Call: downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages
+	 * Service Call: findAvailableWorkflowInfosForDownload
 	 * Parameter options:
-	 * (downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages) parameters
-	 * (downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages) parameters
-	 * (downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages) parameters
+	 * (findAvailableWorkflowInfosForDownload) parameters
+	 * (findAvailableWorkflowInfosForDownload) parameters
+	 * (findAvailableWorkflowInfosForDownload) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return downloadDeliverableCollateralBySubmissionTicketAndTargetLanguagesResponse
+	 * @return findAvailableWorkflowInfosForDownloadResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages($mixed = null) {
+	public function findAvailableWorkflowInfosForDownload($mixed = null) {
 		$validParameters = array(
-			"(downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages)",
-			"(downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages)",
-			"(downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages)",
+			"(findAvailableWorkflowInfosForDownload)",
+			"(findAvailableWorkflowInfosForDownload)",
+			"(findAvailableWorkflowInfosForDownload)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("downloadDeliverableCollateralBySubmissionTicketAndTargetLanguages", $args);
+		return $this->__soapCall("findAvailableWorkflowInfosForDownload", $args);
 	}
 
 
 	/**
-	 * Service Call: findByTicket
+	 * Service Call: findAvailableWorkflowInfosForDownloadBySubmissionTickets
 	 * Parameter options:
-	 * (findByTicket) parameters
-	 * (findByTicket) parameters
-	 * (findByTicket) parameters
+	 * (findAvailableWorkflowInfosForDownloadBySubmissionTickets) parameters
+	 * (findAvailableWorkflowInfosForDownloadBySubmissionTickets) parameters
+	 * (findAvailableWorkflowInfosForDownloadBySubmissionTickets) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return findByTicketResponse
+	 * @return findAvailableWorkflowInfosForDownloadBySubmissionTicketsResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function findByTicket($mixed = null) {
+	public function findAvailableWorkflowInfosForDownloadBySubmissionTickets($mixed = null) {
 		$validParameters = array(
-			"(findByTicket)",
-			"(findByTicket)",
-			"(findByTicket)",
+			"(findAvailableWorkflowInfosForDownloadBySubmissionTickets)",
+			"(findAvailableWorkflowInfosForDownloadBySubmissionTickets)",
+			"(findAvailableWorkflowInfosForDownloadBySubmissionTickets)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("findByTicket", $args);
+		return $this->__soapCall("findAvailableWorkflowInfosForDownloadBySubmissionTickets", $args);
 	}
 
 
 	/**
-	 * Service Call: findCreatingSubmissionsByProjectShortCode
+	 * Service Call: upload
 	 * Parameter options:
-	 * (findCreatingSubmissionsByProjectShortCode) parameters
-	 * (findCreatingSubmissionsByProjectShortCode) parameters
-	 * (findCreatingSubmissionsByProjectShortCode) parameters
+	 * (upload) parameters
+	 * (upload) parameters
+	 * (upload) parameters
 	 * @param mixed,... See function description for parameter options
-	 * @return findCreatingSubmissionsByProjectShortCodeResponse
+	 * @return uploadResponse
 	 * @throws Exception invalid function signature message
 	 */
-	public function findCreatingSubmissionsByProjectShortCode($mixed = null) {
+	public function upload($mixed = null) {
 		$validParameters = array(
-			"(findCreatingSubmissionsByProjectShortCode)",
-			"(findCreatingSubmissionsByProjectShortCode)",
-			"(findCreatingSubmissionsByProjectShortCode)",
+			"(upload)",
+			"(upload)",
+			"(upload)",
 		);
 		$args = func_get_args();
 		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("findCreatingSubmissionsByProjectShortCode", $args);
-	}
-
-
-	/**
-	 * Service Call: search
-	 * Parameter options:
-	 * (search) parameters
-	 * (search) parameters
-	 * (search) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return searchResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function search($mixed = null) {
-		$validParameters = array(
-			"(search)",
-			"(search)",
-			"(search)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("search", $args);
-	}
-
-
-	/**
-	 * Service Call: searchSubmissions
-	 * Parameter options:
-	 * (searchSubmissions) parameters
-	 * (searchSubmissions) parameters
-	 * (searchSubmissions) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return searchSubmissionsResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function searchSubmissions($mixed = null) {
-		$validParameters = array(
-			"(searchSubmissions)",
-			"(searchSubmissions)",
-			"(searchSubmissions)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("searchSubmissions", $args);
-	}
-
-
-	/**
-	 * Service Call: addOwner
-	 * Parameter options:
-	 * (addOwner) parameters
-	 * (addOwner) parameters
-	 * (addOwner) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return addOwnerResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function addOwner($mixed = null) {
-		$validParameters = array(
-			"(addOwner)",
-			"(addOwner)",
-			"(addOwner)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("addOwner", $args);
-	}
-
-
-	/**
-	 * Service Call: startSingleBatchSubmission
-	 * Parameter options:
-	 * (startSingleBatchSubmission) parameters
-	 * (startSingleBatchSubmission) parameters
-	 * (startSingleBatchSubmission) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return startSingleBatchSubmissionResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function startSingleBatchSubmission($mixed = null) {
-		$validParameters = array(
-			"(startSingleBatchSubmission)",
-			"(startSingleBatchSubmission)",
-			"(startSingleBatchSubmission)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("startSingleBatchSubmission", $args);
-	}
-
-
-	/**
-	 * Service Call: startSubmission
-	 * Parameter options:
-	 * (startSubmission) parameters
-	 * (startSubmission) parameters
-	 * (startSubmission) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return startSubmissionResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function startSubmission($mixed = null) {
-		$validParameters = array(
-			"(startSubmission)",
-			"(startSubmission)",
-			"(startSubmission)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("startSubmission", $args);
-	}
-
-
-	/**
-	 * Service Call: uploadReference
-	 * Parameter options:
-	 * (uploadReference) parameters
-	 * (uploadReference) parameters
-	 * (uploadReference) parameters
-	 * @param mixed,... See function description for parameter options
-	 * @return uploadReferenceResponse
-	 * @throws Exception invalid function signature message
-	 */
-	public function uploadReference($mixed = null) {
-		$validParameters = array(
-			"(uploadReference)",
-			"(uploadReference)",
-			"(uploadReference)",
-		);
-		$args = func_get_args();
-		$this->_checkArguments($args, $validParameters);
-		return $this->__soapCall("uploadReference", $args);
+		return $this->__soapCall("upload", $args);
 	}
 
 
