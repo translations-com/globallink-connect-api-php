@@ -8,7 +8,7 @@ require_once 'pd_ws/client/WorkflowService_4180.php';
 require_once 'model/Project.inc.php';
 require_once 'model/Submission.inc.php';
 require_once 'model/Target.inc.php';
-define ( 'GL_WSDL_PATH', 'phar://glexchange.phar/pd_ws/wsdl/' );
+define ( 'GL_WSDL_PATH', __DIR__ . '/pd_ws/wsdl/' );
 define ( 'USER_PROFILE_SERVICE_WSDL', GL_WSDL_PATH . 'UserProfileService_4180.wsdl' );
 define ( 'SUBMISSION_SERVICE_WSDL', GL_WSDL_PATH . 'SubmissionService_4180.wsdl' );
 define ( 'WORKFLOW_SERVICE_WSDL', GL_WSDL_PATH . 'WorkflowService_4180.wsdl' );
@@ -75,22 +75,22 @@ class GLExchange {
 		$header [] = new SoapHeader ( "userAgent", 'userAgent', new SoapVar ( $userAgent, XSD_ANYXML ), true );
 
 		$this->projectService = new ProjectService_4180 ( PROJECT_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/ProjectService' 
+				'location' => $this->pdConfig->url . '/services/ProjectService_4180' 
 		), $proxyConfig ), $header );
 		$this->submissionService = new SubmissionService_4180 ( SUBMISSION_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/SubmissionService' 
+				'location' => $this->pdConfig->url . '/services/SubmissionService_4180' 
 		), $proxyConfig ), $header );
 		$this->workflowService = new WorkflowService_4180 ( WORKFLOW_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/WorkflowService' 
+				'location' => $this->pdConfig->url . '/services/WorkflowService_4180' 
 		), $proxyConfig ), $header );
 		$this->targetService = new TargetService_4180 ( TARGET_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/TargetService' 
+				'location' => $this->pdConfig->url . '/services/TargetService_4180' 
 		), $proxyConfig ), $header );
 		$this->documentService = new DocumentService_4180 ( DOCUMENT_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/DocumentService' 
+				'location' => $this->pdConfig->url . '/services/DocumentService_4180' 
 		), $proxyConfig ), $header );
 		$this->userProfileService = new UserProfileService_4180 ( USER_PROFILE_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/UserProfileService' 
+				'location' => $this->pdConfig->url . '/services/UserProfileService_4180' 
 		), $proxyConfig ), $header );
 		
 		try {
@@ -98,7 +98,7 @@ class GLExchange {
 			$getUserProjectsRequest->isSubProjectIncluded = TRUE;
 			$projects = $this->projectService->getUserProjects ( $getUserProjectsRequest )->return;
 		} catch ( Exception $ex ) {
-			throw new Exception ( "Invalid config. " . $ex->getMessage () );
+			throw new Exception ( "Invalid config");
 		}
 	}
 	private function _convertTargetsToInternal($targets) {
@@ -159,7 +159,7 @@ class GLExchange {
 				$submissionCustomField->fieldValue = $v;
 				$attributes [] = $submissionCustomField;
 			}
-			$submissionInfo->$submissionCustomFields = $attributes;
+			$submissionInfo->submissionCustomFields = $attributes;
 		}
 		
 		if (isset ( $this->submission->workflow ) && $this->submission->workflow->ticket != "") {
@@ -266,8 +266,8 @@ class GLExchange {
 				if ($projectCustomAttribute->mandatory) {
 					$isSet = false;
 					if (isset ( $submission->customAttributes )) {
-						foreach ( $submission->customAttributes as $submissionCustomAttribute ) {
-							if ($submissionCustomAttribute->name == $projectCustomAttribute->name) {
+						foreach ( $submission->customAttributes as $name => $value ) {
+							if ($name == $projectCustomAttribute->name) {
 								$isSet = true;
 								break;
 							}
@@ -278,6 +278,36 @@ class GLExchange {
 					}
 				}
 			}
+			if (isset ( $submission->customAttributes )) {
+				foreach ( $submission->customAttributes as $name => $value ) {
+					$isExists = false;
+					foreach ( $submission->project->customAttributes as $projectCustomAttribute ) {
+						if ($name == $projectCustomAttribute->name) {
+							$isExists = true;
+							if($projectCustomAttribute->type == "COMBO" && isset($projectCustomAttribute->values)){
+								$comboValueCorrect = false;
+								$va = explode(",", $projectCustomAttribute->values);
+								foreach ( $va as $option ) {
+									if($option == $value){
+										$comboValueCorrect = true;
+										break;
+									}
+								}
+								if(! $comboValueCorrect){
+								    throw new Exception("Value '".$value."' for custom field '" . $name . "' is not allowed. Allowed values:".$projectCustomAttribute->values);
+								}
+							}
+						}
+					}
+					if(! $isExists){
+						throw new Exception("Custom field '" . $name . "' is not allowed in project");
+				    }
+				}
+			}
+		} else {
+			if (isset ( $submission->customAttributes )) {
+				throw new Exception("Project doesn't have custom attributes");
+		    }
 		}
 	}
 	
@@ -345,6 +375,19 @@ class GLExchange {
 		
 		return $proj_arr;
 	}
+
+	private function getSubmission($submissionTicket){
+		$findSubmissionByTicketRequest = new findByTicket ();
+		
+		$findSubmissionByTicketRequest->ticket = $submissionTicket;
+		
+		$submission = $this->submissionService->findByTicket ( $findSubmissionByTicketRequest )->return;
+		if (isset($submission)) {
+			return $submission;
+		} else {
+			throw new Exception("Invalid submission ticket");
+		}
+	}
 	
 	/**
 	 * Get Submission ticket if a submission has been initialized.
@@ -368,13 +411,43 @@ class GLExchange {
 	 * @return Submission name for the specified ticket.
 	 */
 	function getSubmissionName($submissionTicket) {
-		$findSubmissionByTicketRequest = new findByTicket ();
-		
-		$findSubmissionByTicketRequest->ticket = $submissionTicket;
-		
-		$submission = $this->submissionService->findByTicket ( $findSubmissionByTicketRequest )->return;
+		$submission = $this->getSubmission($submissionTicket);
 		if (isset($submission)) {
 			return $submission->submissionInfo->name;
+		} else {
+			throw new Exception("Invalid submission ticket");
+		}
+	}
+
+	/**
+	 * Get Submission ID for specified ticket.
+	 * 
+	 * @param
+	 *        	$submissionTicket
+	 *        	Submission ticket
+	 * @return Submission ID for the specified ticket.
+	 */
+	function getSubmissionId($submissionTicket) {
+		$submission = $this->getSubmission($submissionTicket);
+		if (isset($submission)) {
+			return $submission->submissionId;
+		} else {
+			throw new Exception("Invalid submission ticket");
+		}
+	}
+
+	/**
+	 * Get Submission Status for specified ticket.
+	 * 
+	 * @param
+	 *        	$submissionTicket
+	 *        	Submission ticket
+	 * @return Status object with string name and integer value
+	 */
+	function getSubmissionStatus($submissionTicket) {
+		$submission = $this->getSubmission($submissionTicket);
+		if (isset($submission)) {
+			return $submission->status;
 		} else {
 			throw new Exception("Invalid submission ticket");
 		}
