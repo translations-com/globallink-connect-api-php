@@ -34,7 +34,7 @@ class GLExchange {
 	 *        	$connectionConfig
 	 *        	PDConfig - Project Director Connection Configuration
 	 */
-	function __construct($connectionConfig) {
+	function __construct(\PDConfig $connectionConfig) {
 		$this->_setConnectionConfig ( $connectionConfig );
 	}
 	
@@ -47,7 +47,7 @@ class GLExchange {
 	 *        	PDConfig - Project Director Connection Configuration
 	 * @throws Exception
 	 */
-	private function _setConnectionConfig($connectionConfig) {
+	private function _setConnectionConfig(\PDConfig $connectionConfig) {
 		$this->pdConfig = $connectionConfig;
 		if (! isset ( $this->pdConfig->url ))
 			throw new Exception ( "Invalid URL" );
