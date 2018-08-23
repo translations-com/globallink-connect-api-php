@@ -11,6 +11,10 @@
         {
             "name": "Santosh Pai",
             "email": "spai@translations.com"
+        },
+        {
+            "name": "Mariano Sanz",
+            "email": "msanz@translations.com"
         }
     ],
     "autoload": {
