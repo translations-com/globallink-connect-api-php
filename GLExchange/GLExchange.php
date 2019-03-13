@@ -67,6 +67,15 @@ class GLExchange {
 			);
 		}
 		
+		$soapConfig = array("stream_context" => stream_context_create(
+                [
+                    'ssl' => [
+                        'verify_peer'      => false,
+                        'verify_peer_name' => false,
+                    ]
+                ]
+            ));
+		
 		$security = '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' . '<wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' . '<wsse:Username>' . $this->pdConfig->username . '</wsse:Username>' . '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' . $this->pdConfig->password . '</wsse:Password>' . '</wsse:UsernameToken></wsse:Security>';
 		$userAgent = '<commons:userAgent xmlns:commons="http://commons.ws.projectdirector.gs4tr.org">' . $this->pdConfig->userAgent . '</commons:userAgent>';
 		
@@ -75,23 +84,23 @@ class GLExchange {
 		$header [] = new SoapHeader ( "userAgent", 'userAgent', new SoapVar ( $userAgent, XSD_ANYXML ), true );
 
 		$this->projectService = new ProjectService_4180 ( PROJECT_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/ProjectService_4180' 
-		), $proxyConfig ), $header );
+				'location' => $this->pdConfig->url . '/services/ProjectService_4180',
+		), $soapConfig, $proxyConfig ), $header );
 		$this->submissionService = new SubmissionService_4180 ( SUBMISSION_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/SubmissionService_4180' 
-		), $proxyConfig ), $header );
+				'location' => $this->pdConfig->url . '/services/SubmissionService_4180',
+		), $soapConfig, $proxyConfig ), $header );
 		$this->workflowService = new WorkflowService_4180 ( WORKFLOW_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/WorkflowService_4180' 
-		), $proxyConfig ), $header );
+		), $soapConfig, $proxyConfig ), $header );
 		$this->targetService = new TargetService_4180 ( TARGET_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/TargetService_4180' 
-		), $proxyConfig ), $header );
+		), $soapConfig, $proxyConfig ), $header );
 		$this->documentService = new DocumentService_4180 ( DOCUMENT_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/DocumentService_4180' 
-		), $proxyConfig ), $header );
+		), $soapConfig, $proxyConfig ), $header );
 		$this->userProfileService = new UserProfileService_4180 ( USER_PROFILE_SERVICE_WSDL, array_merge ( array (
 				'location' => $this->pdConfig->url . '/services/UserProfileService_4180' 
-		), $proxyConfig ), $header );
+		), $soapConfig, $proxyConfig ), $header );
 		
 		try {
 			$getUserProjectsRequest = new getUserProjects ();
@@ -103,7 +112,7 @@ class GLExchange {
 	}
 	private function _convertTargetsToInternal($targets) {
 		$targets_arr = array ();
-		if(count($targets)>0){
+		if(isset($targets) && count($targets)>0){
 			$pdtargets = is_array($targets)?$targets : array($targets);
 			foreach ( $pdtargets as $target ) {
 				$pdtarget = new PDTarget ( $target );
