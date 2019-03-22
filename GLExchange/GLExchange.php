@@ -112,7 +112,7 @@ class GLExchange {
 	}
 	private function _convertTargetsToInternal($targets) {
 		$targets_arr = array ();
-		if(isset($targets) && count($targets)>0){
+		if(isset($targets)){
 			$pdtargets = is_array($targets)?$targets : array($targets);
 			foreach ( $pdtargets as $target ) {
 				$pdtarget = new PDTarget ( $target );
