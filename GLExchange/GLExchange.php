@@ -8,7 +8,10 @@ require_once 'pd_ws/client/WorkflowService_4180.php';
 require_once 'model/Project.inc.php';
 require_once 'model/Submission.inc.php';
 require_once 'model/Target.inc.php';
-define ( 'GL_WSDL_PATH', __DIR__ . '/pd_ws/wsdl/' );
+
+if (!defined('GL_WSDL_PATH')) {
+	define('GL_WSDL_PATH', dirname(__FILE__) . '/pd_ws/wsdl/');
+}
 define ( 'USER_PROFILE_SERVICE_WSDL', GL_WSDL_PATH . 'UserProfileService_4180.wsdl' );
 define ( 'SUBMISSION_SERVICE_WSDL', GL_WSDL_PATH . 'SubmissionService_4180.wsdl' );
 define ( 'WORKFLOW_SERVICE_WSDL', GL_WSDL_PATH . 'WorkflowService_4180.wsdl' );
