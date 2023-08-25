@@ -8,10 +8,7 @@ require_once 'pd_ws/client/WorkflowService_4180.php';
 require_once 'model/Project.inc.php';
 require_once 'model/Submission.inc.php';
 require_once 'model/Target.inc.php';
-
-if (!defined('GL_WSDL_PATH')) {
-	define('GL_WSDL_PATH', dirname(__FILE__) . '/pd_ws/wsdl/');
-}
+define ( 'GL_WSDL_PATH', __DIR__ . '/pd_ws/wsdl/' );
 define ( 'USER_PROFILE_SERVICE_WSDL', GL_WSDL_PATH . 'UserProfileService_4180.wsdl' );
 define ( 'SUBMISSION_SERVICE_WSDL', GL_WSDL_PATH . 'SubmissionService_4180.wsdl' );
 define ( 'WORKFLOW_SERVICE_WSDL', GL_WSDL_PATH . 'WorkflowService_4180.wsdl' );
@@ -28,7 +25,11 @@ class GLExchange {
 	private $documentService;
 	private $submissionService;
 	private $workflowService;
-	
+    private $adaptorName;
+    private $adaptorVersion;
+    private $clientVersion;
+    private $technologyProduct = "GL_PD";
+
 	/**
 	 *
 	 * Initialize Project Director connector
@@ -40,7 +41,7 @@ class GLExchange {
 	function __construct(\PDConfig $connectionConfig) {
 		$this->_setConnectionConfig ( $connectionConfig );
 	}
-	
+
 	/**
 	 *
 	 * Set/update Project Director connection configuration
@@ -66,10 +67,10 @@ class GLExchange {
 					'proxy_host' => $connectionConfig->proxyConfig->proxyHost,
 					'proxy_port' => $connectionConfig->proxyConfig->proxyPort,
 					'proxy_login' => $connectionConfig->proxyConfig->proxyUser,
-					'proxy_password' => $connectionConfig->proxyConfig->proxyPassword 
+					'proxy_password' => $connectionConfig->proxyConfig->proxyPassword
 			);
 		}
-		
+
 		$soapConfig = array("stream_context" => stream_context_create(
                 [
                     'ssl' => [
@@ -78,10 +79,10 @@ class GLExchange {
                     ]
                 ]
             ));
-		
+
 		$security = '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' . '<wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' . '<wsse:Username>' . $this->pdConfig->username . '</wsse:Username>' . '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' . $this->pdConfig->password . '</wsse:Password>' . '</wsse:UsernameToken></wsse:Security>';
 		$userAgent = '<commons:userAgent xmlns:commons="http://commons.ws.projectdirector.gs4tr.org">' . $this->pdConfig->userAgent . '</commons:userAgent>';
-		
+
 		$header = array ();
 		$header [] = new SoapHeader ( "Security", 'Security', new SoapVar ( $security, XSD_ANYXML ), true );
 		$header [] = new SoapHeader ( "userAgent", 'userAgent', new SoapVar ( $userAgent, XSD_ANYXML ), true );
@@ -93,18 +94,18 @@ class GLExchange {
 				'location' => $this->pdConfig->url . '/services/SubmissionService_4180',
 		), $soapConfig, $proxyConfig ), $header );
 		$this->workflowService = new WorkflowService_4180 ( WORKFLOW_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/WorkflowService_4180' 
+				'location' => $this->pdConfig->url . '/services/WorkflowService_4180'
 		), $soapConfig, $proxyConfig ), $header );
 		$this->targetService = new TargetService_4180 ( TARGET_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/TargetService_4180' 
+				'location' => $this->pdConfig->url . '/services/TargetService_4180'
 		), $soapConfig, $proxyConfig ), $header );
 		$this->documentService = new DocumentService_4180 ( DOCUMENT_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/DocumentService_4180' 
+				'location' => $this->pdConfig->url . '/services/DocumentService_4180'
 		), $soapConfig, $proxyConfig ), $header );
 		$this->userProfileService = new UserProfileService_4180 ( USER_PROFILE_SERVICE_WSDL, array_merge ( array (
-				'location' => $this->pdConfig->url . '/services/UserProfileService_4180' 
+				'location' => $this->pdConfig->url . '/services/UserProfileService_4180'
 		), $soapConfig, $proxyConfig ), $header );
-		
+
 		try {
 			$getUserProjectsRequest = new getUserProjects ();
 			$getUserProjectsRequest->isSubProjectIncluded = TRUE;
@@ -131,14 +132,14 @@ class GLExchange {
 		if (isset ( $this->submission->pmNotes )) {
 			$submissionInfo->internalNotes = $this->submission->pmNotes;
 		}
-		
+
 		if (isset ( $this->submission->dueDate )) {
 			$dateRequested = new Date();
 			$dateRequested->date = $this->submission->dueDate;
 			$dateRequested->critical = false;
 			$submissionInfo->dateRequested = $dateRequested;
 		}
-		
+
 		if (isset ( $this->submission->metadata )) {
 			$i = 0;
 			$metadatas = array ();
@@ -150,19 +151,19 @@ class GLExchange {
 			}
 			$submissionInfo->metadata = $metadatas;
 		}
-		
+
 		if (isset ( $this->submission->submitter )) {
 			$submissionInfo->submitters = array (
-					$this->submission->submitter 
+					$this->submission->submitter
 			);
 		}
-		
+
 		if (isset ( $this->submission->isUrgent ) && $this->submission->isUrgent == TRUE) {
 			$priority = new Priority ();
 			$priority->value = 2;
 			$submissionInfo->priority = $priority;
 		}
-		
+
 		if (isset ( $this->submission->customAttributes )) {
 			$attributes = array ();
 			foreach ( $this->submission->customAttributes as $k => $v ) {
@@ -173,14 +174,29 @@ class GLExchange {
 			}
 			$submissionInfo->submissionCustomFields = $attributes;
 		}
-		
+
 		if (isset ( $this->submission->workflow ) && $this->submission->workflow->ticket != "") {
 			$submissionInfo->workflowDefinitionTicket = $this->submission->workflow->ticket;
 		}
-		
+		$submissionInfo->technologyProduct = "GL_PD";
+		if(isset($this->adaptorName)){
+		    $submissionInfo->adaptorName = $this->adaptorName;
+        } else{
+		    $submissionInfo->adaptorName = 'Unknown';
+        }
+        if(isset($this->adaptorVersion)){
+            $submissionInfo->adaptorVersion = $this->adaptorVersion;
+        } else{
+            $submissionInfo->adaptorVersion = 'Unknown';
+        }
+        if(isset($this->clientVersion)){
+            $submissionInfo->clientVersion = $this->clientVersion;
+        } else{
+            $submissionInfo->clientVersion = 'Unknown';
+        }
 		return $submissionInfo;
 	}
-		
+
 	private function _createWorkflowRequest($submissionWorkflowInfo){
 		$workflowRequest = new WorkflowRequest ();
 		$workflowRequest->submissionTicket = $submissionWorkflowInfo->submissionTicket;
@@ -190,18 +206,18 @@ class GLExchange {
 		$workflowRequest->targetWorkflowInfos = $submissionWorkflowInfo->targetWorkflowInfos;
 		return $workflowRequest;
 	}
-	
+
 	private function _validateDocument($document) {
 		if (! isset ( $document ) || ! isset ( $document->data ) || strlen ( $document->data ) <= 0) {
 			throw new Exception ( "Document is empty" );
 		}
-		
+
 		if (! isset ( $document->name )) {
 			throw new Exception ( "Document name not set" );
 		}
-		
+
 		$project = $this->submission->project;
-		
+
 		if(strcasecmp($document->fileformat, "Non-Parsable") != 0 ){
 			$isFileFormatCorrect = false;
 			foreach ( $project->fileFormats as $fileFormat ) {
@@ -214,16 +230,16 @@ class GLExchange {
 				throw new Exception ( "Specified file format " . $document->fileformat . " doesn`t exist in specified project" );
 			}
 		}
-		
-		
+
+
 		if (! isset ( $document->sourceLanguage ) || strlen ( $document->sourceLanguage ) <= 1) {
 			throw new Exception ( "Source language not set" );
 		}
-		
+
 		if (! isset ( $document->targetLanguages ) || count ( $document->targetLanguages ) <= 0) {
 			throw new Exception ( "Target languages are not set" );
 		}
-		
+
 		foreach ( $document->targetLanguages as $language ) {
 			$isTargetLanguageFound = false;
 			foreach ( $project->languageDirections as $languageDirection ) {
@@ -247,7 +263,7 @@ class GLExchange {
 		if (! isset ( $submission->name )) {
 			throw new Exception ( "Please set submission name" );
 		}
-		
+
 		if (isset ( $submission->workflow )) {
 			$isSet = false;
 			foreach ( $submission->project->workflows as $workflow ) {
@@ -266,13 +282,13 @@ class GLExchange {
 				throw new Exception ( "Submission due date should be greater than current date" );
 			}
 		}
-		
+
 		if (isset ( $submission->submitter )) {
 			if(!$this->isSubmitterValid($submission->project->shortcode, $submission->submitter)){
 				throw new Exception ( "Specified submitter '" . $submission->submitter . "' doesn`t exist" );
 			}
 		}
-		
+
 		if (isset ( $submission->project->customAttributes )) {
 			foreach ( $submission->project->customAttributes as $projectCustomAttribute ) {
 				if ($projectCustomAttribute->mandatory) {
@@ -322,20 +338,20 @@ class GLExchange {
 		    }
 		}
 	}
-	
+
 	function downloadTranslationKit($submissionWorkflowInfo){
 		$repositoryItems = array ();
 		$workflowRequestTickets = array ();
 		$workflowRequest = $this->_createWorkflowRequest($submissionWorkflowInfo);
-		
+
 		$downloadWorkflowRequestTicket = $this->workflowService->download($workflowRequest)->return;
 		array_push($workflowRequestTickets, $downloadWorkflowRequestTicket);
-		
+
 		// Ping server for checking if download has finished
 		while(count($workflowRequestTickets) > 0 ){
 			sleep(DELAY_TIME);
-			
-			foreach ($workflowRequestTickets as &$workflowRequestTicket) { 
+
+			foreach ($workflowRequestTickets as &$workflowRequestTicket) {
 				$downloadActionResult = $this->workflowService->checkDownloadAction($workflowRequestTicket)->return;
 				if ($downloadActionResult->processingFinished->booleanValue) {
 					$repositoryItem = $downloadActionResult->repositoryItem;
@@ -344,10 +360,10 @@ class GLExchange {
 				}
 			}
 		}
-		
+
 		return $repositoryItems;
 	}
-	
+
 	/**
 	 * Find project by shortcode
 	 *
@@ -355,14 +371,14 @@ class GLExchange {
 	 */
 	function getProject($projectShortCode) {
 		$findProjectByShortCodeRequest = new findProjectByShortCode ();
-		
+
 		$findProjectByShortCodeRequest->projectShortCode = $projectShortCode;
-		
+
 		$project = $this->projectService->findProjectByShortCode ( $findProjectByShortCodeRequest )->return;
 
 		return new PDProject($project);
 	}
-	
+
 	/**
 	 * Get all user projects
 	 *
@@ -384,15 +400,15 @@ class GLExchange {
 			$fullProject = $this->getProject ( $projects->projectInfo->shortCode );
 			$proj_arr [0] = $fullProject;
 		}
-		
+
 		return $proj_arr;
 	}
 
 	private function getSubmission($submissionTicket){
 		$findSubmissionByTicketRequest = new findByTicket ();
-		
+
 		$findSubmissionByTicketRequest->ticket = $submissionTicket;
-		
+
 		$submission = $this->submissionService->findByTicket ( $findSubmissionByTicketRequest )->return;
 		if (isset($submission)) {
 			return $submission;
@@ -400,10 +416,10 @@ class GLExchange {
 			throw new Exception("Invalid submission ticket");
 		}
 	}
-	
+
 	/**
 	 * Get Submission ticket if a submission has been initialized.
-	 * 
+	 *
 	 * @return Submission ticket
 	 */
 	function getSubmissionTicket() {
@@ -413,10 +429,10 @@ class GLExchange {
 			throw new Exception("Submission not initialized");
 		}
 	}
-	
+
 	/**
 	 * Get Submission name for specified ticket.
-	 * 
+	 *
 	 * @param
 	 *        	$submissionTicket
 	 *        	Submission ticket
@@ -433,7 +449,7 @@ class GLExchange {
 
 	/**
 	 * Get Submission ID for specified ticket.
-	 * 
+	 *
 	 * @param
 	 *        	$submissionTicket
 	 *        	Submission ticket
@@ -450,7 +466,7 @@ class GLExchange {
 
 	/**
 	 * Get Submission Status for specified ticket.
-	 * 
+	 *
 	 * @param
 	 *        	$submissionTicket
 	 *        	Submission ticket
@@ -464,7 +480,7 @@ class GLExchange {
 			throw new Exception("Invalid submission ticket");
 		}
 	}
-	
+
 	/**
 	 * Cancel document for specified target language
 	 *
@@ -497,7 +513,7 @@ class GLExchange {
 		$cancelTargetRequest->targetId = $targetTicket;
 		return $this->targetService->cancelTarget ( $cancelTargetRequest );
 	}
-	
+
 	/**
 	 * Cancel Submission for all languages
 	 *
@@ -520,7 +536,7 @@ class GLExchange {
 			return $this->submissionService->cancelSubmissionWithComment ( $cancelSubmissionRequest )->return;
 		}
 	}
-	
+
 	/**
 	 * Downloads target document from PD
 	 *
@@ -532,18 +548,18 @@ class GLExchange {
 		$downloadTargetResourceRequest = new downloadTargetResource ();
 		$downloadTargetResourceRequest->targetId = $ticket;
 		$repositoryItem = $this->targetService->downloadTargetResource ( $downloadTargetResourceRequest )->return;
-		
+
 		return $repositoryItem->data->_;
 	}
-	
+
 	function findAvailableWorkflowInfosForClaim($limit){
 		return $this->workflowService->findAvailableWorkflowInfosForClaim($limit)->return;
 	}
-	
+
 	function findAvailableWorkflowInfosForDownload($limit){
 		return $this->workflowService->findAvailableWorkflowInfosForDownload($limit)->return;
 	}
-	
+
 	/**
 	 * Get cancelled targets for submission(s)
 	 *
@@ -561,12 +577,12 @@ class GLExchange {
 		$getCancelledTargetsBySubmissionRequest = new getCanceledTargetsBySubmissions ();
 		$getCancelledTargetsBySubmissionRequest->maxResults = $maxResults;
 		$getCancelledTargetsBySubmissionRequest->submissionTickets = is_array($submissionTickets)?$submissionTickets:array($submissionTickets);
-		
+
 		$cancelledTargets = $this->targetService->getCanceledTargetsBySubmissions ( $getCancelledTargetsBySubmissionRequest )->return;
-		
+
 		return $this->_convertTargetsToInternal ( $cancelledTargets );
 	}
-	
+
 	/**
 	 * Get cancelled targets for all projects
 	 *
@@ -587,12 +603,12 @@ class GLExchange {
 		$getCanceledTargetsByProjectsRequest = new getCanceledTargetsByProjects ();
 		$getCanceledTargetsByProjectsRequest->projectTickets = $tickets;
 		$getCanceledTargetsByProjectsRequest->maxResults = $maxResults;
-		
+
 		$cancelledTargets = $this->targetService->getCanceledTargetsByProjects ( $getCanceledTargetsByProjectsRequest )->return;
-		
+
 		return $this->_convertTargetsToInternal ( $cancelledTargets );
 	}
-	
+
 	/**
 	 * Get cancelled targets for document(s)
 	 *
@@ -610,12 +626,12 @@ class GLExchange {
 		$getCancelledTargetsByDocumentRequest = new getCanceledTargetsByDocuments ();
 		$getCancelledTargetsByDocumentRequest->maxResults = $maxResults;
 		$getCancelledTargetsByDocumentRequest->documentTickets = is_array($documentTickets)?$documentTickets:array($documentTickets);
-		
+
 		$cancelledTargets = $this->targetService->getCanceledTargetsByDocuments ( $getCancelledTargetsByDocumentRequest )->return;
-		
+
 		return $this->_convertTargetsToInternal ( $cancelledTargets );
 	}
-	
+
 	/**
 	 * Get cancelled targets for project(s)
 	 *
@@ -629,15 +645,15 @@ class GLExchange {
 	 */
 	function getCancelledTargetsByProjects($projectTickets, $maxResults) {
 		$getCancelledTargetsByProjectsRequest = new getCancelledTargetsByProjects ();
-		
+
 		$getCancelledTargetsByProjectsRequest->projectTickets = is_array($projectTickets)?$projectTickets:array($projectTickets);;
 		$getCancelledTargetsByProjectsRequest->maxResults = $maxResults;
-		
+
 		$cancelledTargets = $this->targetService->getCancelledTargetsByProjects ( $getCancelledTargetsByProjectsRequest )->return;
-		
+
 		return $this->_convertTargetsToInternal ( $cancelledTargets );
 	}
-	
+
 	/**
 	 * Get completed targets for project(s)
 	 *
@@ -651,12 +667,12 @@ class GLExchange {
 	 */
 	function getCompletedTargetsByProjects($projectTickets, $maxResults) {
 		$getCompletedTargetsByProjectsRequest = new getCompletedTargetsByProjects ();
-		
+
 		$getCompletedTargetsByProjectsRequest->projectTickets = is_array($projectTickets)?$projectTickets:array($projectTickets);;
 		$getCompletedTargetsByProjectsRequest->maxResults = $maxResults;
-		
+
 		$completedTargets = $this->targetService->getCompletedTargetsByProjects ( $getCompletedTargetsByProjectsRequest )->return;
-		
+
 		return $this->_convertTargetsToInternal ( $completedTargets );
 	}
 
@@ -674,7 +690,7 @@ class GLExchange {
 	function getCompletedTargetsByProject($project, $maxResults) {
 		return $this->getCompletedTargetsByProjects(array ($project->ticket), $maxResults);
 	}
-	
+
 	/**
 	 * Get completed targets for all projects
 	 *
@@ -690,17 +706,17 @@ class GLExchange {
 		foreach ( $projects as $project ) {
 			$tickets [$i ++] = $project->ticket;
 		}
-		
+
 		$getCompletedTargetsByProjectsRequest = new getCompletedTargetsByProjects ();
-		
+
 		$getCompletedTargetsByProjectsRequest->projectTickets = $tickets;
 		$getCompletedTargetsByProjectsRequest->maxResults = $maxResults;
-		
+
 		$completedTargets = $this->targetService->getCompletedTargetsByProjects ( $getCompletedTargetsByProjectsRequest )->return;
-		
+
 		return $this->_convertTargetsToInternal ( $completedTargets );
 	}
-	
+
 	/**
 	 * Get completed targets for submission(s)
 	 *
@@ -716,9 +732,9 @@ class GLExchange {
 		$getCompletedTargetsBySubmissionsRequest = new getCompletedTargetsBySubmissions ();
 		$getCompletedTargetsBySubmissionsRequest->submissionTickets = is_array($submissionTickets)?$submissionTickets:array($submissionTickets);
 		$getCompletedTargetsBySubmissionsRequest->maxResults = $maxResults;
-		
+
 		$completedTargets = $this->targetService->getCompletedTargetsBySubmissions ( $getCompletedTargetsBySubmissionsRequest )->return;
-		
+
 		return $this->_convertTargetsToInternal ( $completedTargets );
 	}
 
@@ -737,29 +753,29 @@ class GLExchange {
 		$getCompletedTargetsByDocumentsRequest = new getCompletedTargetsByDocuments ();
 		$getCompletedTargetsByDocumentsRequest->documentTickets = is_array($documentTickets)?$documentTickets:array($documentTickets);
 		$getCompletedTargetsByDocumentsRequest->maxResults = $maxResults;
-		
+
 		$completedTargets = $this->targetService->getCompletedTargetsByDocuments ( $getCompletedTargetsByDocumentsRequest )->return;
-		
+
 		return $this->_convertTargetsToInternal ( $completedTargets );
 	}
-	
+
 	function getPreliminaryTargets($submissionWorkflowInfo){
 		$repositoryItems = array ();
 		// 1. Claim
 		$workflowRequestForClaim = $this->_createWorkflowRequest($submissionWorkflowInfo);
-		
+
 		$this->workflowService->claim ( $workflowRequestForClaim );
-		
+
 		$submissionTickets = array();
 		$submissionTickets[0] = $submissionWorkflowInfo->submissionTicket;
-		
+
 		// 2. Wait until all claimed become available for download
 		$availableSubmissionWorkflowInfosForDownload = $this->workflowService->findAvailableWorkflowInfosForDownloadBySubmissionTickets($submissionTickets)->return;
 		while(count($availableSubmissionWorkflowInfosForDownload) != 1){
 			sleep(DELAY_TIME);
 			$availableSubmissionWorkflowInfosForDownload = $this->workflowService->findAvailableWorkflowInfosForDownloadBySubmissionTickets($submissionTickets)->return;
 		}
-		
+
 		// 3. Send download preview requests
 		$workflowRequestTickets = array();
 		foreach ($availableSubmissionWorkflowInfosForDownload as &$availableSubmissionWorkflowInfo) {
@@ -767,7 +783,7 @@ class GLExchange {
 		    $workflowRequestTicket = $this->workflowService->downloadPreview($workflowRequestForDownload)->return;
 		    array_push($workflowRequestTickets, $workflowRequestTicket);
 		}
-		
+
 		// 4. Download
 		while (count($workflowRequestTickets) > 0) {
 			foreach ($workflowRequestTickets as &$workflowRequestTicket) {
@@ -779,13 +795,13 @@ class GLExchange {
 				}
 			}
 		}
-		
+
 		return $repositoryItems;
 	}
-	
+
 	/**
 	 * Get Unstarted Submissions.
-	 * 
+	 *
 	 * @param
 	 *        	$project
 	 *        	PDProject
@@ -802,7 +818,7 @@ class GLExchange {
 		}
 		return $submissions;
 	}
-	
+
 	/**
 	 * Initialize a new Submission
 	 *
@@ -812,11 +828,11 @@ class GLExchange {
 	 */
 	function initSubmission($submission) {
 		$this->_validateSubmission ( $submission );
-		
+
 		$this->submission = $submission;
 		$this->submission->ticket = "";
 	}
-	
+
 	/**
 	 * Validate Submission submitter
 	 *
@@ -846,7 +862,7 @@ class GLExchange {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Sends confirmation that the target resources was downloaded successfully
 	 * by the customer.
@@ -857,41 +873,39 @@ class GLExchange {
 	 */
 	function sendDownloadConfirmation($ticket) {
 		$sendDownloadConfirmationRequest = new sendDownloadConfirmation ();
-		
+
 		$sendDownloadConfirmationRequest->targetId = $ticket;
-		
+
 		return $this->targetService->sendDownloadConfirmation ( $sendDownloadConfirmationRequest )->return;
 	}
-	
+
 	/**
 	 *
 	 * Start Submission
 	 *
 	 * @return Submission ticket
 	 */
-	function startSubmission() {
+	function startSubmission($modifiedSubmissionInfo = null) {
 		if (! isset ( $this->submission ) || ! isset ( $this->submission->project ) || ! isset ( $this->submission->name )) {
 			throw new Exception ( "Please initialize submission first." );
 		}
-		
+
 		if (! isset ( $this->submission->ticket ) || $this->submission->ticket == "") {
 			throw new Exception ( "Please upload a translatable document first." );
 		}
-		
-		$submissionInfo = $this->_createSubmissionInfo ();
-		
+        $submissionInfo = $this->_createSubmissionInfo ();
 		$startSubmissionRequest = new startSubmission ();
 		$startSubmissionRequest->submissionId = $this->submission->ticket;
 		$startSubmissionRequest->submissionInfo = $submissionInfo;
-		
+
 		$this->submissionService->startSubmission ( $startSubmissionRequest );
-		
+
 		$submissionTicket = $this->submission->ticket;
 		$this->submission = NULL;
-		
+
 		return $submissionTicket;
 	}
-	
+
 	/**
 	 *
 	 * Upload reference file for submission
@@ -907,22 +921,22 @@ class GLExchange {
 		if (! isset ( $referenceDocument->name )) {
 			throw new Exception ( "Document name not set" );
 		}
-		
+
 		if (! isset ( $this->submission ) || ! isset ( $this->submission->ticket )) {
 			throw new Exception ( "Submission not initialized." );
 		}
 		if ($this->submission->ticket == "") {
 			throw new Exception ( "Invalid submission ticket. Please upload a translatable document before attempting to upload reference documents." );
 		}
-		
+
 		$uploadReferenceRequest = new uploadReference ();
 		$uploadReferenceRequest->data = $referenceDocument->data;
 		$uploadReferenceRequest->submissionId = $this->submission->ticket;
 		$uploadReferenceRequest->resourceInfo = $referenceDocument->getResourceInfo ();
-		
+
 		return $this->submissionService->uploadReference ( $uploadReferenceRequest )->return;
 	}
-	
+
 	/**
 	 * Uploads the document to project director for translation
 	 *
@@ -936,24 +950,24 @@ class GLExchange {
 			throw new Exception ( "Submission not initialized." );
 		}
 		$this->_validateDocument ( $document );
-		
+
 		$documentInfo = $document->getDocumentInfo ( $this->submission );
 		$resourceInfo = $document->getResourceInfo ();
-		
+
 		$submitDocumentWithBinaryResourceRequest = new submitDocumentWithBinaryResource ();
-		
+
 		$submitDocumentWithBinaryResourceRequest->documentInfo = $documentInfo;
 		$submitDocumentWithBinaryResourceRequest->resourceInfo = $resourceInfo;
 		$submitDocumentWithBinaryResourceRequest->data = $document->data;
-		
+
 		$documentTicket = $this->documentService->submitDocumentWithBinaryResource ( $submitDocumentWithBinaryResourceRequest )->return;
 		if (isset ( $documentTicket )) {
 			$this->submission->ticket = $documentTicket->submissionTicket;
 		}
-		
+
 		return $documentTicket->ticketId;
 	}
-	
+
 	/**
 	 * Uploads preliminary delivery file to project director
 	 *
@@ -970,10 +984,10 @@ class GLExchange {
 		$resourceInfo = new ResourceInfo();
 		$resourceInfo->name = $fileName;
 		$resourceInfo->size = strlen ( $data );
-		
+
 		// Upload file
 		$workflowRequestTicket = $this->workflowService->upload($resourceInfo, $data)->return;
-		
+
 		// Wait until upload is done, or print error message if it failed
 		$uploadFinished = false;
 		while (!$uploadFinished) {
@@ -989,10 +1003,19 @@ class GLExchange {
 				}
 			}
 		}
-		
+
 		return $result;
 	}
-	
+
+	public function setAdaptorName($adaptorName){
+	    $this->adaptorName = $adaptorName;
+    }
+    public function setAdaptorVersion($adaptorVersion){
+	    $this->adaptorVersion = $adaptorVersion;
+    }
+    public function setClientVersion($clientVersion){
+	    $this->clientVersion = $clientVersion;
+    }
 }
 
 ?>

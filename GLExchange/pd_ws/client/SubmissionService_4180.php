@@ -1111,6 +1111,11 @@ class Submission {
 	 * @var string
 	 */
 	public $id;
+    /**
+     * @access public
+     * @var string
+     */
+    public $name;
 	/**
 	 * @access public
 	 * @var string
@@ -1158,6 +1163,16 @@ if (!class_exists("SubmissionInfo")) {
  * SubmissionInfo
  */
 class SubmissionInfo {
+    /**
+     * @access public
+     * @var string
+     */
+    public $adaptorName;
+    /**
+     * @access public
+     * @var string
+     */
+    public $adaptorVersion;
 	/**
 	 * @access public
 	 * @var string
@@ -1178,6 +1193,11 @@ class SubmissionInfo {
 	 * @var string
 	 */
 	public $clientIdentifier;
+    /**
+     * @access public
+     * @var string
+     */
+    public $clientVersion;
 	/**
 	 * @access public
 	 * @var Date
@@ -1243,6 +1263,11 @@ class SubmissionInfo {
 	 * @var string[]
 	 */
 	public $submitters;
+    /**
+     * @access public
+     * @var string
+     */
+    public $technologyProduct;
 	/**
 	 * @access public
 	 * @var string

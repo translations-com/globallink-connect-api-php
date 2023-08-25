@@ -396,6 +396,7 @@
 				nillable="true" type="tns:Document" />
 			<xs:element name="dueDate" nillable="true" type="tns:Date" />
 			<xs:element name="id" nillable="true" type="xs:string" />
+            <xs:element name="name" nillable="true" type="xs:string" />
 			<xs:element name="owner" nillable="true" type="xs:string" />
 			<xs:element name="project" nillable="true" type="tns:Project" />
 			<xs:element name="status" nillable="true" type="tns:ItemStatusEnum" />
@@ -411,11 +412,14 @@
 	</xs:complexType>
 	<xs:complexType name="SubmissionInfo">
 		<xs:sequence>
+            <xs:element name="adaptorName" nillable="true" type="xs:string" />
+            <xs:element name="adaptorVersion" nillable="true" type="xs:string" />
 			<xs:element name="additionalCosts" nillable="true" type="xs:string" />
 			<xs:element name="autoStartChilds" nillable="true" type="xs:boolean" />
 			<xs:element name="claimScope" nillable="true"
 				type="tns:ClaimScopeEnum" />
 			<xs:element name="clientIdentifier" nillable="true" type="xs:string" />
+            <xs:element name="clientVersion" nillable="true" type="xs:string" />
 			<xs:element name="dateRequested" nillable="true" type="tns:Date" />
 			<xs:element name="internalNotes" nillable="true" type="xs:string" />
 			<xs:element name="metadata" nillable="true" minOccurs="0"
@@ -438,6 +442,7 @@
 				maxOccurs="unbounded" nillable="true" type="tns:SubmissionCustomFields" />
 			<xs:element name="submitters" nillable="true" minOccurs="0"
 				maxOccurs="unbounded" type="xs:string" />
+            <xs:element name="technologyProduct" nillable="true" type="xs:string" />
 			<xs:element name="workflowDefinitionTicket" nillable="true"
 				type="xs:string" />
 		</xs:sequence>

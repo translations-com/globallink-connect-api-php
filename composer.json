@@ -15,6 +15,10 @@
         {
             "name": "Mariano Sanz",
             "email": "msanz@translations.com"
+        },
+        {
+            "name": "Justin Griffin",
+            "email": "jgriffin@translations.com"
         }
     ],
     "autoload": {

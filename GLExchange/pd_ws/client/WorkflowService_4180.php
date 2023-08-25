@@ -1111,6 +1111,11 @@ class Submission {
 	 * @var string
 	 */
 	public $id;
+    /**
+     * @access public
+     * @var string
+     */
+    public $name;
 	/**
 	 * @access public
 	 * @var string
@@ -1157,97 +1162,117 @@ if (!class_exists("SubmissionInfo")) {
 /**
  * SubmissionInfo
  */
-class SubmissionInfo {
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $additionalCosts;
-	/**
-	 * @access public
-	 * @var boolean
-	 */
-	public $autoStartChilds;
-	/**
-	 * @access public
-	 * @var ClaimScopeEnum
-	 */
-	public $claimScope;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $clientIdentifier;
-	/**
-	 * @access public
-	 * @var Date
-	 */
-	public $dateRequested;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $internalNotes;
-	/**
-	 * @access public
-	 * @var Metadata[]
-	 */
-	public $metadata;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $name;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $officeName;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $paClientTicket;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $paJobNumber;
-	/**
-	 * @access public
-	 * @var Priority
-	 */
-	public $priority;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $projectTicket;
-	/**
-	 * @access public
-	 * @var double
-	 */
-	public $revenue;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $submissionBackground;
-	/**
-	 * @access public
-	 * @var SubmissionCustomFields[]
-	 */
-	public $submissionCustomFields;
-	/**
-	 * @access public
-	 * @var string[]
-	 */
-	public $submitters;
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $workflowDefinitionTicket;
+    class SubmissionInfo {
+        /**
+         * @access public
+         * @var string
+         */
+        public $adaptorName;
+        /**
+         * @access public
+         * @var string
+         */
+        public $adaptorVersion;
+        /**
+         * @access public
+         * @var string
+         */
+        public $additionalCosts;
+        /**
+         * @access public
+         * @var boolean
+         */
+        public $autoStartChilds;
+        /**
+         * @access public
+         * @var ClaimScopeEnum
+         */
+        public $claimScope;
+        /**
+         * @access public
+         * @var string
+         */
+        public $clientIdentifier;
+        /**
+         * @access public
+         * @var string
+         */
+        public $clientVersion;
+        /**
+         * @access public
+         * @var Date
+         */
+        public $dateRequested;
+        /**
+         * @access public
+         * @var string
+         */
+        public $internalNotes;
+        /**
+         * @access public
+         * @var Metadata[]
+         */
+        public $metadata;
+        /**
+         * @access public
+         * @var string
+         */
+        public $name;
+        /**
+         * @access public
+         * @var string
+         */
+        public $officeName;
+        /**
+         * @access public
+         * @var string
+         */
+        public $paClientTicket;
+        /**
+         * @access public
+         * @var string
+         */
+        public $paJobNumber;
+        /**
+         * @access public
+         * @var Priority
+         */
+        public $priority;
+        /**
+         * @access public
+         * @var string
+         */
+        public $projectTicket;
+        /**
+         * @access public
+         * @var double
+         */
+        public $revenue;
+        /**
+         * @access public
+         * @var string
+         */
+        public $submissionBackground;
+        /**
+         * @access public
+         * @var SubmissionCustomFields[]
+         */
+        public $submissionCustomFields;
+        /**
+         * @access public
+         * @var string[]
+         */
+        public $submitters;
+        /**
+         * @access public
+         * @var string
+         */
+        public $technologyProduct;
+        /**
+         * @access public
+         * @var string
+         */
+        public $workflowDefinitionTicket;
 }}
 
 if (!class_exists("SubmissionPagedList")) {
