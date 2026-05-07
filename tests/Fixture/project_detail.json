@@ -1,0 +1,52 @@
+{
+    "name": "Test Project",
+    "projectId": 1001,
+    "organizationId": 100,
+    "shortCode": "TP1",
+    "enabled": true,
+    "autoStartSubmission": false,
+    "quoteEnabled": true,
+    "quoteScope": "PROJECT",
+    "autoQuote": false,
+    "costScopeId": 1,
+    "defaultWorkflowDefinitionId": 200,
+    "fileFormatProfiles": [
+        {
+            "name": "Default XML",
+            "fileFormatId": 301,
+            "default": true,
+            "enabled": true,
+            "mimeTypes": ["application/xml", "text/xml"],
+            "nonParsable": false,
+            "targetFormat": "TXLF",
+            "dateUpdated": 1704067200000,
+            "defaultWorkflowDefinitionId": 200,
+            "defaultWorkflowDefinitionName": "Standard Translation"
+        }
+    ],
+    "workflowDefinitions": [
+        {
+            "name": "Standard Translation",
+            "id": 200,
+            "default": true,
+            "description": "Standard translation workflow",
+            "linkedWorkflows": []
+        }
+    ],
+    "projectLanguageDirections": [
+        {
+            "sourceLanguage": "en-US",
+            "sourceLanguageDisplayName": "English (United States)",
+            "targetLanguage": "de-DE",
+            "targetLanguageDisplayName": "German (Germany)",
+            "default": true
+        },
+        {
+            "sourceLanguage": "en-US",
+            "sourceLanguageDisplayName": "English (United States)",
+            "targetLanguage": "fr-FR",
+            "targetLanguageDisplayName": "French (France)",
+            "default": false
+        }
+    ]
+}

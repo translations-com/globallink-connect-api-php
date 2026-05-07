@@ -1,0 +1,7 @@
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test",
+    "token_type": "bearer",
+    "expires_in": 3600,
+    "scope": "read write",
+    "refresh_token": "refresh_token_test"
+}

@@ -1,0 +1,34 @@
+[
+    {
+        "status": "PROCESSED",
+        "targetId": 7001,
+        "submissionId": 5001,
+        "sourceLanguage": "en-US",
+        "targetLanguage": "de-DE",
+        "jobId": 8001,
+        "documentId": 6001,
+        "fileFormatName": "Default XML",
+        "dueDate": 1704153600000,
+        "documentName": "test-file.xml",
+        "dateCompleted": 1704110400000,
+        "fileFormatId": 301,
+        "currentPhase": "Delivery",
+        "translatableNames": []
+    },
+    {
+        "status": "PROCESSED",
+        "targetId": 7002,
+        "submissionId": 5001,
+        "sourceLanguage": "en-US",
+        "targetLanguage": "fr-FR",
+        "jobId": 8002,
+        "documentId": 6001,
+        "fileFormatName": "Default XML",
+        "dueDate": 1704153600000,
+        "documentName": "test-file.xml",
+        "dateCompleted": 1704110400000,
+        "fileFormatId": 301,
+        "currentPhase": "Delivery",
+        "translatableNames": []
+    }
+]

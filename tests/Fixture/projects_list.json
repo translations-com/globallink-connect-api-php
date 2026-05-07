@@ -1,0 +1,30 @@
+[
+    {
+        "name": "Test Project 1",
+        "projectId": 1001,
+        "organizationId": 100,
+        "shortCode": "TP1",
+        "enabled": true,
+        "quoteEnabled": false,
+        "quoteScope": "NONE",
+        "autoQuote": false,
+        "costScopeId": 1,
+        "autoStartSubmission": false,
+        "defaultWorkflowDefinitionId": 200,
+        "displayMslaLevel": false
+    },
+    {
+        "name": "Test Project 2",
+        "projectId": 1002,
+        "organizationId": 100,
+        "shortCode": "TP2",
+        "enabled": true,
+        "quoteEnabled": true,
+        "quoteScope": "PROJECT",
+        "autoQuote": true,
+        "costScopeId": 2,
+        "autoStartSubmission": true,
+        "defaultWorkflowDefinitionId": 201,
+        "displayMslaLevel": true
+    }
+]
