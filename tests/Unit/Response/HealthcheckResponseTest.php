@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Unit\Response;
+namespace GlobalLink\RestClient\Tests\Unit\Response;
 
 use PHPUnit\Framework\TestCase;
-use TransPerfect\GlobalLink\Response\HealthcheckResponse;
+use GlobalLink\RestClient\Response\HealthcheckResponse;
 
 /**
  * Unit tests for HealthcheckResponse.

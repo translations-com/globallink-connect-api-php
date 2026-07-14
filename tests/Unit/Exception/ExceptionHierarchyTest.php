@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Unit\Exception;
+namespace GlobalLink\RestClient\Tests\Unit\Exception;
 
 use PHPUnit\Framework\TestCase;
-use TransPerfect\GlobalLink\Exception\ApiException;
-use TransPerfect\GlobalLink\Exception\AuthenticationException;
-use TransPerfect\GlobalLink\Exception\GlobalLinkException;
-use TransPerfect\GlobalLink\Exception\InvalidArgumentException;
-use TransPerfect\GlobalLink\Exception\RateLimitException;
+use GlobalLink\RestClient\Exception\ApiException;
+use GlobalLink\RestClient\Exception\AuthenticationException;
+use GlobalLink\RestClient\Exception\GlobalLinkException;
+use GlobalLink\RestClient\Exception\InvalidArgumentException;
+use GlobalLink\RestClient\Exception\RateLimitException;
 
 /**
  * Tests for exception hierarchy.

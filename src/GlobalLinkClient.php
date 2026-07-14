@@ -2,48 +2,48 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink;
+namespace GlobalLink\RestClient;
 
-use TransPerfect\GlobalLink\Config\RetryConfig;
-use TransPerfect\GlobalLink\Exception\ApiException;
-use TransPerfect\GlobalLink\Exception\AuthenticationException;
-use TransPerfect\GlobalLink\Exception\GlobalLinkException;
-use TransPerfect\GlobalLink\Exception\InvalidArgumentException;
-use TransPerfect\GlobalLink\Exception\RateLimitException;
-use TransPerfect\GlobalLink\Http\HttpClientInterface;
-use TransPerfect\GlobalLink\Http\HttpResponse;
-use TransPerfect\GlobalLink\Http\StreamHttpClient;
-use TransPerfect\GlobalLink\Model\ProjectInfo;
-use TransPerfect\GlobalLink\Model\SubmissionInfo;
-use TransPerfect\GlobalLink\Model\Target;
-use TransPerfect\GlobalLink\Model\TechTracking;
-use TransPerfect\GlobalLink\Request\CancelSubmissionRequest;
-use TransPerfect\GlobalLink\Request\CreateSubmissionRequest;
-use TransPerfect\GlobalLink\Request\GetSubmissionsRequest;
-use TransPerfect\GlobalLink\Request\GetTargetsRequest;
-use TransPerfect\GlobalLink\Request\ListProjectsRequest;
-use TransPerfect\GlobalLink\Request\LoginRequest;
-use TransPerfect\GlobalLink\Request\SaveSubmissionRequest;
-use TransPerfect\GlobalLink\Request\UploadReferenceFileRequest;
-use TransPerfect\GlobalLink\Request\UploadSourceFileRequest;
-use TransPerfect\GlobalLink\Response\ConfirmTargetDeliveredResponse;
-use TransPerfect\GlobalLink\Response\CreateSubmissionResponse;
-use TransPerfect\GlobalLink\Response\GetProjectCustomAttributesResponse;
-use TransPerfect\GlobalLink\Response\GetProjectFileFormatsResponse;
-use TransPerfect\GlobalLink\Response\GetProjectLanguageDirectionsResponse;
-use TransPerfect\GlobalLink\Response\GetProjectMslaLevelsResponse;
-use TransPerfect\GlobalLink\Response\GetProjectOrgUsersResponse;
-use TransPerfect\GlobalLink\Response\GetProjectWorkflowsResponse;
-use TransPerfect\GlobalLink\Response\GetSubmissionsResponse;
-use TransPerfect\GlobalLink\Response\GetSubmissionWordcountResponse;
-use TransPerfect\GlobalLink\Response\GetTargetsResponse;
-use TransPerfect\GlobalLink\Response\HealthcheckResponse;
-use TransPerfect\GlobalLink\Response\InstanceInfoResponse;
-use TransPerfect\GlobalLink\Response\ListProjectsResponse;
-use TransPerfect\GlobalLink\Response\LoginResponse;
-use TransPerfect\GlobalLink\Response\SaveSubmissionResponse;
-use TransPerfect\GlobalLink\Response\UploadReferenceFileResponse;
-use TransPerfect\GlobalLink\Response\UploadSourceFileResponse;
+use GlobalLink\RestClient\Config\RetryConfig;
+use GlobalLink\RestClient\Exception\ApiException;
+use GlobalLink\RestClient\Exception\AuthenticationException;
+use GlobalLink\RestClient\Exception\GlobalLinkException;
+use GlobalLink\RestClient\Exception\InvalidArgumentException;
+use GlobalLink\RestClient\Exception\RateLimitException;
+use GlobalLink\RestClient\Http\HttpClientInterface;
+use GlobalLink\RestClient\Http\HttpResponse;
+use GlobalLink\RestClient\Http\StreamHttpClient;
+use GlobalLink\RestClient\Model\ProjectInfo;
+use GlobalLink\RestClient\Model\SubmissionInfo;
+use GlobalLink\RestClient\Model\Target;
+use GlobalLink\RestClient\Model\TechTracking;
+use GlobalLink\RestClient\Request\CancelSubmissionRequest;
+use GlobalLink\RestClient\Request\CreateSubmissionRequest;
+use GlobalLink\RestClient\Request\GetSubmissionsRequest;
+use GlobalLink\RestClient\Request\GetTargetsRequest;
+use GlobalLink\RestClient\Request\ListProjectsRequest;
+use GlobalLink\RestClient\Request\LoginRequest;
+use GlobalLink\RestClient\Request\SaveSubmissionRequest;
+use GlobalLink\RestClient\Request\UploadReferenceFileRequest;
+use GlobalLink\RestClient\Request\UploadSourceFileRequest;
+use GlobalLink\RestClient\Response\ConfirmTargetDeliveredResponse;
+use GlobalLink\RestClient\Response\CreateSubmissionResponse;
+use GlobalLink\RestClient\Response\GetProjectCustomAttributesResponse;
+use GlobalLink\RestClient\Response\GetProjectFileFormatsResponse;
+use GlobalLink\RestClient\Response\GetProjectLanguageDirectionsResponse;
+use GlobalLink\RestClient\Response\GetProjectMslaLevelsResponse;
+use GlobalLink\RestClient\Response\GetProjectOrgUsersResponse;
+use GlobalLink\RestClient\Response\GetProjectWorkflowsResponse;
+use GlobalLink\RestClient\Response\GetSubmissionsResponse;
+use GlobalLink\RestClient\Response\GetSubmissionWordcountResponse;
+use GlobalLink\RestClient\Response\GetTargetsResponse;
+use GlobalLink\RestClient\Response\HealthcheckResponse;
+use GlobalLink\RestClient\Response\InstanceInfoResponse;
+use GlobalLink\RestClient\Response\ListProjectsResponse;
+use GlobalLink\RestClient\Response\LoginResponse;
+use GlobalLink\RestClient\Response\SaveSubmissionResponse;
+use GlobalLink\RestClient\Response\UploadReferenceFileResponse;
+use GlobalLink\RestClient\Response\UploadSourceFileResponse;
 
 /**
  * GlobalLink Enterprise REST API Client.
@@ -54,7 +54,7 @@ use TransPerfect\GlobalLink\Response\UploadSourceFileResponse;
  */
 class GlobalLinkClient
 {
-    private const SDK_VERSION = '1.0.0';
+    private const SDK_VERSION = '2.0.0';
     private const CONTENT_TYPE_JSON = 'application/json';
     private const CONTENT_TYPE_FORM = 'application/x-www-form-urlencoded';
 
@@ -175,7 +175,7 @@ class GlobalLinkClient
      * List all projects with optional filters.
      *
      * @param ListProjectsRequest|null $request Optional filters
-     * @return list<\TransPerfect\GlobalLink\Model\Project> List of projects
+     * @return list<\GlobalLink\RestClient\Model\Project> List of projects
      * @throws ApiException On API error
      */
     public function getProjects(?ListProjectsRequest $request = null): array
@@ -192,7 +192,7 @@ class GlobalLinkClient
      * Get file format profiles for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\TransPerfect\GlobalLink\Model\FileFormatProfile>
+     * @return list<\GlobalLink\RestClient\Model\FileFormatProfile>
      * @throws ApiException On API error
      */
     public function getProjectFileFormats(int $projectId): array
@@ -208,7 +208,7 @@ class GlobalLinkClient
      * Get workflow definitions for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\TransPerfect\GlobalLink\Model\WorkflowDefinition>
+     * @return list<\GlobalLink\RestClient\Model\WorkflowDefinition>
      * @throws ApiException On API error
      */
     public function getProjectWorkflows(int $projectId): array
@@ -224,7 +224,7 @@ class GlobalLinkClient
      * Get custom attribute definitions for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\TransPerfect\GlobalLink\Model\CustomAttribute>
+     * @return list<\GlobalLink\RestClient\Model\CustomAttribute>
      * @throws ApiException On API error
      */
     public function getProjectCustomAttributes(int $projectId): array
@@ -240,7 +240,7 @@ class GlobalLinkClient
      * Get organization users for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\TransPerfect\GlobalLink\Model\User>
+     * @return list<\GlobalLink\RestClient\Model\User>
      * @throws ApiException On API error
      */
     public function getProjectOrgUsers(int $projectId): array
@@ -256,7 +256,7 @@ class GlobalLinkClient
      * Get language directions for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\TransPerfect\GlobalLink\Model\ProjectLanguageDirection>
+     * @return list<\GlobalLink\RestClient\Model\ProjectLanguageDirection>
      * @throws ApiException On API error
      */
     public function getProjectLanguageDirections(int $projectId): array
@@ -274,7 +274,7 @@ class GlobalLinkClient
      * MSLA levels define submission priorities (e.g., Rush, Standard, Low).
      *
      * @param int $projectId Project ID
-     * @return list<\TransPerfect\GlobalLink\Model\MslaLevel>
+     * @return list<\GlobalLink\RestClient\Model\MslaLevel>
      * @throws ApiException On API error
      */
     public function getProjectMslaLevels(int $projectId): array
@@ -382,10 +382,10 @@ class GlobalLinkClient
      * (100% match, fuzzy matches, no match, etc.).
      *
      * @param int $submissionId Submission ID
-     * @return \TransPerfect\GlobalLink\Model\SubmissionWordcount Wordcount information
+     * @return \GlobalLink\RestClient\Model\SubmissionWordcount Wordcount information
      * @throws ApiException On API error
      */
-    public function getSubmissionWordcount(int $submissionId): \TransPerfect\GlobalLink\Model\SubmissionWordcount
+    public function getSubmissionWordcount(int $submissionId): \GlobalLink\RestClient\Model\SubmissionWordcount
     {
         $this->ensureAuthenticated();
         $safeId = $this->validatePathSegment($submissionId);

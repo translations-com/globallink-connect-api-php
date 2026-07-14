@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Response;
+namespace GlobalLink\RestClient\Response;
 
-use TransPerfect\GlobalLink\Model\Target;
+use GlobalLink\RestClient\Model\Target;
 
 /**
  * Response from getting targets.

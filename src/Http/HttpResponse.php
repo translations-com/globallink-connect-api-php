@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Http;
+namespace GlobalLink\RestClient\Http;
 
 /**
  * Value object representing an HTTP response.

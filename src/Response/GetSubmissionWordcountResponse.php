@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Response;
+namespace GlobalLink\RestClient\Response;
 
-use TransPerfect\GlobalLink\Model\SubmissionWordcount;
+use GlobalLink\RestClient\Model\SubmissionWordcount;
 
 /**
  * Response for GET /submissions/{submission-id}/wordcount.

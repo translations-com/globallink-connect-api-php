@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Http;
+namespace GlobalLink\RestClient\Http;
 
 /**
  * Interface for HTTP clients.
@@ -20,7 +20,7 @@ interface HttpClientInterface
      * @param array<string, string> $headers Request headers
      * @param string|null $body Request body (for POST, PUT, PATCH)
      * @return HttpResponse The response from the server
-     * @throws \TransPerfect\GlobalLink\Exception\GlobalLinkException On connection failure
+     * @throws \GlobalLink\RestClient\Exception\GlobalLinkException On connection failure
      */
     public function send(string $method, string $url, array $headers, ?string $body = null): HttpResponse;
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Exception;
+namespace GlobalLink\RestClient\Exception;
 
 /**
  * Base exception for all GlobalLink SDK errors.

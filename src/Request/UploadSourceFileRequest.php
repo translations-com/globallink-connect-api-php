@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Request;
+namespace GlobalLink\RestClient\Request;
 
-use TransPerfect\GlobalLink\Exception\InvalidArgumentException;
+use GlobalLink\RestClient\Exception\InvalidArgumentException;
 
 /**
  * Request for uploading a source file to a submission.

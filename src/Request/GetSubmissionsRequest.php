@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Request;
+namespace GlobalLink\RestClient\Request;
 
 /**
  * Request for getting submissions with filters.

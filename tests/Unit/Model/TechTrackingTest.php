@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Unit\Model;
+namespace GlobalLink\RestClient\Tests\Unit\Model;
 
 use PHPUnit\Framework\TestCase;
-use TransPerfect\GlobalLink\Exception\InvalidArgumentException;
-use TransPerfect\GlobalLink\Model\TechTracking;
+use GlobalLink\RestClient\Exception\InvalidArgumentException;
+use GlobalLink\RestClient\Model\TechTracking;
 
 /**
  * Unit tests for TechTracking model.

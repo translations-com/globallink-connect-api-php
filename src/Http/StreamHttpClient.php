@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Http;
+namespace GlobalLink\RestClient\Http;
 
-use TransPerfect\GlobalLink\Exception\GlobalLinkException;
+use GlobalLink\RestClient\Exception\GlobalLinkException;
 
 /**
  * HTTP client implementation using PHP's native stream functions.

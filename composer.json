@@ -20,12 +20,12 @@
     },
     "autoload": {
         "psr-4": {
-            "TransPerfect\\GlobalLink\\": "src/"
+            "GlobalLink\\RestClient\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "TransPerfect\\GlobalLink\\Tests\\": "tests/"
+            "GlobalLink\\RestClient\\Tests\\": "tests/"
         }
     },
     "scripts": {

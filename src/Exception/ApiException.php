@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Exception;
+namespace GlobalLink\RestClient\Exception;
 
 /**
  * Exception thrown when the API returns an error response (4xx/5xx).

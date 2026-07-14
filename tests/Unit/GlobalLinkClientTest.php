@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Unit;
+namespace GlobalLink\RestClient\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use TransPerfect\GlobalLink\Exception\ApiException;
-use TransPerfect\GlobalLink\Exception\AuthenticationException;
-use TransPerfect\GlobalLink\Exception\InvalidArgumentException;
-use TransPerfect\GlobalLink\Exception\RateLimitException;
-use TransPerfect\GlobalLink\GlobalLinkClient;
-use TransPerfect\GlobalLink\Http\HttpResponse;
-use TransPerfect\GlobalLink\Request\ListProjectsRequest;
-use TransPerfect\GlobalLink\Tests\Mock\MockHttpClient;
+use GlobalLink\RestClient\Exception\ApiException;
+use GlobalLink\RestClient\Exception\AuthenticationException;
+use GlobalLink\RestClient\Exception\InvalidArgumentException;
+use GlobalLink\RestClient\Exception\RateLimitException;
+use GlobalLink\RestClient\GlobalLinkClient;
+use GlobalLink\RestClient\Http\HttpResponse;
+use GlobalLink\RestClient\Request\ListProjectsRequest;
+use GlobalLink\RestClient\Tests\Mock\MockHttpClient;
 
 /**
  * Unit tests for GlobalLinkClient.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Model;
+namespace GlobalLink\RestClient\Model;
 
 /**
  * Represents a reference file attached to a submission.

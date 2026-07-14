@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Response;
+namespace GlobalLink\RestClient\Response;
 
-use TransPerfect\GlobalLink\Model\FileFormatProfile;
+use GlobalLink\RestClient\Model\FileFormatProfile;
 
 /**
  * Response from getting project file formats.

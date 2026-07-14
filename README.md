@@ -1,5 +1,7 @@
 # GlobalLink Connect PHP SDK
 
+**Version:** 2.0.0
+
 A PHP SDK for the GlobalLink Enterprise REST API, enabling seamless integration with TransPerfect's GlobalLink translation management platform.
 
 ## Features
@@ -93,13 +95,13 @@ Or copy `.env.example` to `.env` and load variables manually.
 
 require_once 'vendor/autoload.php';
 
-use TransPerfect\GlobalLink\GlobalLinkClient;
-use TransPerfect\GlobalLink\Request\CreateSubmissionRequest;
-use TransPerfect\GlobalLink\Request\UploadSourceFileRequest;
-use TransPerfect\GlobalLink\Request\SaveSubmissionRequest;
-use TransPerfect\GlobalLink\Request\GetTargetsRequest;
-use TransPerfect\GlobalLink\Model\BatchInfo;
-use TransPerfect\GlobalLink\Model\CreateSubmissionTargetLanguageInfo;
+use GlobalLink\RestClient\GlobalLinkClient;
+use GlobalLink\RestClient\Request\CreateSubmissionRequest;
+use GlobalLink\RestClient\Request\UploadSourceFileRequest;
+use GlobalLink\RestClient\Request\SaveSubmissionRequest;
+use GlobalLink\RestClient\Request\GetTargetsRequest;
+use GlobalLink\RestClient\Model\BatchInfo;
+use GlobalLink\RestClient\Model\CreateSubmissionTargetLanguageInfo;
 
 // Initialize the client
 $client = new GlobalLinkClient(
@@ -208,7 +210,7 @@ echo "Max documents per submission: {$info->maxDocumentsBeforeNewSubmission}\n";
 ### Projects
 
 ```php
-use TransPerfect\GlobalLink\Request\ListProjectsRequest;
+use GlobalLink\RestClient\Request\ListProjectsRequest;
 
 // List all projects
 $projects = $client->getProjects();
@@ -241,10 +243,10 @@ foreach ($mslaLevels as $level) {
 ### Submissions
 
 ```php
-use TransPerfect\GlobalLink\Request\GetSubmissionsRequest;
-use TransPerfect\GlobalLink\Request\UploadReferenceFileRequest;
-use TransPerfect\GlobalLink\Model\TechTracking;
-use TransPerfect\GlobalLink\Request\CancelSubmissionRequest;
+use GlobalLink\RestClient\Request\GetSubmissionsRequest;
+use GlobalLink\RestClient\Request\UploadReferenceFileRequest;
+use GlobalLink\RestClient\Model\TechTracking;
+use GlobalLink\RestClient\Request\CancelSubmissionRequest;
 
 // Create submission
 $response = $client->createSubmission($request);
@@ -300,7 +302,7 @@ $client->uploadSubmissionReferenceFile($submissionId, $refRequest);
 // Set tech tracking (for analytics)
 $techTracking = new TechTracking(
     adaptorName: 'GlobalLink Drupal Adaptor',
-    adaptorVersion: '1.0.0',
+    adaptorVersion: '2.0.0',
     clientVersion: '11',
     technologyProduct: 'GLE'
 );
@@ -318,7 +320,7 @@ $client->cancelSubmission($submissionId, new CancelSubmissionRequest(
 ### Targets
 
 ```php
-use TransPerfect\GlobalLink\Request\GetTargetsRequest;
+use GlobalLink\RestClient\Request\GetTargetsRequest;
 
 // Get targets by status with pagination
 // Note: pageSize must be between 20 and 200 (API requirement)
@@ -364,11 +366,11 @@ echo "Failed: " . count($response->failedToDeliverTargets) . "\n";
 The SDK provides a typed exception hierarchy:
 
 ```php
-use TransPerfect\GlobalLink\Exception\GlobalLinkException;
-use TransPerfect\GlobalLink\Exception\ApiException;
-use TransPerfect\GlobalLink\Exception\AuthenticationException;
-use TransPerfect\GlobalLink\Exception\RateLimitException;
-use TransPerfect\GlobalLink\Exception\InvalidArgumentException;
+use GlobalLink\RestClient\Exception\GlobalLinkException;
+use GlobalLink\RestClient\Exception\ApiException;
+use GlobalLink\RestClient\Exception\AuthenticationException;
+use GlobalLink\RestClient\Exception\RateLimitException;
+use GlobalLink\RestClient\Exception\InvalidArgumentException;
 
 try {
     $projects = $client->getProjects();
@@ -404,8 +406,8 @@ if ($rateLimitInfo !== null) {
 You can inject a custom HTTP client for testing or to use a different HTTP library:
 
 ```php
-use TransPerfect\GlobalLink\Http\HttpClientInterface;
-use TransPerfect\GlobalLink\Http\HttpResponse;
+use GlobalLink\RestClient\Http\HttpClientInterface;
+use GlobalLink\RestClient\Http\HttpResponse;
 
 class GuzzleHttpClient implements HttpClientInterface
 {
@@ -452,7 +454,7 @@ $client = new GlobalLinkClient(
 Enable automatic retries for transient failures (429 rate limit, 5xx server errors):
 
 ```php
-use TransPerfect\GlobalLink\Config\RetryConfig;
+use GlobalLink\RestClient\Config\RetryConfig;
 
 $client = new GlobalLinkClient(
     // ... credentials ...

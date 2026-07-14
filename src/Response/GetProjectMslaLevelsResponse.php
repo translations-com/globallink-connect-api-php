@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Response;
+namespace GlobalLink\RestClient\Response;
 
-use TransPerfect\GlobalLink\Model\MslaLevel;
+use GlobalLink\RestClient\Model\MslaLevel;
 
 /**
  * Response for GET /projects/{project-id}/mslalevels.

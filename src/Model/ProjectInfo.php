@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Model;
+namespace GlobalLink\RestClient\Model;
 
 /**
  * Represents detailed project information in GlobalLink.

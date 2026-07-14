@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Exception;
+namespace GlobalLink\RestClient\Exception;
 
 /**
  * Exception thrown when rate limit is exceeded (429).

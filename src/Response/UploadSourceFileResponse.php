@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Response;
+namespace GlobalLink\RestClient\Response;
 
 /**
  * Target ID information from upload source file response.

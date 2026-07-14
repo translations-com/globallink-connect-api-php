@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Unit\Model;
+namespace GlobalLink\RestClient\Tests\Unit\Model;
 
 use PHPUnit\Framework\TestCase;
-use TransPerfect\GlobalLink\Model\MslaLevel;
+use GlobalLink\RestClient\Model\MslaLevel;
 
 /**
  * Unit tests for MslaLevel model.

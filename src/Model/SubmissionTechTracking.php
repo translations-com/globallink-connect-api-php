@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Model;
+namespace GlobalLink\RestClient\Model;
 
 /**
  * Tech tracking information attached to a submission (read-only response model).

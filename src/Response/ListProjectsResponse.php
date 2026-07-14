@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Response;
+namespace GlobalLink\RestClient\Response;
 
-use TransPerfect\GlobalLink\Model\Project;
+use GlobalLink\RestClient\Model\Project;
 
 /**
  * Response from listing projects.

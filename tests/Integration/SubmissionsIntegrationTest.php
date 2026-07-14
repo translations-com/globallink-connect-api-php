@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Integration;
+namespace GlobalLink\RestClient\Tests\Integration;
 
-use TransPerfect\GlobalLink\Model\BatchInfo;
-use TransPerfect\GlobalLink\Model\SubmissionInfo;
-use TransPerfect\GlobalLink\Model\SubmissionWordcount;
-use TransPerfect\GlobalLink\Model\TechTracking;
-use TransPerfect\GlobalLink\Request\CreateSubmissionRequest;
-use TransPerfect\GlobalLink\Request\GetSubmissionsRequest;
-use TransPerfect\GlobalLink\Request\SaveSubmissionRequest;
-use TransPerfect\GlobalLink\Request\UploadSourceFileRequest;
-use TransPerfect\GlobalLink\Response\CreateSubmissionResponse;
-use TransPerfect\GlobalLink\Response\SaveSubmissionResponse;
-use TransPerfect\GlobalLink\Response\UploadSourceFileResponse;
+use GlobalLink\RestClient\Model\BatchInfo;
+use GlobalLink\RestClient\Model\SubmissionInfo;
+use GlobalLink\RestClient\Model\SubmissionWordcount;
+use GlobalLink\RestClient\Model\TechTracking;
+use GlobalLink\RestClient\Request\CreateSubmissionRequest;
+use GlobalLink\RestClient\Request\GetSubmissionsRequest;
+use GlobalLink\RestClient\Request\SaveSubmissionRequest;
+use GlobalLink\RestClient\Request\UploadSourceFileRequest;
+use GlobalLink\RestClient\Response\CreateSubmissionResponse;
+use GlobalLink\RestClient\Response\SaveSubmissionResponse;
+use GlobalLink\RestClient\Response\UploadSourceFileResponse;
 
 /**
  * Integration tests for submission workflow.
@@ -30,7 +30,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
 {
     private const DATE_FORMAT = 'Y-m-d H:i:s';
     private const SDK_NAME = 'GlobalLink PHP SDK';
-    private const SDK_VERSION = '1.0.0';
+    private const SDK_VERSION = '2.0.0';
 
     private ?int $createdSubmissionId = null;
 
@@ -354,7 +354,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
                 $this->debug("Found wordcount for submission {$submission->submissionId}: {$wordcount->totalWordCount} words");
                 $testedSubmission = true;
                 break;
-            } catch (\TransPerfect\GlobalLink\Exception\ApiException $e) {
+            } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
                 // Wordcount may not be available for all submissions
                 continue;
             }

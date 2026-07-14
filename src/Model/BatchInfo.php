@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Model;
+namespace GlobalLink\RestClient\Model;
 
-use TransPerfect\GlobalLink\Exception\InvalidArgumentException;
+use GlobalLink\RestClient\Exception\InvalidArgumentException;
 
 /**
  * Batch information for creating submissions.

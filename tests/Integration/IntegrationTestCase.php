@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Integration;
+namespace GlobalLink\RestClient\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
-use TransPerfect\GlobalLink\GlobalLinkClient;
+use GlobalLink\RestClient\GlobalLinkClient;
 
 /**
  * Base class for integration tests.

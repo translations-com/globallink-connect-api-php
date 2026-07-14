@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Unit\Model;
+namespace GlobalLink\RestClient\Tests\Unit\Model;
 
 use PHPUnit\Framework\TestCase;
-use TransPerfect\GlobalLink\Model\SubmissionWordcount;
+use GlobalLink\RestClient\Model\SubmissionWordcount;
 
 /**
  * Unit tests for SubmissionWordcount model.

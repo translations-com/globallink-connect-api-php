@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Integration;
+namespace GlobalLink\RestClient\Tests\Integration;
 
-use TransPerfect\GlobalLink\Model\Target;
-use TransPerfect\GlobalLink\Request\GetSubmissionsRequest;
-use TransPerfect\GlobalLink\Request\GetTargetsRequest;
-use TransPerfect\GlobalLink\Response\ConfirmTargetDeliveredResponse;
+use GlobalLink\RestClient\Model\Target;
+use GlobalLink\RestClient\Request\GetSubmissionsRequest;
+use GlobalLink\RestClient\Request\GetTargetsRequest;
+use GlobalLink\RestClient\Response\ConfirmTargetDeliveredResponse;
 
 /**
  * Integration tests for downloading completed/translated content.
@@ -104,7 +104,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
                 $this->assertInstanceOf(Target::class, $target);
                 $this->assertSame('CANCELLED', $target->status);
             }
-        } catch (\TransPerfect\GlobalLink\Exception\ApiException $e) {
+        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
             $this->markTestSkipped('Cancelled status polling not available: ' . $e->getMessage());
         }
     }
@@ -307,7 +307,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             $this->assertIsArray($response->failedToDeliverTargets);
 
             $this->debug('Success: ' . count($response->successfullyDeliveredTargets) . ', Failed: ' . count($response->failedToDeliverTargets));
-        } catch (\TransPerfect\GlobalLink\Exception\ApiException $e) {
+        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
             $this->markTestSkipped('Target delivery confirmation not available: ' . $e->getMessage());
         }
     }
@@ -454,7 +454,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
                     $this->debug('Verified no overlap between pages');
                 }
             }
-        } catch (\TransPerfect\GlobalLink\Exception\ApiException $e) {
+        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
             $this->markTestSkipped('Pagination not supported: ' . $e->getMessage());
         }
     }
@@ -494,7 +494,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             );
 
             return $this->client->getTargets($request);
-        } catch (\TransPerfect\GlobalLink\Exception\ApiException $e) {
+        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
             // If project-based filtering fails, try submission-based
             return $this->fetchProcessedTargetsBySubmission();
         }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Config;
+namespace GlobalLink\RestClient\Config;
 
 /**
  * Configuration for retry behavior on transient API failures.

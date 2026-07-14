@@ -17,17 +17,17 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-use TransPerfect\GlobalLink\GlobalLinkClient;
-use TransPerfect\GlobalLink\Request\CancelSubmissionRequest;
-use TransPerfect\GlobalLink\Request\CreateSubmissionRequest;
-use TransPerfect\GlobalLink\Request\GetSubmissionsRequest;
-use TransPerfect\GlobalLink\Request\SaveSubmissionRequest;
-use TransPerfect\GlobalLink\Request\UploadReferenceFileRequest;
-use TransPerfect\GlobalLink\Request\UploadSourceFileRequest;
-use TransPerfect\GlobalLink\Model\BatchInfo;
-use TransPerfect\GlobalLink\Model\CreateSubmissionTargetLanguageInfo;
-use TransPerfect\GlobalLink\Model\TechTracking;
-use TransPerfect\GlobalLink\Exception\GlobalLinkException;
+use GlobalLink\RestClient\GlobalLinkClient;
+use GlobalLink\RestClient\Request\CancelSubmissionRequest;
+use GlobalLink\RestClient\Request\CreateSubmissionRequest;
+use GlobalLink\RestClient\Request\GetSubmissionsRequest;
+use GlobalLink\RestClient\Request\SaveSubmissionRequest;
+use GlobalLink\RestClient\Request\UploadReferenceFileRequest;
+use GlobalLink\RestClient\Request\UploadSourceFileRequest;
+use GlobalLink\RestClient\Model\BatchInfo;
+use GlobalLink\RestClient\Model\CreateSubmissionTargetLanguageInfo;
+use GlobalLink\RestClient\Model\TechTracking;
+use GlobalLink\RestClient\Exception\GlobalLinkException;
 
 // Load environment variables
 $apiUrl = getenv('GLE_API_URL') ?: '';
@@ -147,7 +147,7 @@ try {
     echo "=== Adding Tech Tracking ===\n";
     $techTracking = new TechTracking(
         adaptorName: 'PHP SDK Example',
-        adaptorVersion: '1.0.0',
+        adaptorVersion: '2.0.0',
         clientVersion: PHP_VERSION,
         technologyProduct: 'PHP'
     );

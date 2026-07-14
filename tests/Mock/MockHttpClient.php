@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Mock;
+namespace GlobalLink\RestClient\Tests\Mock;
 
-use TransPerfect\GlobalLink\Exception\GlobalLinkException;
-use TransPerfect\GlobalLink\Http\HttpClientInterface;
-use TransPerfect\GlobalLink\Http\HttpResponse;
+use GlobalLink\RestClient\Exception\GlobalLinkException;
+use GlobalLink\RestClient\Http\HttpClientInterface;
+use GlobalLink\RestClient\Http\HttpResponse;
 
 /**
  * Mock HTTP client for testing.

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Integration;
+namespace GlobalLink\RestClient\Tests\Integration;
 
-use TransPerfect\GlobalLink\Model\BatchInfo;
-use TransPerfect\GlobalLink\Model\SubmissionInfo;
-use TransPerfect\GlobalLink\Model\Target;
-use TransPerfect\GlobalLink\Model\TechTracking;
-use TransPerfect\GlobalLink\Request\CreateSubmissionRequest;
-use TransPerfect\GlobalLink\Request\GetTargetsRequest;
-use TransPerfect\GlobalLink\Request\SaveSubmissionRequest;
-use TransPerfect\GlobalLink\Request\UploadSourceFileRequest;
-use TransPerfect\GlobalLink\Response\CreateSubmissionResponse;
-use TransPerfect\GlobalLink\Response\SaveSubmissionResponse;
-use TransPerfect\GlobalLink\Response\UploadSourceFileResponse;
+use GlobalLink\RestClient\Model\BatchInfo;
+use GlobalLink\RestClient\Model\SubmissionInfo;
+use GlobalLink\RestClient\Model\Target;
+use GlobalLink\RestClient\Model\TechTracking;
+use GlobalLink\RestClient\Request\CreateSubmissionRequest;
+use GlobalLink\RestClient\Request\GetTargetsRequest;
+use GlobalLink\RestClient\Request\SaveSubmissionRequest;
+use GlobalLink\RestClient\Request\UploadSourceFileRequest;
+use GlobalLink\RestClient\Response\CreateSubmissionResponse;
+use GlobalLink\RestClient\Response\SaveSubmissionResponse;
+use GlobalLink\RestClient\Response\UploadSourceFileResponse;
 
 /**
  * End-to-end workflow integration test.
@@ -37,7 +37,7 @@ use TransPerfect\GlobalLink\Response\UploadSourceFileResponse;
 class WorkflowIntegrationTest extends IntegrationTestCase
 {
     private const SDK_NAME = 'GlobalLink PHP SDK';
-    private const SDK_VERSION = '1.0.0';
+    private const SDK_VERSION = '2.0.0';
 
     /**
      * Step 1: Create a new submission.
@@ -327,7 +327,7 @@ XML;
             $this->debug('Failed to deliver: ' . count($response->failedToDeliverTargets));
 
             $this->debug('=== WORKFLOW TEST COMPLETE ===');
-        } catch (\TransPerfect\GlobalLink\Exception\ApiException $e) {
+        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
             // Target may already be delivered
             $this->debug('Delivery confirmation skipped: ' . $e->getMessage());
             $this->debug('=== WORKFLOW TEST COMPLETE (with skip) ===');

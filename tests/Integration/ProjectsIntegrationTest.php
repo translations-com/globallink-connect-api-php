@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Tests\Integration;
+namespace GlobalLink\RestClient\Tests\Integration;
 
-use TransPerfect\GlobalLink\Model\CustomAttribute;
-use TransPerfect\GlobalLink\Model\FileFormatProfile;
-use TransPerfect\GlobalLink\Model\MslaLevel;
-use TransPerfect\GlobalLink\Model\Project;
-use TransPerfect\GlobalLink\Model\ProjectInfo;
-use TransPerfect\GlobalLink\Model\ProjectLanguageDirection;
-use TransPerfect\GlobalLink\Model\User;
-use TransPerfect\GlobalLink\Model\WorkflowDefinition;
-use TransPerfect\GlobalLink\Response\HealthcheckResponse;
-use TransPerfect\GlobalLink\Response\InstanceInfoResponse;
+use GlobalLink\RestClient\Model\CustomAttribute;
+use GlobalLink\RestClient\Model\FileFormatProfile;
+use GlobalLink\RestClient\Model\MslaLevel;
+use GlobalLink\RestClient\Model\Project;
+use GlobalLink\RestClient\Model\ProjectInfo;
+use GlobalLink\RestClient\Model\ProjectLanguageDirection;
+use GlobalLink\RestClient\Model\User;
+use GlobalLink\RestClient\Model\WorkflowDefinition;
+use GlobalLink\RestClient\Response\HealthcheckResponse;
+use GlobalLink\RestClient\Response\InstanceInfoResponse;
 
 /**
  * Integration tests for project-related operations.

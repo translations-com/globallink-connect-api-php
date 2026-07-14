@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Request;
+namespace GlobalLink\RestClient\Request;
 
-use TransPerfect\GlobalLink\Exception\InvalidArgumentException;
-use TransPerfect\GlobalLink\Model\BatchInfo;
-use TransPerfect\GlobalLink\Model\TechTracking;
+use GlobalLink\RestClient\Exception\InvalidArgumentException;
+use GlobalLink\RestClient\Model\BatchInfo;
+use GlobalLink\RestClient\Model\TechTracking;
 
 /**
  * Request for creating a new submission.

@@ -21,9 +21,9 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-use TransPerfect\GlobalLink\GlobalLinkClient;
-use TransPerfect\GlobalLink\Request\ListProjectsRequest;
-use TransPerfect\GlobalLink\Exception\GlobalLinkException;
+use GlobalLink\RestClient\GlobalLinkClient;
+use GlobalLink\RestClient\Request\ListProjectsRequest;
+use GlobalLink\RestClient\Exception\GlobalLinkException;
 
 // Load environment variables (in production, use a proper env loader)
 $apiUrl = getenv('GLE_API_URL') ?: '';

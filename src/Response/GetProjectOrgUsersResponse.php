@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Response;
+namespace GlobalLink\RestClient\Response;
 
-use TransPerfect\GlobalLink\Model\User;
+use GlobalLink\RestClient\Model\User;
 
 /**
  * Response from getting project organization users.

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TransPerfect\GlobalLink\Response;
+namespace GlobalLink\RestClient\Response;
 
-use TransPerfect\GlobalLink\Model\SubmissionInfo;
+use GlobalLink\RestClient\Model\SubmissionInfo;
 
 /**
  * Response from getting submissions.
