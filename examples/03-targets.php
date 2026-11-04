@@ -50,12 +50,12 @@ try {
     echo "Connected successfully!\n\n";
 
     // Get the first project
-    $projects = $client->getProjects();
-    if (empty($projects)) {
+    $projectsResponse = $client->getProjects();
+    if (!$projectsResponse->isSuccess() || empty($projectsResponse->projects)) {
         die("Error: No projects available.\n");
     }
 
-    $project = $projects[0];
+    $project = $projectsResponse->projects[0];
     echo "Using project: {$project->name} (ID: {$project->projectId})\n\n";
 
     // === Poll for processed targets ===
@@ -67,7 +67,11 @@ try {
         pageSize: 20
     );
 
-    $targets = $client->getTargets($request);
+    $targetsResponse = $client->getTargets($request);
+    if (!$targetsResponse->isSuccess()) {
+        die("Failed to get targets: {$targetsResponse->errorMessage}\n");
+    }
+    $targets = $targetsResponse->targets;
 
     if (empty($targets)) {
         echo "No processed targets found.\n";
@@ -97,12 +101,15 @@ try {
             $firstTarget = $targets[0];
             echo "=== Downloading Target {$firstTarget->targetId} ===\n";
 
-            try {
-                $content = $client->downloadTargetDeliverable(
-                    $firstTarget->submissionId,
-                    $firstTarget->targetId
-                );
+            $download = $client->downloadTargetDeliverable(
+                $firstTarget->submissionId,
+                $firstTarget->targetId
+            );
 
+            if (!$download->isSuccess()) {
+                echo "Download/confirm failed: {$download->errorMessage}\n";
+            } else {
+                $content = $download->content;
                 $filename = "downloaded_{$firstTarget->targetLanguage}_{$firstTarget->documentName}";
                 // In production, you would save this to a file:
                 // file_put_contents($filename, $content);
@@ -117,11 +124,12 @@ try {
                     [$firstTarget->targetId]
                 );
 
-                echo "Successfully delivered: " . count($confirmResponse->successfullyDeliveredTargets) . "\n";
-                echo "Failed to deliver: " . count($confirmResponse->failedToDeliverTargets) . "\n";
-
-            } catch (GlobalLinkException $e) {
-                echo "Download/confirm failed: " . $e->getMessage() . "\n";
+                if ($confirmResponse->isSuccess()) {
+                    echo "Successfully delivered: " . count($confirmResponse->successfullyDeliveredTargets) . "\n";
+                    echo "Failed to deliver: " . count($confirmResponse->failedToDeliverTargets) . "\n";
+                } else {
+                    echo "Confirm failed: {$confirmResponse->errorMessage}\n";
+                }
             }
         }
     }
@@ -143,7 +151,12 @@ try {
             pageNumber: $pageNumber
         );
 
-        $pageTargets = $client->getTargets($paginatedRequest);
+        $pageTargetsResponse = $client->getTargets($paginatedRequest);
+        if (!$pageTargetsResponse->isSuccess()) {
+            echo "Page {$pageNumber}: error {$pageTargetsResponse->errorMessage}\n";
+            break;
+        }
+        $pageTargets = $pageTargetsResponse->targets;
         $pageCount = count($pageTargets);
         $totalFetched += $pageCount;
 
@@ -166,8 +179,12 @@ try {
         pageSize: 20 // Use minimum valid page size
     );
 
-    $cancelledTargets = $client->getTargets($cancelledRequest);
-    echo "Found " . count($cancelledTargets) . " cancelled target(s)\n";
+    $cancelledResponse = $client->getTargets($cancelledRequest);
+    if (!$cancelledResponse->isSuccess()) {
+        echo "Failed to load cancelled targets: {$cancelledResponse->errorMessage}\n";
+    } else {
+        echo "Found " . count($cancelledResponse->targets) . " cancelled target(s)\n";
+    }
 
     // === Download all deliverables for a submission ===
     if (!empty($targets)) {
@@ -194,11 +211,14 @@ try {
         // Example bulk download (commented out to avoid large downloads):
         /*
         echo "Downloading all deliverables...\n";
-        $zipContent = $client->downloadSubmissionDeliverables($submissionId, includeManifest: true);
+        $zipDownload = $client->downloadSubmissionDeliverables($submissionId, includeManifest: true);
+        $zipContent = $zipDownload->content;
 
         // Note: The API may return direct ZIP content or a JSON response
         // with a downloadId for async downloads (for large submissions)
-        if (str_starts_with($zipContent, 'PK')) {
+        if (!$zipDownload->isSuccess()) {
+            echo "Bulk download failed: {$zipDownload->errorMessage}\n";
+        } elseif (str_starts_with($zipContent, 'PK')) {
             // Direct ZIP content
             file_put_contents("deliverables_{$submissionId}.zip", $zipContent);
             echo "Saved to deliverables_{$submissionId}.zip\n";

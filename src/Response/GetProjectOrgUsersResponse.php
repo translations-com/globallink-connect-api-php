@@ -9,36 +9,79 @@ use GlobalLink\RestClient\Model\User;
 /**
  * Response from getting project organization users.
  */
-readonly class GetProjectOrgUsersResponse
+readonly class GetProjectOrgUsersResponse extends ApiResponse
 {
     /**
      * @param list<User> $users
+     * @param array<string, list<string>> $headers
      */
     public function __construct(
         public array $users = [],
+        int $responseCode = 200,
+        ?string $errorMessage = null,
+        array $headers = [],
+        string $responseBody = '',
     ) {
+        parent::__construct($responseCode, $errorMessage, $headers, $responseBody);
     }
 
     /**
-     * Create a response from a JSON string.
-     *
-     * @return list<User>
+     * @param array<string, list<string>> $headers
      */
-    public static function fromJson(string $json): array
-    {
-        if (!json_validate($json)) {
-            throw new \InvalidArgumentException('Invalid JSON provided');
+    public static function fromJson(
+        string $json,
+        int $responseCode = 200,
+        array $headers = [],
+    ): self {
+        $errorMessage = self::extractErrorMessage($json, $responseCode);
+        if ($errorMessage !== null) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: $errorMessage,
+                headers: $headers,
+                responseBody: $json,
+            );
+        }
+
+        $unusable = self::unusableSuccessBodyMessage($json, allowEmpty: true);
+        if ($unusable !== null) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: $unusable,
+                headers: $headers,
+                responseBody: $json,
+            );
+        }
+
+        if (trim($json) === '') {
+            return new self(
+                responseCode: $responseCode,
+                headers: $headers,
+                responseBody: $json,
+            );
         }
 
         $data = json_decode($json, true);
         $users = [];
 
-        if (is_array($data)) {
-            foreach ($data as $user) {
-                $users[] = User::fromArray($user);
-            }
+        if (!is_array($data) || self::hasNonArrayItem($data)) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: 'Unexpected JSON response',
+                headers: $headers,
+                responseBody: $json,
+            );
         }
 
-        return $users;
+        foreach ($data as $user) {
+            $users[] = User::fromArray($user);
+        }
+
+        return new self(
+            users: $users,
+            responseCode: $responseCode,
+            headers: $headers,
+            responseBody: $json,
+        );
     }
 }

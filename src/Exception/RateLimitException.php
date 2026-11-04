@@ -15,9 +15,10 @@ class RateLimitException extends ApiException
         private readonly ?int $rateLimitLimit = null,
         private readonly ?int $rateLimitRemaining = null,
         private readonly ?int $rateLimitReset = null,
+        string $responseBody = '',
         ?\Throwable $previous = null,
     ) {
-        parent::__construct($message, 429, '', $previous);
+        parent::__construct($message, 429, $responseBody, $previous);
     }
 
     /**

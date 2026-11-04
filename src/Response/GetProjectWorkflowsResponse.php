@@ -9,36 +9,79 @@ use GlobalLink\RestClient\Model\WorkflowDefinition;
 /**
  * Response from getting project workflows.
  */
-readonly class GetProjectWorkflowsResponse
+readonly class GetProjectWorkflowsResponse extends ApiResponse
 {
     /**
      * @param list<WorkflowDefinition> $workflows
+     * @param array<string, list<string>> $headers
      */
     public function __construct(
         public array $workflows = [],
+        int $responseCode = 200,
+        ?string $errorMessage = null,
+        array $headers = [],
+        string $responseBody = '',
     ) {
+        parent::__construct($responseCode, $errorMessage, $headers, $responseBody);
     }
 
     /**
-     * Create a response from a JSON string.
-     *
-     * @return list<WorkflowDefinition>
+     * @param array<string, list<string>> $headers
      */
-    public static function fromJson(string $json): array
-    {
-        if (!json_validate($json)) {
-            throw new \InvalidArgumentException('Invalid JSON provided');
+    public static function fromJson(
+        string $json,
+        int $responseCode = 200,
+        array $headers = [],
+    ): self {
+        $errorMessage = self::extractErrorMessage($json, $responseCode);
+        if ($errorMessage !== null) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: $errorMessage,
+                headers: $headers,
+                responseBody: $json,
+            );
+        }
+
+        $unusable = self::unusableSuccessBodyMessage($json, allowEmpty: true);
+        if ($unusable !== null) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: $unusable,
+                headers: $headers,
+                responseBody: $json,
+            );
+        }
+
+        if (trim($json) === '') {
+            return new self(
+                responseCode: $responseCode,
+                headers: $headers,
+                responseBody: $json,
+            );
         }
 
         $data = json_decode($json, true);
         $workflows = [];
 
-        if (is_array($data)) {
-            foreach ($data as $workflow) {
-                $workflows[] = WorkflowDefinition::fromArray($workflow);
-            }
+        if (!is_array($data) || self::hasNonArrayItem($data)) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: 'Unexpected JSON response',
+                headers: $headers,
+                responseBody: $json,
+            );
         }
 
-        return $workflows;
+        foreach ($data as $workflow) {
+            $workflows[] = WorkflowDefinition::fromArray($workflow);
+        }
+
+        return new self(
+            workflows: $workflows,
+            responseCode: $responseCode,
+            headers: $headers,
+            responseBody: $json,
+        );
     }
 }

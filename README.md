@@ -112,14 +112,21 @@ $client = new GlobalLinkClient(
     getenv('GLE_OAUTH_SECRET')
 );
 
-// List projects
-$projects = $client->getProjects();
-foreach ($projects as $project) {
+// List projects — always check isSuccess() before using domain data
+$projectsResponse = $client->getProjects();
+if (!$projectsResponse->isSuccess()) {
+    throw new RuntimeException($projectsResponse->errorMessage ?? 'Failed to list projects');
+}
+foreach ($projectsResponse->projects as $project) {
     echo "Project: {$project->name} ({$project->shortCode})\n";
 }
 
 // Get project details
-$projectInfo = $client->getProject($projects[0]->projectId);
+$projectResponse = $client->getProject($projectsResponse->projects[0]->projectId);
+if (!$projectResponse->isSuccess()) {
+    throw new RuntimeException($projectResponse->errorMessage ?? 'Failed to get project');
+}
+$projectInfo = $projectResponse->project;
 
 // Create a submission
 $batch = new BatchInfo(
@@ -141,6 +148,9 @@ $request = new CreateSubmissionRequest(
 );
 
 $createResponse = $client->createSubmission($request);
+if (!$createResponse->isSuccess()) {
+    throw new RuntimeException($createResponse->errorMessage ?? 'Failed to create submission');
+}
 $submissionId = $createResponse->submissionId;
 echo "Created submission: {$submissionId}\n";
 
@@ -151,22 +161,34 @@ $uploadRequest = new UploadSourceFileRequest(
     fileFormatName: 'Default XML'
 );
 
-$client->uploadSubmissionSourceFile($submissionId, $uploadRequest);
+$uploadResponse = $client->uploadSubmissionSourceFile($submissionId, $uploadRequest);
+if (!$uploadResponse->isSuccess()) {
+    throw new RuntimeException($uploadResponse->errorMessage ?? 'Upload failed');
+}
 
 // Save and start the submission
 $saveRequest = new SaveSubmissionRequest(autoStart: true);
-$client->saveSubmission($submissionId, $saveRequest);
+$saveResponse = $client->saveSubmission($submissionId, $saveRequest);
+if (!$saveResponse->isSuccess()) {
+    throw new RuntimeException($saveResponse->errorMessage ?? 'Save failed');
+}
 
 // Poll for processed targets
 $targetsRequest = new GetTargetsRequest('PROCESSED', submissionIds: [$submissionId]);
-$targets = $client->getTargets($targetsRequest);
+$targetsResponse = $client->getTargets($targetsRequest);
+if (!$targetsResponse->isSuccess()) {
+    throw new RuntimeException($targetsResponse->errorMessage ?? 'Failed to get targets');
+}
 
-foreach ($targets as $target) {
+foreach ($targetsResponse->targets as $target) {
     echo "Target {$target->targetId} ({$target->targetLanguage}): {$target->status}\n";
     
     // Download the translated file
-    $content = $client->downloadTargetDeliverable($submissionId, $target->targetId);
-    file_put_contents("translated_{$target->targetLanguage}.xml", $content);
+    $download = $client->downloadTargetDeliverable($submissionId, $target->targetId);
+    if (!$download->isSuccess()) {
+        throw new RuntimeException($download->errorMessage ?? 'Download failed');
+    }
+    file_put_contents("translated_{$target->targetLanguage}.xml", $download->content);
     
     // Confirm delivery
     $client->confirmTargetDelivery($submissionId, [$target->targetId]);
@@ -179,10 +201,15 @@ foreach ($targets as $target) {
 
 The client automatically handles OAuth2 authentication and token refresh. Tokens are refreshed automatically when they expire.
 
+By default, a failed initial login does **not** throw — the client is constructed without a token. Check `isTokenExpired()` or handle the error Response on the next API call. Pass `throwOnAuthenticationFailure: true` if you want construction to throw instead (`AuthenticationException`, or `RateLimitException` when the login is rate limited):
+
 ```php
-// Check if token is expired
+$client = new GlobalLinkClient(
+    $url, $user, $pass, $clientId, $clientSecret,
+    // throwOnAuthenticationFailure: true, // optional: throw on failed initial login
+);
 if ($client->isTokenExpired()) {
-    echo "Token needs refresh\n";
+    // Initial login failed; the next API call will retry auth and return an error Response
 }
 ```
 
@@ -202,9 +229,11 @@ if ($health->healthy) {
 
 ```php
 $info = $client->getInstanceInfo();
-echo "Version: {$info->version}\n";
-echo "Max upload size: {$info->maxUploadSize}\n";
-echo "Max documents per submission: {$info->maxDocumentsBeforeNewSubmission}\n";
+if ($info->isSuccess()) {
+    echo "Version: {$info->version}\n";
+    echo "Max upload size: {$info->maxUploadSize}\n";
+    echo "Max documents per submission: {$info->maxDocumentsBeforeNewSubmission}\n";
+}
 ```
 
 ### Projects
@@ -213,7 +242,10 @@ echo "Max documents per submission: {$info->maxDocumentsBeforeNewSubmission}\n";
 use GlobalLink\RestClient\Request\ListProjectsRequest;
 
 // List all projects
-$projects = $client->getProjects();
+$projectsResponse = $client->getProjects();
+if ($projectsResponse->isSuccess()) {
+    $projects = $projectsResponse->projects;
+}
 
 // List projects with filters
 $request = new ListProjectsRequest(
@@ -221,20 +253,20 @@ $request = new ListProjectsRequest(
     pageSize: 50,
     pageNumber: 0
 );
-$projects = $client->getProjects($request);
+$projects = $client->getProjects($request)->projects;
 
 // Get project details
-$project = $client->getProject($projectId);
+$project = $client->getProject($projectId)->project;
 
 // Get project configuration
-$fileFormats = $client->getProjectFileFormats($projectId);
-$workflows = $client->getProjectWorkflows($projectId);
-$customAttributes = $client->getProjectCustomAttributes($projectId);
-$languageDirections = $client->getProjectLanguageDirections($projectId);
-$users = $client->getProjectOrgUsers($projectId);
+$fileFormats = $client->getProjectFileFormats($projectId)->fileFormatProfiles;
+$workflows = $client->getProjectWorkflows($projectId)->workflows;
+$customAttributes = $client->getProjectCustomAttributes($projectId)->customAttributes;
+$languageDirections = $client->getProjectLanguageDirections($projectId)->languageDirections;
+$users = $client->getProjectOrgUsers($projectId)->users;
 
 // Get MSLA (priority) levels
-$mslaLevels = $client->getProjectMslaLevels($projectId);
+$mslaLevels = $client->getProjectMslaLevels($projectId)->mslaLevels;
 foreach ($mslaLevels as $level) {
     echo "{$level->name} [{$level->priority}]\n";
 }
@@ -252,7 +284,7 @@ use GlobalLink\RestClient\Request\CancelSubmissionRequest;
 $response = $client->createSubmission($request);
 
 // Get submissions
-$submissions = $client->getSubmissions();
+$submissions = $client->getSubmissions()->submissions;
 
 // Get submissions with filters
 $request = new GetSubmissionsRequest(
@@ -261,19 +293,19 @@ $request = new GetSubmissionsRequest(
     pageSize: 50,
     pageNumber: 0
 );
-$submissions = $client->getSubmissions($request);
+$submissions = $client->getSubmissions($request)->submissions;
 
 // Get single submission
-$submission = $client->getSubmission($submissionId);
+$submission = $client->getSubmission($submissionId)->submission;
 
 // Get submission wordcount (with leverage breakdown)
-$wordcount = $client->getSubmissionWordcount($submissionId);
+$wordcount = $client->getSubmissionWordcount($submissionId)->wordcount;
 echo "Total words: {$wordcount->totalWordCount}\n";
 echo "100% match: {$wordcount->match100}\n";
 echo "No match: {$wordcount->noMatch}\n";
 
 // Update submission (JSON Patch)
-$submission = $client->patchSubmission($submissionId, 'replace', '/name', 'New Name');
+$submission = $client->patchSubmission($submissionId, 'replace', '/name', 'New Name')->submission;
 
 // Upload source file
 $uploadRequest = new UploadSourceFileRequest(
@@ -330,30 +362,32 @@ $request = new GetTargetsRequest(
     pageSize: 50,
     pageNumber: 0
 );
-$targets = $client->getTargets($request);
+$targets = $client->getTargets($request)->targets;
 
 // Get cancelled targets
 $cancelledRequest = new GetTargetsRequest(
     targetStatus: 'CANCELLED',
     projectIds: [$projectId]
 );
-$cancelledTargets = $client->getTargets($cancelledRequest);
+$cancelledTargets = $client->getTargets($cancelledRequest)->targets;
 
 // Download single target deliverable
-$content = $client->downloadTargetDeliverable($submissionId, $targetId);
-file_put_contents('translated.xml', $content);
+$download = $client->downloadTargetDeliverable($submissionId, $targetId);
+if ($download->isSuccess()) {
+    file_put_contents('translated.xml', $download->content);
+}
 
 // Download all deliverables (ZIP)
-$zipContent = $client->downloadSubmissionDeliverables($submissionId, includeManifest: true);
+$zipContent = $client->downloadSubmissionDeliverables($submissionId, includeManifest: true)->content;
 
 // Download only deliverables (no source/reference files)
-$zipContent = $client->downloadSubmissionOnlyDeliverables($submissionId);
+$zipContent = $client->downloadSubmissionOnlyDeliverables($submissionId)->content;
 
 // Download by target languages
-$zipContent = $client->downloadSubmissionDeliverablesByLanguages($submissionId, ['de-DE', 'fr-FR']);
+$zipContent = $client->downloadSubmissionDeliverablesByLanguages($submissionId, ['de-DE', 'fr-FR'])->content;
 
 // Download specific targets by ID
-$zipContent = $client->downloadSubmissionDeliverablesByTargetIds($submissionId, [$targetId1, $targetId2]);
+$zipContent = $client->downloadSubmissionDeliverablesByTargetIds($submissionId, [$targetId1, $targetId2])->content;
 
 // Confirm delivery (marks targets as delivered)
 $response = $client->confirmTargetDelivery($submissionId, [$targetId1, $targetId2]);
@@ -363,29 +397,34 @@ echo "Failed: " . count($response->failedToDeliverTargets) . "\n";
 
 ## Error Handling
 
-The SDK provides a typed exception hierarchy:
+API methods do **not** throw on HTTP 4xx/5xx, redirects, or transport failures. They return a Response with:
+
+- `isSuccess()` / `isError()`
+- `responseCode` (use `0` for transport/network failures)
+- `errorMessage`
+- `headers` (including `Retry-After` on 429)
+- `responseBody`
+
+Only a usable **2xx** body is success. An empty list on a 404/500 is still an error — check `isSuccess()` before treating domain fields as data.
+
+Constructor login does not throw by default (`throwOnAuthenticationFailure: false`). Pass `true` to throw on failed initial login. Invalid client arguments still throw `InvalidArgumentException`.
 
 ```php
-use GlobalLink\RestClient\Exception\GlobalLinkException;
-use GlobalLink\RestClient\Exception\ApiException;
-use GlobalLink\RestClient\Exception\AuthenticationException;
-use GlobalLink\RestClient\Exception\RateLimitException;
-use GlobalLink\RestClient\Exception\InvalidArgumentException;
+$response = $client->getProjects();
 
-try {
-    $projects = $client->getProjects();
-} catch (AuthenticationException $e) {
-    // Handle authentication errors (401/403)
-    echo "Authentication failed: " . $e->getMessage();
-} catch (RateLimitException $e) {
-    // Handle rate limiting (429)
-    echo "Rate limited. Retry after: " . $e->getRetryAfter() . " seconds";
-} catch (ApiException $e) {
-    // Handle other API errors (4xx/5xx)
-    echo "API error ({$e->getStatusCode()}): " . $e->getMessage();
-} catch (GlobalLinkException $e) {
-    // Handle all SDK errors
-    echo "Error: " . $e->getMessage();
+if ($response->isError()) {
+    echo "API error ({$response->responseCode}): {$response->errorMessage}\n";
+
+    // Rate limiting (429): read Retry-After from response headers
+    if ($response->responseCode === 429) {
+        $retryAfter = $response->headers['Retry-After'][0] ?? null;
+        echo "Rate limited. Retry after: {$retryAfter} seconds\n";
+    }
+    return;
+}
+
+foreach ($response->projects as $project) {
+    echo $project->name . "\n";
 }
 ```
 
@@ -397,6 +436,9 @@ $rateLimitInfo = $client->getRateLimitInfo();
 if ($rateLimitInfo !== null) {
     echo "Requests remaining: {$rateLimitInfo['remaining']}/{$rateLimitInfo['limit']}\n";
 }
+
+// On a 429 Response, also use the Retry-After header:
+// $response->headers['Retry-After'][0] ?? null
 ```
 
 ## Advanced Usage
@@ -515,7 +557,11 @@ do {
         pageNumber: $pageNumber
     );
     
-    $targets = $client->getTargets($request);
+    $targetsResponse = $client->getTargets($request);
+    if (!$targetsResponse->isSuccess()) {
+        break;
+    }
+    $targets = $targetsResponse->targets;
     $allTargets = array_merge($allTargets, $targets);
     $pageNumber++;
 } while (count($targets) === 50);
@@ -563,7 +609,10 @@ GLE_FILE_FORMAT_NAME=XML
 GLE_SOURCE_LANGUAGE=en-US
 GLE_TARGET_LANGUAGES=de-DE,ja-JP
 GLE_TEST_FILE_NAME=test.xml
+GLE_TEST_PROCESSING_TIMEOUT=180
 ```
+
+> **Note:** Integration tests create real submissions in the test project, download their deliverables and confirm delivery. Use a sandbox project whose first workflow completes automatically (for example a pseudo-translation workflow); the tests wait up to `GLE_TEST_PROCESSING_TIMEOUT` seconds for targets to reach `PROCESSED`.
 
 3. Run integration tests:
    ```bash

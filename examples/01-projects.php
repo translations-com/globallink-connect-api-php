@@ -61,13 +61,20 @@ try {
     // Get instance info
     echo "=== Instance Info ===\n";
     $instanceInfo = $client->getInstanceInfo();
+    if (!$instanceInfo->isSuccess()) {
+        die("Failed to get instance info: {$instanceInfo->errorMessage}\n");
+    }
     echo "Version: {$instanceInfo->version}\n";
     echo "Max upload size: " . number_format($instanceInfo->maxUploadSize) . " bytes\n";
     echo "Max documents per submission: {$instanceInfo->maxDocumentsBeforeNewSubmission}\n\n";
 
     // List all projects
     echo "=== Projects ===\n";
-    $projects = $client->getProjects();
+    $projectsResponse = $client->getProjects();
+    if (!$projectsResponse->isSuccess()) {
+        die("Failed to list projects: {$projectsResponse->errorMessage}\n");
+    }
+    $projects = $projectsResponse->projects;
     echo "Found " . count($projects) . " project(s)\n\n";
 
     foreach ($projects as $project) {
@@ -84,13 +91,17 @@ try {
         $projectId = $projects[0]->projectId;
         echo "=== Project Details (ID: {$projectId}) ===\n";
 
-        $projectInfo = $client->getProject($projectId);
+        $projectResponse = $client->getProject($projectId);
+        if (!$projectResponse->isSuccess() || $projectResponse->project === null) {
+            die("Failed to get project: {$projectResponse->errorMessage}\n");
+        }
+        $projectInfo = $projectResponse->project;
         echo "Name: {$projectInfo->name}\n";
         echo "Short Code: {$projectInfo->shortCode}\n\n";
 
         // File formats
         echo "File Formats:\n";
-        $fileFormats = $client->getProjectFileFormats($projectId);
+        $fileFormats = $client->getProjectFileFormats($projectId)->fileFormatProfiles;
         foreach ($fileFormats as $format) {
             $default = $format->default ? ' (default)' : '';
             echo "  - {$format->name}{$default}\n";
@@ -99,7 +110,7 @@ try {
 
         // Workflows
         echo "Workflows:\n";
-        $workflows = $client->getProjectWorkflows($projectId);
+        $workflows = $client->getProjectWorkflows($projectId)->workflows;
         foreach ($workflows as $workflow) {
             $default = $workflow->default ? ' (default)' : '';
             echo "  - {$workflow->name}{$default}\n";
@@ -108,7 +119,7 @@ try {
 
         // Language directions
         echo "Language Directions:\n";
-        $directions = $client->getProjectLanguageDirections($projectId);
+        $directions = $client->getProjectLanguageDirections($projectId)->languageDirections;
         foreach ($directions as $direction) {
             echo "  - {$direction->sourceLanguageDisplayName} -> {$direction->targetLanguageDisplayName}\n";
         }
@@ -116,7 +127,7 @@ try {
 
         // Custom attributes
         echo "Custom Attributes:\n";
-        $attributes = $client->getProjectCustomAttributes($projectId);
+        $attributes = $client->getProjectCustomAttributes($projectId)->customAttributes;
         if (empty($attributes)) {
             echo "  (none)\n";
         } else {
@@ -129,8 +140,11 @@ try {
 
         // Organization users
         echo "Organization Users:\n";
-        $users = $client->getProjectOrgUsers($projectId);
-        if (empty($users)) {
+        $usersResponse = $client->getProjectOrgUsers($projectId);
+        $users = $usersResponse->users;
+        if (!$usersResponse->isSuccess()) {
+            echo "  Failed to load users: {$usersResponse->errorMessage}\n";
+        } elseif (empty($users)) {
             echo "  (none)\n";
         } else {
             $displayCount = min(5, count($users));
@@ -147,7 +161,7 @@ try {
 
         // MSLA (priority) levels
         echo "MSLA Levels (Priorities):\n";
-        $mslaLevels = $client->getProjectMslaLevels($projectId);
+        $mslaLevels = $client->getProjectMslaLevels($projectId)->mslaLevels;
         if (empty($mslaLevels)) {
             echo "  (none configured)\n";
         } else {
@@ -164,7 +178,7 @@ try {
     // Note: pageSize must be between 20 and 200 (API requirement)
     echo "=== Filtered Projects ===\n";
     $request = new ListProjectsRequest(pageSize: 20);
-    $filteredProjects = $client->getProjects($request);
+    $filteredProjects = $client->getProjects($request)->projects;
     echo "Retrieved " . count($filteredProjects) . " project(s) with page size 20\n";
 
 } catch (GlobalLinkException $e) {

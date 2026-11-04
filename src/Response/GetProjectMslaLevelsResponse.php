@@ -9,26 +9,79 @@ use GlobalLink\RestClient\Model\MslaLevel;
 /**
  * Response for GET /projects/{project-id}/mslalevels.
  */
-final class GetProjectMslaLevelsResponse
+readonly class GetProjectMslaLevelsResponse extends ApiResponse
 {
     /**
-     * Parse JSON response into MslaLevel list.
-     *
-     * @return list<MslaLevel>
-     * @throws \InvalidArgumentException If JSON is invalid
+     * @param list<MslaLevel> $mslaLevels
+     * @param array<string, list<string>> $headers
      */
-    public static function fromJson(string $json): array
-    {
-        if (!json_validate($json)) {
-            throw new \InvalidArgumentException('Invalid JSON provided');
+    public function __construct(
+        public array $mslaLevels = [],
+        int $responseCode = 200,
+        ?string $errorMessage = null,
+        array $headers = [],
+        string $responseBody = '',
+    ) {
+        parent::__construct($responseCode, $errorMessage, $headers, $responseBody);
+    }
+
+    /**
+     * @param array<string, list<string>> $headers
+     */
+    public static function fromJson(
+        string $json,
+        int $responseCode = 200,
+        array $headers = [],
+    ): self {
+        $errorMessage = self::extractErrorMessage($json, $responseCode);
+        if ($errorMessage !== null) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: $errorMessage,
+                headers: $headers,
+                responseBody: $json,
+            );
+        }
+
+        $unusable = self::unusableSuccessBodyMessage($json, allowEmpty: true);
+        if ($unusable !== null) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: $unusable,
+                headers: $headers,
+                responseBody: $json,
+            );
+        }
+
+        if (trim($json) === '') {
+            return new self(
+                responseCode: $responseCode,
+                headers: $headers,
+                responseBody: $json,
+            );
+        }
+
+        $data = json_decode($json, true);
+        if (!is_array($data) || self::hasNonArrayItem($data)) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: 'Unexpected JSON response',
+                headers: $headers,
+                responseBody: $json,
+            );
         }
 
         /** @var list<array<string, mixed>> $data */
-        $data = json_decode($json, true) ?? [];
-
-        return array_map(
+        $mslaLevels = array_map(
             fn(array $item) => MslaLevel::fromArray($item),
             $data
+        );
+
+        return new self(
+            mslaLevels: $mslaLevels,
+            responseCode: $responseCode,
+            headers: $headers,
+            responseBody: $json,
         );
     }
 }

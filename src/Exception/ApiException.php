@@ -28,7 +28,6 @@ class ApiException extends GlobalLinkException
 
     /**
      * Get the response body from the failed request.
-     * Note: May be empty or sanitized to avoid leaking sensitive data.
      */
     public function getResponseBody(): string
     {

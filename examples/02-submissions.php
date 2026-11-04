@@ -54,16 +54,20 @@ try {
     echo "Connected successfully!\n\n";
 
     // Get the first project for creating a submission
-    $projects = $client->getProjects();
-    if (empty($projects)) {
+    $projectsResponse = $client->getProjects();
+    if (!$projectsResponse->isSuccess() || empty($projectsResponse->projects)) {
         die("Error: No projects available.\n");
     }
 
-    $project = $projects[0];
+    $project = $projectsResponse->projects[0];
     echo "Using project: {$project->name} (ID: {$project->projectId})\n\n";
 
     // Get project details for language directions
-    $projectInfo = $client->getProject($project->projectId);
+    $projectResponse = $client->getProject($project->projectId);
+    if (!$projectResponse->isSuccess() || $projectResponse->project === null) {
+        die("Error: Failed to get project details.\n");
+    }
+    $projectInfo = $projectResponse->project;
     $languageDirections = $projectInfo->projectLanguageDirections;
 
     if (empty($languageDirections)) {
@@ -71,7 +75,7 @@ try {
     }
 
     // Get file formats
-    $fileFormats = $client->getProjectFileFormats($project->projectId);
+    $fileFormats = $client->getProjectFileFormats($project->projectId)->fileFormatProfiles;
     $defaultFormat = null;
     foreach ($fileFormats as $format) {
         if ($format->default) {
@@ -89,7 +93,7 @@ try {
         pageSize: 20, // Minimum allowed: 20, Maximum: 200, Default: 50
         pageNumber: 0
     );
-    $submissions = $client->getSubmissions($submissionsRequest);
+    $submissions = $client->getSubmissions($submissionsRequest)->submissions;
 
     if (empty($submissions)) {
         echo "No submissions found.\n";
@@ -140,6 +144,9 @@ try {
     echo "Target languages: " . implode(', ', $targetLanguages) . "\n";
 
     $createResponse = $client->createSubmission($createRequest);
+    if (!$createResponse->isSuccess()) {
+        die("Create failed: {$createResponse->errorMessage}\n");
+    }
     $submissionId = $createResponse->submissionId;
     echo "Created submission ID: {$submissionId}\n\n";
 
@@ -182,6 +189,9 @@ XML;
     }
 
     $uploadResponse = $client->uploadSubmissionSourceFile($submissionId, $uploadRequest);
+    if (!$uploadResponse->isSuccess()) {
+        die("Upload failed: {$uploadResponse->errorMessage}\n");
+    }
     echo "Uploaded file. Process ID: {$uploadResponse->processId}\n";
     echo "Document IDs: " . count($uploadResponse->documentIds) . "\n\n";
 
@@ -208,11 +218,18 @@ TXT;
     );
 
     $refUploadResponse = $client->uploadSubmissionReferenceFile($submissionId, $refUploadRequest);
+    if (!$refUploadResponse->isSuccess()) {
+        die("Reference upload failed: {$refUploadResponse->errorMessage}\n");
+    }
     echo "Uploaded reference file. Process ID: {$refUploadResponse->processId}\n\n";
 
     // === Get submission details ===
     echo "=== Submission Details ===\n";
-    $submission = $client->getSubmission($submissionId);
+    $submissionResponse = $client->getSubmission($submissionId);
+    if (!$submissionResponse->isSuccess() || $submissionResponse->submission === null) {
+        die("Failed to get submission: {$submissionResponse->errorMessage}\n");
+    }
+    $submission = $submissionResponse->submission;
     echo "Name: {$submission->name}\n";
     echo "Status: {$submission->status}\n";
     echo "File count: {$submission->fileCount}\n";
@@ -226,6 +243,9 @@ TXT;
     echo "=== Saving Submission ===\n";
     $saveRequest = new SaveSubmissionRequest(autoStart: false);
     $saveResponse = $client->saveSubmission($submissionId, $saveRequest);
+    if (!$saveResponse->isSuccess()) {
+        die("Save failed: {$saveResponse->errorMessage}\n");
+    }
 
     echo "Submission saved.\n";
     echo "Messages: " . implode(', ', $saveResponse->messages) . "\n\n";
@@ -248,8 +268,9 @@ TXT;
 
     // === Get submission wordcount ===
     echo "=== Submission Wordcount ===\n";
-    try {
-        $wordcount = $client->getSubmissionWordcount($submissionId);
+    $wordcountResponse = $client->getSubmissionWordcount($submissionId);
+    if ($wordcountResponse->isSuccess() && $wordcountResponse->wordcount !== null) {
+        $wordcount = $wordcountResponse->wordcount;
         echo "Total word count: {$wordcount->totalWordCount}\n";
         echo "Total segments: {$wordcount->totalSegments}\n";
         echo "Leverage breakdown:\n";
@@ -260,9 +281,9 @@ TXT;
         echo "  - 75-84% match: {$wordcount->match75to84}\n";
         echo "  - No match: {$wordcount->noMatch}\n";
         echo "  - Repetitions: {$wordcount->repetitions}\n";
-    } catch (GlobalLinkException $e) {
+    } else {
         // Wordcount may not be available for draft submissions
-        echo "Wordcount not available: " . $e->getMessage() . "\n";
+        echo "Wordcount not available: {$wordcountResponse->errorMessage}\n";
     }
     echo "\n";
 

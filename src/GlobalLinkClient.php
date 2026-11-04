@@ -13,9 +13,6 @@ use GlobalLink\RestClient\Exception\RateLimitException;
 use GlobalLink\RestClient\Http\HttpClientInterface;
 use GlobalLink\RestClient\Http\HttpResponse;
 use GlobalLink\RestClient\Http\StreamHttpClient;
-use GlobalLink\RestClient\Model\ProjectInfo;
-use GlobalLink\RestClient\Model\SubmissionInfo;
-use GlobalLink\RestClient\Model\Target;
 use GlobalLink\RestClient\Model\TechTracking;
 use GlobalLink\RestClient\Request\CancelSubmissionRequest;
 use GlobalLink\RestClient\Request\CreateSubmissionRequest;
@@ -26,14 +23,19 @@ use GlobalLink\RestClient\Request\LoginRequest;
 use GlobalLink\RestClient\Request\SaveSubmissionRequest;
 use GlobalLink\RestClient\Request\UploadReferenceFileRequest;
 use GlobalLink\RestClient\Request\UploadSourceFileRequest;
+use GlobalLink\RestClient\Response\ApiResponse;
+use GlobalLink\RestClient\Response\CancelSubmissionResponse;
 use GlobalLink\RestClient\Response\ConfirmTargetDeliveredResponse;
 use GlobalLink\RestClient\Response\CreateSubmissionResponse;
+use GlobalLink\RestClient\Response\DownloadResponse;
 use GlobalLink\RestClient\Response\GetProjectCustomAttributesResponse;
 use GlobalLink\RestClient\Response\GetProjectFileFormatsResponse;
 use GlobalLink\RestClient\Response\GetProjectLanguageDirectionsResponse;
 use GlobalLink\RestClient\Response\GetProjectMslaLevelsResponse;
 use GlobalLink\RestClient\Response\GetProjectOrgUsersResponse;
+use GlobalLink\RestClient\Response\GetProjectResponse;
 use GlobalLink\RestClient\Response\GetProjectWorkflowsResponse;
+use GlobalLink\RestClient\Response\GetSubmissionResponse;
 use GlobalLink\RestClient\Response\GetSubmissionsResponse;
 use GlobalLink\RestClient\Response\GetSubmissionWordcountResponse;
 use GlobalLink\RestClient\Response\GetTargetsResponse;
@@ -75,6 +77,11 @@ class GlobalLinkClient
     /**
      * Create a new GlobalLink client.
      *
+     * Initial OAuth login runs during construction. By default, a failed login does not throw;
+     * the client is constructed without a token — check `isTokenExpired()` (or the next API
+     * Response). Subsequent calls retry authentication and return error Responses on failure.
+     * Pass `$throwOnAuthenticationFailure = true` to throw on failed initial login instead.
+     *
      * @param string $baseUrl Base URL of the GlobalLink API (e.g., https://example.globallink.com)
      * @param string $username GlobalLink username
      * @param string $password GlobalLink password
@@ -82,8 +89,12 @@ class GlobalLinkClient
      * @param string $oauthWsPassword OAuth client secret
      * @param HttpClientInterface|null $httpClient Optional custom HTTP client (for testing or custom implementations)
      * @param string|null $userAgent Optional custom User-Agent header
-     * @param RetryConfig|null $retryConfig Optional retry configuration for transient failures (429, 5xx)
-     * @throws AuthenticationException If initial authentication fails
+     * @param RetryConfig|null $retryConfig Optional retry configuration for transient failures (429, 5xx, transport)
+     * @param bool $throwOnAuthenticationFailure When false (default), failed initial login does not throw.
+     *                                           When true, failed initial login throws.
+     * @throws AuthenticationException|ApiException|GlobalLinkException If initial authentication fails and
+     *                                                                  $throwOnAuthenticationFailure is true
+     * @throws InvalidArgumentException If required constructor arguments are empty
      */
     public function __construct(
         string $baseUrl,
@@ -94,6 +105,7 @@ class GlobalLinkClient
         ?HttpClientInterface $httpClient = null,
         ?string $userAgent = null,
         ?RetryConfig $retryConfig = null,
+        bool $throwOnAuthenticationFailure = false,
     ) {
         // Validate required parameters
         if (empty(trim($baseUrl))) {
@@ -125,7 +137,7 @@ class GlobalLinkClient
         $this->retryConfig = $retryConfig;
 
         // Authenticate on construction
-        $this->authenticate();
+        $this->authenticate($throwOnAuthenticationFailure);
     }
 
     /**
@@ -159,113 +171,126 @@ class GlobalLinkClient
      * Get a project by ID.
      *
      * @param string|int $projectId Project ID
-     * @return ProjectInfo Detailed project information
-     * @throws ApiException On API error
+     * @return GetProjectResponse Detailed project information
+     * @throws InvalidArgumentException If the project ID is invalid
      */
-    public function getProject(string|int $projectId): ProjectInfo
+    public function getProject(string|int $projectId): GetProjectResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetProjectResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($projectId);
 
         $result = $this->request('GET', "/rest/v0/projects/{$safeId}");
-        return ProjectInfo::fromJson($result['body']);
+        return GetProjectResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
      * List all projects with optional filters.
      *
      * @param ListProjectsRequest|null $request Optional filters
-     * @return list<\GlobalLink\RestClient\Model\Project> List of projects
-     * @throws ApiException On API error
+     * @return ListProjectsResponse List of projects
      */
-    public function getProjects(?ListProjectsRequest $request = null): array
+    public function getProjects(?ListProjectsRequest $request = null): ListProjectsResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return ListProjectsResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
 
         $queryParams = $request?->toQueryParams() ?? [];
         $result = $this->request('GET', '/rest/v0/projects', ['query' => $queryParams]);
 
-        return ListProjectsResponse::fromJson($result['body']);
+        return ListProjectsResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
      * Get file format profiles for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\GlobalLink\RestClient\Model\FileFormatProfile>
-     * @throws ApiException On API error
+     * @return GetProjectFileFormatsResponse
+     * @throws InvalidArgumentException If the project ID is invalid
      */
-    public function getProjectFileFormats(int $projectId): array
+    public function getProjectFileFormats(int $projectId): GetProjectFileFormatsResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetProjectFileFormatsResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($projectId);
 
         $result = $this->request('GET', "/rest/v0/projects/{$safeId}/fileformats");
-        return GetProjectFileFormatsResponse::fromJson($result['body']);
+        return GetProjectFileFormatsResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
      * Get workflow definitions for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\GlobalLink\RestClient\Model\WorkflowDefinition>
-     * @throws ApiException On API error
+     * @return GetProjectWorkflowsResponse
+     * @throws InvalidArgumentException If the project ID is invalid
      */
-    public function getProjectWorkflows(int $projectId): array
+    public function getProjectWorkflows(int $projectId): GetProjectWorkflowsResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetProjectWorkflowsResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($projectId);
 
         $result = $this->request('GET', "/rest/v0/projects/{$safeId}/workflows");
-        return GetProjectWorkflowsResponse::fromJson($result['body']);
+        return GetProjectWorkflowsResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
      * Get custom attribute definitions for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\GlobalLink\RestClient\Model\CustomAttribute>
-     * @throws ApiException On API error
+     * @return GetProjectCustomAttributesResponse
+     * @throws InvalidArgumentException If the project ID is invalid
      */
-    public function getProjectCustomAttributes(int $projectId): array
+    public function getProjectCustomAttributes(int $projectId): GetProjectCustomAttributesResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetProjectCustomAttributesResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($projectId);
 
         $result = $this->request('GET', "/rest/v0/projects/{$safeId}/customattributes");
-        return GetProjectCustomAttributesResponse::fromJson($result['body']);
+        return GetProjectCustomAttributesResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
      * Get organization users for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\GlobalLink\RestClient\Model\User>
-     * @throws ApiException On API error
+     * @return GetProjectOrgUsersResponse
+     * @throws InvalidArgumentException If the project ID is invalid
      */
-    public function getProjectOrgUsers(int $projectId): array
+    public function getProjectOrgUsers(int $projectId): GetProjectOrgUsersResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetProjectOrgUsersResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($projectId);
 
         $result = $this->request('GET', "/rest/v0/projects/{$safeId}/users/org");
-        return GetProjectOrgUsersResponse::fromJson($result['body']);
+        return GetProjectOrgUsersResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
      * Get language directions for a project.
      *
      * @param int $projectId Project ID
-     * @return list<\GlobalLink\RestClient\Model\ProjectLanguageDirection>
-     * @throws ApiException On API error
+     * @return GetProjectLanguageDirectionsResponse
+     * @throws InvalidArgumentException If the project ID is invalid
      */
-    public function getProjectLanguageDirections(int $projectId): array
+    public function getProjectLanguageDirections(int $projectId): GetProjectLanguageDirectionsResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetProjectLanguageDirectionsResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($projectId);
 
         $result = $this->request('GET', "/rest/v0/projects/{$safeId}/languagedirections");
-        return GetProjectLanguageDirectionsResponse::fromJson($result['body']);
+        return GetProjectLanguageDirectionsResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -274,16 +299,18 @@ class GlobalLinkClient
      * MSLA levels define submission priorities (e.g., Rush, Standard, Low).
      *
      * @param int $projectId Project ID
-     * @return list<\GlobalLink\RestClient\Model\MslaLevel>
-     * @throws ApiException On API error
+     * @return GetProjectMslaLevelsResponse
+     * @throws InvalidArgumentException If the project ID is invalid
      */
-    public function getProjectMslaLevels(int $projectId): array
+    public function getProjectMslaLevels(int $projectId): GetProjectMslaLevelsResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetProjectMslaLevelsResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($projectId);
 
         $result = $this->request('GET', "/rest/v0/projects/{$safeId}/mslalevels");
-        return GetProjectMslaLevelsResponse::fromJson($result['body']);
+        return GetProjectMslaLevelsResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     // =========================================================================
@@ -294,14 +321,15 @@ class GlobalLinkClient
      * Get instance information (version, limits, etc.).
      *
      * @return InstanceInfoResponse Instance information
-     * @throws ApiException On API error
      */
     public function getInstanceInfo(): InstanceInfoResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return InstanceInfoResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
 
         $result = $this->request('GET', '/rest/v0/instanceInfo');
-        return InstanceInfoResponse::fromJson($result['body']);
+        return InstanceInfoResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -318,9 +346,9 @@ class GlobalLinkClient
             'User-Agent' => $this->userAgent,
         ];
 
-        $response = $this->httpClient->send('GET', $this->baseUrl . '/health.pd', $headers, null);
+        $response = $this->sendHttp('GET', $this->baseUrl . '/health.pd', $headers, null);
 
-        return HealthcheckResponse::fromResponse($response->body, $response->statusCode);
+        return HealthcheckResponse::fromResponse($response->body, $response->statusCode, $response->headers);
     }
 
     // =========================================================================
@@ -332,47 +360,51 @@ class GlobalLinkClient
      *
      * @param CreateSubmissionRequest $request Submission details
      * @return CreateSubmissionResponse Response containing the new submission ID
-     * @throws ApiException On API error
      */
     public function createSubmission(CreateSubmissionRequest $request): CreateSubmissionResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return CreateSubmissionResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
 
         $result = $this->request('POST', '/rest/v0/submissions/create', ['json' => $request->toArray()]);
-        return CreateSubmissionResponse::fromJson($result['body']);
+        return CreateSubmissionResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
      * Get submissions with optional filters.
      *
      * @param GetSubmissionsRequest|null $request Optional filters
-     * @return list<SubmissionInfo> List of submissions
-     * @throws ApiException On API error
+     * @return GetSubmissionsResponse List of submissions
      */
-    public function getSubmissions(?GetSubmissionsRequest $request = null): array
+    public function getSubmissions(?GetSubmissionsRequest $request = null): GetSubmissionsResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetSubmissionsResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
 
         $queryParams = $request?->toQueryParams() ?? [];
         $result = $this->request('GET', '/rest/v0/submissions', ['query' => $queryParams]);
 
-        return GetSubmissionsResponse::fromJson($result['body']);
+        return GetSubmissionsResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
      * Get a submission by ID.
      *
      * @param int $submissionId Submission ID
-     * @return SubmissionInfo Submission details
-     * @throws ApiException On API error
+     * @return GetSubmissionResponse Submission details
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
-    public function getSubmission(int $submissionId): SubmissionInfo
+    public function getSubmission(int $submissionId): GetSubmissionResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetSubmissionResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $result = $this->request('GET', "/rest/v0/submissions/{$safeId}");
-        return SubmissionInfo::fromJson($result['body']);
+        return GetSubmissionResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -382,16 +414,18 @@ class GlobalLinkClient
      * (100% match, fuzzy matches, no match, etc.).
      *
      * @param int $submissionId Submission ID
-     * @return \GlobalLink\RestClient\Model\SubmissionWordcount Wordcount information
-     * @throws ApiException On API error
+     * @return GetSubmissionWordcountResponse Wordcount information
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
-    public function getSubmissionWordcount(int $submissionId): \GlobalLink\RestClient\Model\SubmissionWordcount
+    public function getSubmissionWordcount(int $submissionId): GetSubmissionWordcountResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetSubmissionWordcountResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $result = $this->request('GET', "/rest/v0/submissions/{$safeId}/wordcount");
-        return GetSubmissionWordcountResponse::fromJson($result['body']);
+        return GetSubmissionWordcountResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -401,12 +435,14 @@ class GlobalLinkClient
      * @param string $op Operation (usually "replace")
      * @param string $path Property path (e.g., /name, /instructions, /dueDate)
      * @param mixed $value New value
-     * @return SubmissionInfo Updated submission
-     * @throws ApiException On API error
+     * @return GetSubmissionResponse Updated submission
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
-    public function patchSubmission(int $submissionId, string $op, string $path, mixed $value): SubmissionInfo
+    public function patchSubmission(int $submissionId, string $op, string $path, mixed $value): GetSubmissionResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetSubmissionResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $body = [
@@ -416,7 +452,7 @@ class GlobalLinkClient
         ];
 
         $result = $this->request('PATCH', "/rest/v0/submissions/{$safeId}", ['json' => $body]);
-        return SubmissionInfo::fromJson($result['body']);
+        return GetSubmissionResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -425,17 +461,19 @@ class GlobalLinkClient
      * @param int $submissionId Submission ID
      * @param SaveSubmissionRequest|null $request Optional save options (e.g., autoStart)
      * @return SaveSubmissionResponse Response with started/linked submission IDs
-     * @throws ApiException On API error
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
     public function saveSubmission(int $submissionId, ?SaveSubmissionRequest $request = null): SaveSubmissionResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return SaveSubmissionResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $options = $request?->toArray() ?? [];
         $result = $this->request('POST', "/rest/v0/submissions/{$safeId}/save", ['query' => $options]);
 
-        return SaveSubmissionResponse::fromJson($result['body']);
+        return SaveSubmissionResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -443,16 +481,18 @@ class GlobalLinkClient
      *
      * @param int $submissionId Submission ID
      * @param CancelSubmissionRequest $request Cancel request with target or document IDs
-     * @return bool True if successful
-     * @throws ApiException On API error
+     * @return CancelSubmissionResponse Cancellation result
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
-    public function cancelSubmission(int $submissionId, CancelSubmissionRequest $request): bool
+    public function cancelSubmission(int $submissionId, CancelSubmissionRequest $request): CancelSubmissionResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return CancelSubmissionResponse::fromHttpResult($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $result = $this->request('POST', "/rest/v0/submissions/cancel/{$safeId}", ['json' => $request->toArray()]);
-        return $result['status'] === 200;
+        return CancelSubmissionResponse::fromHttpResult($result['body'], $result['status'], $result['headers']);
     }
 
     // =========================================================================
@@ -465,12 +505,13 @@ class GlobalLinkClient
      * @param int $submissionId Submission ID
      * @param UploadSourceFileRequest $request Upload request with file details
      * @return UploadSourceFileResponse Upload response with document IDs
-     * @throws ApiException On API error
-     * @throws InvalidArgumentException If file is invalid
+     * @throws InvalidArgumentException If the submission ID or file is invalid
      */
     public function uploadSubmissionSourceFile(int $submissionId, UploadSourceFileRequest $request): UploadSourceFileResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return UploadSourceFileResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $result = $this->request(
@@ -479,7 +520,7 @@ class GlobalLinkClient
             ['multipart' => $request->toMultipart()]
         );
 
-        return UploadSourceFileResponse::fromJson($result['body']);
+        return UploadSourceFileResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -488,12 +529,13 @@ class GlobalLinkClient
      * @param int $submissionId Submission ID
      * @param UploadReferenceFileRequest $request Upload request with file details
      * @return UploadReferenceFileResponse Upload response
-     * @throws ApiException On API error
-     * @throws InvalidArgumentException If file is invalid
+     * @throws InvalidArgumentException If the submission ID or file is invalid
      */
     public function uploadSubmissionReferenceFile(int $submissionId, UploadReferenceFileRequest $request): UploadReferenceFileResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return UploadReferenceFileResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $result = $this->request(
@@ -502,7 +544,7 @@ class GlobalLinkClient
             ['multipart' => $request->toMultipart()]
         );
 
-        return UploadReferenceFileResponse::fromJson($result['body']);
+        return UploadReferenceFileResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     // =========================================================================
@@ -514,12 +556,14 @@ class GlobalLinkClient
      *
      * @param int $submissionId Submission ID
      * @param TechTracking $techTracking Tech tracking information
-     * @return SubmissionInfo Updated submission
-     * @throws ApiException On API error
+     * @return GetSubmissionResponse Updated submission
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
-    public function putSubmissionTechTracking(int $submissionId, TechTracking $techTracking): SubmissionInfo
+    public function putSubmissionTechTracking(int $submissionId, TechTracking $techTracking): GetSubmissionResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetSubmissionResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $result = $this->request(
@@ -528,6 +572,10 @@ class GlobalLinkClient
             ['json' => $techTracking->toArray()]
         );
 
+        if (!ApiResponse::isHttpSuccessStatus($result['status'])) {
+            return GetSubmissionResponse::fromJson($result['body'], $result['status'], $result['headers']);
+        }
+
         // The API may return the updated submission or an empty response
         // If we get a valid JSON response with submission data, parse it
         // Otherwise, fetch the submission to get the updated state
@@ -535,7 +583,7 @@ class GlobalLinkClient
             $data = json_decode($result['body'], true);
             // Check if it's a submission response (has submissionId)
             if (isset($data['submissionId'])) {
-                return SubmissionInfo::fromJson($result['body']);
+                return GetSubmissionResponse::fromJson($result['body'], $result['status'], $result['headers']);
             }
         }
 
@@ -551,15 +599,16 @@ class GlobalLinkClient
      * Get targets with filters.
      *
      * @param GetTargetsRequest $request Target query with status and optional filters
-     * @return list<Target> List of targets
-     * @throws ApiException On API error
+     * @return GetTargetsResponse List of targets
      */
-    public function getTargets(GetTargetsRequest $request): array
+    public function getTargets(GetTargetsRequest $request): GetTargetsResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return GetTargetsResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
 
         $result = $this->request('GET', '/rest/v0/targets', ['query' => $request->toArray()]);
-        return GetTargetsResponse::fromJson($result['body']);
+        return GetTargetsResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     // =========================================================================
@@ -571,12 +620,14 @@ class GlobalLinkClient
      *
      * @param int $submissionId Submission ID
      * @param int $targetId Target ID
-     * @return string File contents
-     * @throws ApiException On API error
+     * @return DownloadResponse File contents
+     * @throws InvalidArgumentException If IDs are invalid
      */
-    public function downloadTargetDeliverable(int $submissionId, int $targetId): string
+    public function downloadTargetDeliverable(int $submissionId, int $targetId): DownloadResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return DownloadResponse::fromHttpResult($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeSubmissionId = $this->validatePathSegment($submissionId);
         $safeTargetId = $this->validatePathSegment($targetId);
 
@@ -585,7 +636,7 @@ class GlobalLinkClient
             "/rest/v0/submissions/{$safeSubmissionId}/targets/{$safeTargetId}/download/deliverable"
         );
 
-        return $result['body'];
+        return DownloadResponse::fromHttpResult($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -594,15 +645,17 @@ class GlobalLinkClient
      * @param int $submissionId Submission ID
      * @param bool $downloadAllDeliverables Whether to download all deliverables
      * @param bool|null $includeManifest Whether to include manifest file
-     * @return string ZIP file contents
-     * @throws ApiException On API error
+     * @return DownloadResponse ZIP file contents
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
     public function downloadSubmissionDeliverables(
         int $submissionId,
         bool $downloadAllDeliverables = true,
         ?bool $includeManifest = null,
-    ): string {
-        $this->ensureAuthenticated();
+    ): DownloadResponse {
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return DownloadResponse::fromHttpResult($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $query = ['downloadAllDeliverables' => $downloadAllDeliverables ? 'true' : 'false'];
@@ -611,7 +664,7 @@ class GlobalLinkClient
         }
 
         $result = $this->request('GET', "/rest/v0/submissions/{$safeId}/download", ['query' => $query]);
-        return $result['body'];
+        return DownloadResponse::fromHttpResult($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -620,15 +673,17 @@ class GlobalLinkClient
      * @param int $submissionId Submission ID
      * @param bool $downloadOnlyDeliverables Whether to download only deliverables
      * @param bool|null $includeManifest Whether to include manifest file
-     * @return string ZIP file contents
-     * @throws ApiException On API error
+     * @return DownloadResponse ZIP file contents
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
     public function downloadSubmissionOnlyDeliverables(
         int $submissionId,
         bool $downloadOnlyDeliverables = true,
         ?bool $includeManifest = null,
-    ): string {
-        $this->ensureAuthenticated();
+    ): DownloadResponse {
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return DownloadResponse::fromHttpResult($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $query = ['downloadOnlyDeliverables' => $downloadOnlyDeliverables ? 'true' : 'false'];
@@ -637,7 +692,7 @@ class GlobalLinkClient
         }
 
         $result = $this->request('GET', "/rest/v0/submissions/{$safeId}/download", ['query' => $query]);
-        return $result['body'];
+        return DownloadResponse::fromHttpResult($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -646,15 +701,17 @@ class GlobalLinkClient
      * @param int $submissionId Submission ID
      * @param list<string> $deliverableLanguages Target language codes (e.g., ['zh-CN', 'fr-FR'])
      * @param bool|null $includeManifest Whether to include manifest file
-     * @return string ZIP file contents
-     * @throws ApiException On API error
+     * @return DownloadResponse ZIP file contents
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
     public function downloadSubmissionDeliverablesByLanguages(
         int $submissionId,
         array $deliverableLanguages,
         ?bool $includeManifest = null,
-    ): string {
-        $this->ensureAuthenticated();
+    ): DownloadResponse {
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return DownloadResponse::fromHttpResult($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $query = ['deliverableLanguages' => implode(',', $deliverableLanguages)];
@@ -663,7 +720,7 @@ class GlobalLinkClient
         }
 
         $result = $this->request('GET', "/rest/v0/submissions/{$safeId}/download", ['query' => $query]);
-        return $result['body'];
+        return DownloadResponse::fromHttpResult($result['body'], $result['status'], $result['headers']);
     }
 
     /**
@@ -672,15 +729,17 @@ class GlobalLinkClient
      * @param int $submissionId Submission ID
      * @param list<int> $deliverableTargetIds Target IDs to download
      * @param bool|null $includeManifest Whether to include manifest file
-     * @return string ZIP file contents
-     * @throws ApiException On API error
+     * @return DownloadResponse ZIP file contents
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
     public function downloadSubmissionDeliverablesByTargetIds(
         int $submissionId,
         array $deliverableTargetIds,
         ?bool $includeManifest = null,
-    ): string {
-        $this->ensureAuthenticated();
+    ): DownloadResponse {
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return DownloadResponse::fromHttpResult($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $query = ['deliverableTargetIds' => implode(',', $deliverableTargetIds)];
@@ -689,7 +748,7 @@ class GlobalLinkClient
         }
 
         $result = $this->request('GET', "/rest/v0/submissions/{$safeId}/download", ['query' => $query]);
-        return $result['body'];
+        return DownloadResponse::fromHttpResult($result['body'], $result['status'], $result['headers']);
     }
 
     // =========================================================================
@@ -702,11 +761,13 @@ class GlobalLinkClient
      * @param int $submissionId Submission ID
      * @param list<int> $targetIds Target IDs to confirm
      * @return ConfirmTargetDeliveredResponse Response with successful/failed target IDs
-     * @throws ApiException On API error
+     * @throws InvalidArgumentException If the submission ID is invalid
      */
     public function confirmTargetDelivery(int $submissionId, array $targetIds): ConfirmTargetDeliveredResponse
     {
-        $this->ensureAuthenticated();
+        if (($authError = $this->ensureAuthenticated()) !== null) {
+            return ConfirmTargetDeliveredResponse::fromJson($authError['body'], $authError['status'], $authError['headers']);
+        }
         $safeId = $this->validatePathSegment($submissionId);
 
         $result = $this->request(
@@ -715,7 +776,7 @@ class GlobalLinkClient
             ['json' => ['targetIds' => $targetIds]]
         );
 
-        return ConfirmTargetDeliveredResponse::fromJson($result['body']);
+        return ConfirmTargetDeliveredResponse::fromJson($result['body'], $result['status'], $result['headers']);
     }
 
     // =========================================================================
@@ -724,8 +785,14 @@ class GlobalLinkClient
 
     /**
      * Authenticate with the API and store the access token.
+     *
+     * @param bool $throwOnFailure When true (constructor), throw on HTTP/auth failure.
+     *                             When false (token refresh), return the error payload.
+     * @return array{body: string, status: int, headers: array<string, list<string>>}|null
+     *         null on success; error payload when $throwOnFailure is false and auth fails
+     * @throws AuthenticationException|ApiException When $throwOnFailure is true and auth fails
      */
-    private function authenticate(): void
+    private function authenticate(bool $throwOnFailure = true): ?array
     {
         $loginRequest = new LoginRequest($this->username, $this->password);
 
@@ -736,40 +803,82 @@ class GlobalLinkClient
         ];
 
         $body = http_build_query($loginRequest->toFormUrlEncoded());
-        $response = $this->httpClient->send('POST', $this->baseUrl . '/oauth/token', $headers, $body);
+        $response = $this->sendHttp('POST', $this->baseUrl . '/oauth/token', $headers, $body);
 
-        $this->handleErrorResponse($response);
+        if (!ApiResponse::isHttpSuccessStatus($response->statusCode)) {
+            if ($throwOnFailure) {
+                $this->throwAuthenticationError($response);
+            }
 
-        $loginResponse = LoginResponse::fromJson($response->body);
+            return [
+                'body' => $response->body,
+                'status' => $response->statusCode,
+                'headers' => $response->headers,
+            ];
+        }
+
+        $loginResponse = LoginResponse::fromJson($response->body, $response->statusCode, $response->headers);
 
         if ($loginResponse->accessToken === null) {
-            throw new AuthenticationException('Authentication failed: No access token received');
+            if ($throwOnFailure) {
+                throw new AuthenticationException('Authentication failed: No access token received');
+            }
+
+            return [
+                'body' => $response->body !== '' ? $response->body : '{"message":"Authentication failed: No access token received"}',
+                'status' => 401,
+                'headers' => $response->headers,
+            ];
         }
 
         $this->accessToken = $loginResponse->accessToken;
         $this->tokenExpiresAt = $loginResponse->expiresIn !== null
             ? time() + $loginResponse->expiresIn
             : null;
+
+        return null;
     }
 
     /**
      * Ensure the client is authenticated, re-authenticating if the token is expired.
+     *
+     * @return array{body: string, status: int, headers: array<string, list<string>>}|null
+     *         null when authenticated; error payload when re-authentication fails
      */
-    private function ensureAuthenticated(): void
+    private function ensureAuthenticated(): ?array
     {
         if ($this->isTokenExpired()) {
-            $this->authenticate();
+            return $this->authenticate(throwOnFailure: false);
+        }
+
+        return null;
+    }
+
+    /**
+     * Send an HTTP request, mapping transport failures to statusCode 0.
+     *
+     * @param array<string, string> $headers
+     */
+    private function sendHttp(string $method, string $url, array $headers, ?string $body): HttpResponse
+    {
+        try {
+            return $this->httpClient->send($method, $url, $headers, $body);
+        } catch (\Throwable $e) {
+            return new HttpResponse(0, $e->getMessage());
         }
     }
 
     /**
      * Make an HTTP request to the API.
      *
+     * Does not throw on transport failures or 4xx/5xx; returns status, body, and headers
+     * for the caller to map into a typed Response. Retries transient failures when
+     * RetryConfig is set (including transport failures when retryOnServerError is enabled).
+     *
      * @param string $method HTTP method
      * @param string $uri URI path
      * @param array<string, mixed> $options Request options (json, multipart, query, form_params)
      * @return array{body: string, status: int, headers: array<string, list<string>>}
-     * @throws ApiException On API error
      */
     private function request(string $method, string $uri, array $options = []): array
     {
@@ -809,18 +918,18 @@ class GlobalLinkClient
         }
 
         $attempt = 0;
-            $maxAttempts = ($this->retryConfig !== null ? $this->retryConfig->maxRetries : 0) + 1;
+        $maxAttempts = ($this->retryConfig !== null ? $this->retryConfig->maxRetries : 0) + 1;
 
         while (true) {
-            $response = $this->httpClient->send($method, $url, $headers, $body);
+            $response = $this->sendHttp($method, $url, $headers, $body);
 
             // Parse rate limit headers
             $this->parseRateLimitHeaders($response);
 
             $attempt++;
 
-            // Success - return immediately
-            if ($response->statusCode < 400) {
+            // Only a 2xx status is treated as an HTTP success (not 1xx/3xx redirects)
+            if (ApiResponse::isHttpSuccessStatus($response->statusCode)) {
                 return [
                     'body' => $response->body,
                     'status' => $response->statusCode,
@@ -833,13 +942,20 @@ class GlobalLinkClient
             if ($this->retryConfig !== null && $attempt < $maxAttempts) {
                 if ($response->statusCode === 429 && $this->retryConfig->retryOnRateLimit) {
                     $shouldRetry = true;
-                } elseif ($response->statusCode >= 500 && $this->retryConfig->retryOnServerError) {
+                } elseif (
+                    ($response->statusCode >= 500 || $response->statusCode === 0)
+                    && $this->retryConfig->retryOnServerError
+                ) {
                     $shouldRetry = true;
                 }
             }
 
             if (!$shouldRetry) {
-                $this->handleErrorResponse($response);
+                return [
+                    'body' => $response->body,
+                    'status' => $response->statusCode,
+                    'headers' => $response->headers,
+                ];
             }
 
             // Calculate delay: for 429 use Retry-After header, else exponential backoff
@@ -1000,50 +1116,43 @@ class GlobalLinkClient
     }
 
     /**
-     * Handle error responses from the API.
+     * Throw an exception for constructor authentication failures.
      *
      * @throws AuthenticationException On 401/403
      * @throws RateLimitException On 429
+     * @throws GlobalLinkException On transport failure (status 0)
      * @throws ApiException On other 4xx/5xx
      */
-    private function handleErrorResponse(HttpResponse $response): void
+    private function throwAuthenticationError(HttpResponse $response): never
     {
-        if ($response->statusCode < 400) {
-            return;
+        $message = ApiResponse::extractErrorMessage($response->body, $response->statusCode)
+            ?? (string) $response->statusCode;
+
+        if ($response->statusCode === 0) {
+            throw new GlobalLinkException($message);
         }
 
-        // Extract error message from response body
-        $message = "API error: {$response->statusCode}";
-        $decodedBody = [];
-
-        if (!empty($response->body) && json_validate($response->body)) {
-            $decodedBody = json_decode($response->body, true);
-            if (isset($decodedBody['message'])) {
-                $message .= ': ' . $decodedBody['message'];
-            } elseif (isset($decodedBody['error_description'])) {
-                $message .= ': ' . $decodedBody['error_description'];
-            } elseif (isset($decodedBody['error'])) {
-                $message .= ': ' . $decodedBody['error'];
-            }
-        }
-
-        // Handle specific status codes
         if ($response->statusCode === 401 || $response->statusCode === 403) {
-            throw new AuthenticationException($message, $response->statusCode);
+            throw new AuthenticationException($message, $response->statusCode, $response->body);
         }
 
         if ($response->statusCode === 429) {
-            $retryAfter = $response->getHeader('Retry-After');
             throw new RateLimitException(
                 $message,
-                $retryAfter !== null ? (int) $retryAfter : null,
-                $this->lastRateLimitInfo['limit'] ?? null,
-                $this->lastRateLimitInfo['remaining'] ?? null,
-                $this->lastRateLimitInfo['reset'] ?? null,
+                $this->intHeader($response, 'Retry-After'),
+                $this->intHeader($response, 'X-RateLimit-Limit'),
+                $this->intHeader($response, 'X-RateLimit-Remaining'),
+                $this->intHeader($response, 'X-RateLimit-Reset'),
+                $response->body,
             );
         }
 
-        // Don't include raw body in exception to avoid leaking secrets
-        throw new ApiException($message, $response->statusCode);
+        throw new ApiException($message, $response->statusCode, $response->body);
+    }
+
+    private function intHeader(HttpResponse $response, string $name): ?int
+    {
+        $value = $response->getHeader($name);
+        return $value !== null && is_numeric($value) ? (int) $value : null;
     }
 }

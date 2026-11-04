@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace GlobalLink\RestClient\Http;
 
-use GlobalLink\RestClient\Exception\GlobalLinkException;
-
 /**
  * HTTP client implementation using PHP's native stream functions.
  *
  * This is the default transport that uses fopen() with stream_context_create()
  * for making HTTP requests without external dependencies.
+ *
+ * Transport/network failures return HttpResponse with statusCode 0 instead of throwing.
  */
 class StreamHttpClient implements HttpClientInterface
 {
@@ -53,15 +53,17 @@ class StreamHttpClient implements HttpClientInterface
         $fp = @fopen($url, 'rb', false, $context);
         if ($fp === false) {
             $error = error_get_last();
-            throw new GlobalLinkException(
-                sprintf('Unable to connect to %s: %s', $url, $error['message'] ?? 'Unknown error')
+            // statusCode 0 = transport failure (no HTTP response)
+            return new HttpResponse(
+                0,
+                sprintf('Unable to connect to %s: %s', $url, $error['message'] ?? 'Unknown error'),
             );
         }
 
         $responseBody = stream_get_contents($fp);
         if ($responseBody === false) {
             fclose($fp);
-            throw new GlobalLinkException('Failed to read response body');
+            return new HttpResponse(0, 'Failed to read response body');
         }
 
         $meta = stream_get_meta_data($fp);

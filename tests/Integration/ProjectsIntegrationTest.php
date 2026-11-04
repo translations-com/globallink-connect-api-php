@@ -23,8 +23,10 @@ class ProjectsIntegrationTest extends IntegrationTestCase
     public function testGetProjects(): void
     {
         $this->debug('Fetching all projects...');
-        $projects = $this->client->getProjects();
+        $response = $this->client->getProjects();
+        $projects = $response->projects;
 
+        $this->assertTrue($response->isSuccess());
         $this->assertIsArray($projects);
         $this->assertNotEmpty($projects, 'Expected at least one project');
         $this->debug('Found ' . count($projects) . ' projects');
@@ -42,8 +44,10 @@ class ProjectsIntegrationTest extends IntegrationTestCase
         $projectId = $this->getTestProjectId();
         $this->debug("Fetching project details for ID: {$projectId}");
 
-        $project = $this->client->getProject($projectId);
+        $response = $this->client->getProject($projectId);
+        $project = $response->project;
 
+        $this->assertTrue($response->isSuccess());
         $this->assertInstanceOf(ProjectInfo::class, $project);
         $this->assertSame($projectId, $project->projectId);
         $this->assertNotEmpty($project->name);
@@ -56,7 +60,7 @@ class ProjectsIntegrationTest extends IntegrationTestCase
         $projectId = $this->getTestProjectId();
         $this->debug("Fetching file formats for project {$projectId}...");
 
-        $formats = $this->client->getProjectFileFormats($projectId);
+        $formats = $this->client->getProjectFileFormats($projectId)->fileFormatProfiles;
 
         $this->assertIsArray($formats);
         $this->assertNotEmpty($formats, 'Expected at least one file format');
@@ -76,7 +80,7 @@ class ProjectsIntegrationTest extends IntegrationTestCase
         $projectId = $this->getTestProjectId();
         $this->debug("Fetching workflows for project {$projectId}...");
 
-        $workflows = $this->client->getProjectWorkflows($projectId);
+        $workflows = $this->client->getProjectWorkflows($projectId)->workflows;
 
         $this->assertIsArray($workflows);
         $this->assertNotEmpty($workflows, 'Expected at least one workflow');
@@ -96,7 +100,7 @@ class ProjectsIntegrationTest extends IntegrationTestCase
         $projectId = $this->getTestProjectId();
         $this->debug("Fetching custom attributes for project {$projectId}...");
 
-        $attributes = $this->client->getProjectCustomAttributes($projectId);
+        $attributes = $this->client->getProjectCustomAttributes($projectId)->customAttributes;
 
         $this->assertIsArray($attributes);
         $this->debug('Found ' . count($attributes) . ' custom attributes');
@@ -117,7 +121,7 @@ class ProjectsIntegrationTest extends IntegrationTestCase
         $projectId = $this->getTestProjectId();
         $this->debug("Fetching language directions for project {$projectId}...");
 
-        $directions = $this->client->getProjectLanguageDirections($projectId);
+        $directions = $this->client->getProjectLanguageDirections($projectId)->languageDirections;
 
         $this->assertIsArray($directions);
         $this->assertNotEmpty($directions, 'Expected at least one language direction');
@@ -140,7 +144,7 @@ class ProjectsIntegrationTest extends IntegrationTestCase
         $projectId = $this->getTestProjectId();
         $this->debug("Fetching organization users for project {$projectId}...");
 
-        $users = $this->client->getProjectOrgUsers($projectId);
+        $users = $this->client->getProjectOrgUsers($projectId)->users;
 
         $this->assertIsArray($users);
         $this->debug('Found ' . count($users) . ' users');
@@ -168,7 +172,7 @@ class ProjectsIntegrationTest extends IntegrationTestCase
         $projectId = $this->getTestProjectId();
         $this->debug("Fetching MSLA levels for project {$projectId}...");
 
-        $levels = $this->client->getProjectMslaLevels($projectId);
+        $levels = $this->client->getProjectMslaLevels($projectId)->mslaLevels;
 
         $this->assertIsArray($levels);
         $this->debug('Found ' . count($levels) . ' MSLA levels');

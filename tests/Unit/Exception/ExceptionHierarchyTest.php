@@ -45,11 +45,12 @@ class ExceptionHierarchyTest extends TestCase
 
     public function testRateLimitExceptionExtendsApiException(): void
     {
-        $exception = new RateLimitException('Rate limited', 60, 100, 0, 1704110400);
+        $exception = new RateLimitException('Rate limited', 60, 100, 0, 1704110400, '{"message":"Rate limited"}');
 
         $this->assertInstanceOf(ApiException::class, $exception);
         $this->assertInstanceOf(GlobalLinkException::class, $exception);
         $this->assertSame(429, $exception->getStatusCode());
+        $this->assertSame('{"message":"Rate limited"}', $exception->getResponseBody());
         $this->assertSame(60, $exception->getRetryAfter());
         $this->assertSame(100, $exception->getRateLimitLimit());
         $this->assertSame(0, $exception->getRateLimitRemaining());

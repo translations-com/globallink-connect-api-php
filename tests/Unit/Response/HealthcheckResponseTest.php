@@ -18,6 +18,10 @@ class HealthcheckResponseTest extends TestCase
 
         $this->assertTrue($response->healthy);
         $this->assertSame('OK', $response->message);
+        $this->assertSame(200, $response->responseCode);
+        $this->assertNull($response->errorMessage);
+        $this->assertSame('OK', $response->responseBody);
+        $this->assertTrue($response->isSuccess());
     }
 
     public function testFromResponseUnhealthy(): void
@@ -26,6 +30,20 @@ class HealthcheckResponseTest extends TestCase
 
         $this->assertFalse($response->healthy);
         $this->assertSame('Service Unavailable', $response->message);
+        $this->assertSame(503, $response->responseCode);
+        $this->assertSame('503', $response->errorMessage);
+        $this->assertSame('Service Unavailable', $response->responseBody);
+        $this->assertTrue($response->isError());
+    }
+
+    public function testFromResponseTransportFailure(): void
+    {
+        $response = HealthcheckResponse::fromResponse('Unable to connect', 0);
+
+        $this->assertFalse($response->healthy);
+        $this->assertSame(0, $response->responseCode);
+        $this->assertSame('Unable to connect', $response->errorMessage);
+        $this->assertTrue($response->isError());
     }
 
     public function testFromResponseWithWhitespace(): void

@@ -63,7 +63,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
         );
 
         $this->debug('Fetching submissions with status filter (IN_PROCESS, READY, DELIVERED)...');
-        $submissions = $this->client->getSubmissions($request);
+        $submissions = $this->client->getSubmissions($request)->submissions;
 
         $this->assertIsArray($submissions);
         $this->debug('Found ' . count($submissions) . ' submissions');
@@ -83,7 +83,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
         $this->debug('Fetching submissions with filters...');
         $request = new GetSubmissionsRequest(pageSize: 50);
 
-        $submissions = $this->client->getSubmissions($request);
+        $submissions = $this->client->getSubmissions($request)->submissions;
 
         $this->assertIsArray($submissions);
         $this->debug('Found ' . count($submissions) . ' submissions');
@@ -127,7 +127,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
         $this->createdSubmissionId = $response->submissionId;
 
         // Verify we can retrieve the created submission
-        $submission = $this->client->getSubmission($response->submissionId);
+        $submission = $this->client->getSubmission($response->submissionId)->submission;
         $this->assertStringContainsString('Integration Test', $submission->name);
         $this->assertSame($projectId, $submission->projectId);
         $this->assertSame($this->sourceLanguage, $submission->sourceLanguage);
@@ -182,7 +182,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
 
         // Step 3: Verify submission state before save
         $this->debug('Step 3: Verifying submission state...');
-        $submission = $this->client->getSubmission($submissionId);
+        $submission = $this->client->getSubmission($submissionId)->submission;
         $this->assertContains($submission->status, ['DRAFT', 'CREATING']);
         $this->assertGreaterThan(0, $submission->fileCount);
         $this->debug("Status: {$submission->status}, Files: {$submission->fileCount}");
@@ -197,8 +197,8 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
 
         // Step 5: Verify submission is saved (status varies by workflow)
         $this->debug('Step 5: Verifying final state...');
-        $savedSubmission = $this->client->getSubmission($submissionId);
-        $validStatuses = ['SAVED', 'ANALYZE', 'TRANSLATE', 'PENDING', 'WAITING', 'IN_PROCESS', 'PROCESSING'];
+        $savedSubmission = $this->client->getSubmission($submissionId)->submission;
+        $validStatuses = ['SAVED', 'READY', 'ANALYZE', 'TRANSLATE', 'PENDING', 'WAITING', 'IN_PROCESS', 'PROCESSING'];
         $this->assertContains($savedSubmission->status, $validStatuses);
         $this->debug("Final status: {$savedSubmission->status}");
     }
@@ -249,7 +249,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
         $this->debug("Upload complete. Process ID: {$uploadResponse->processId}");
 
         // Verify file was uploaded
-        $submission = $this->client->getSubmission($submissionId);
+        $submission = $this->client->getSubmission($submissionId)->submission;
         $this->assertGreaterThan(0, $submission->fileCount);
         $this->debug("File count: {$submission->fileCount}");
     }
@@ -301,7 +301,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
             technologyProduct: 'PHP'
         );
 
-        $updatedSubmission = $this->client->putSubmissionTechTracking($submissionId, $techTracking);
+        $updatedSubmission = $this->client->putSubmissionTechTracking($submissionId, $techTracking)->submission;
 
         $this->assertInstanceOf(SubmissionInfo::class, $updatedSubmission);
         $this->assertSame($submissionId, $updatedSubmission->submissionId);
@@ -333,7 +333,7 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
             pageNumber: 0
         );
 
-        $submissions = $this->client->getSubmissions($request);
+        $submissions = $this->client->getSubmissions($request)->submissions;
 
         if (empty($submissions)) {
             $this->markTestSkipped('No analyzed submissions available for wordcount testing');
@@ -344,20 +344,22 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
         // Try to find a submission that has wordcount available
         $testedSubmission = false;
         foreach ($submissions as $submission) {
-            try {
-                $wordcount = $this->client->getSubmissionWordcount($submission->submissionId);
+            $wordcountResponse = $this->client->getSubmissionWordcount($submission->submissionId);
 
-                $this->assertInstanceOf(SubmissionWordcount::class, $wordcount);
-                $this->assertIsInt($wordcount->totalWordCount);
-                $this->assertGreaterThanOrEqual(0, $wordcount->totalWordCount);
-
-                $this->debug("Found wordcount for submission {$submission->submissionId}: {$wordcount->totalWordCount} words");
-                $testedSubmission = true;
-                break;
-            } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
+            if ($wordcountResponse->isError()) {
                 // Wordcount may not be available for all submissions
                 continue;
             }
+
+            $wordcount = $wordcountResponse->wordcount;
+
+            $this->assertInstanceOf(SubmissionWordcount::class, $wordcount);
+            $this->assertIsInt($wordcount->totalWordCount);
+            $this->assertGreaterThanOrEqual(0, $wordcount->totalWordCount);
+
+            $this->debug("Found wordcount for submission {$submission->submissionId}: {$wordcount->totalWordCount} words");
+            $testedSubmission = true;
+            break;
         }
 
         if (!$testedSubmission) {
@@ -410,24 +412,8 @@ class SubmissionsIntegrationTest extends IntegrationTestCase
         $this->createdSubmissionId = $response->submissionId;
 
         // Verify submission was created with tech tracking
-        $submission = $this->client->getSubmission($response->submissionId);
+        $submission = $this->client->getSubmission($response->submissionId)->submission;
         $this->assertNotNull($submission->techTracking);
         $this->debug("Tech tracking verified: {$submission->techTracking->adaptorName}");
-    }
-
-    /**
-     * Get the default workflow ID for the test project.
-     */
-    private function getDefaultWorkflowId(): int
-    {
-        $projectId = $this->getTestProjectId();
-        $workflows = $this->client->getProjectWorkflows($projectId);
-
-        if (empty($workflows)) {
-            $this->markTestSkipped('No workflows available for testing');
-        }
-
-        // Return the first workflow ID
-        return $workflows[0]->id;
     }
 }

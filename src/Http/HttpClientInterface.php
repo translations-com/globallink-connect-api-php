@@ -19,8 +19,10 @@ interface HttpClientInterface
      * @param string $url Full URL to send the request to
      * @param array<string, string> $headers Request headers
      * @param string|null $body Request body (for POST, PUT, PATCH)
-     * @return HttpResponse The response from the server
-     * @throws \GlobalLink\RestClient\Exception\GlobalLinkException On connection failure
+     * @return HttpResponse The response from the server. Transport/network failures
+     *                      should return statusCode 0 with an error message in the body
+     *                      (preferred). Implementations may still throw; the SDK client
+     *                      maps thrown transport errors to statusCode 0 responses.
      */
     public function send(string $method, string $url, array $headers, ?string $body = null): HttpResponse;
 }

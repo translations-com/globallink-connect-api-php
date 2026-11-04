@@ -9,12 +9,13 @@ use GlobalLink\RestClient\Model\SubmissionInfo;
 use GlobalLink\RestClient\Model\Target;
 use GlobalLink\RestClient\Model\TechTracking;
 use GlobalLink\RestClient\Request\CreateSubmissionRequest;
-use GlobalLink\RestClient\Request\GetTargetsRequest;
 use GlobalLink\RestClient\Request\SaveSubmissionRequest;
 use GlobalLink\RestClient\Request\UploadSourceFileRequest;
 use GlobalLink\RestClient\Response\CreateSubmissionResponse;
 use GlobalLink\RestClient\Response\SaveSubmissionResponse;
 use GlobalLink\RestClient\Response\UploadSourceFileResponse;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * End-to-end workflow integration test.
@@ -30,10 +31,9 @@ use GlobalLink\RestClient\Response\UploadSourceFileResponse;
  * 6. Download deliverables
  * 7. Confirm delivery
  *
- * Tests are chained using @depends to ensure proper ordering and data sharing.
- *
- * @group workflow
+ * Tests are chained using #[Depends] to ensure proper ordering and data sharing.
  */
+#[Group('workflow')]
 class WorkflowIntegrationTest extends IntegrationTestCase
 {
     private const SDK_NAME = 'GlobalLink PHP SDK';
@@ -86,9 +86,8 @@ class WorkflowIntegrationTest extends IntegrationTestCase
 
     /**
      * Step 2: Upload source file to the submission.
-     *
-     * @depends testStep1CreateSubmission
      */
+    #[Depends('testStep1CreateSubmission')]
     public function testStep2UploadSourceFile(int $submissionId): int
     {
         $this->debug('=== WORKFLOW TEST: Step 2 - Upload Source File ===');
@@ -138,9 +137,8 @@ XML;
 
     /**
      * Step 3: Set tech tracking information.
-     *
-     * @depends testStep2UploadSourceFile
      */
+    #[Depends('testStep2UploadSourceFile')]
     public function testStep3SetTechTracking(int $submissionId): int
     {
         $this->debug('=== WORKFLOW TEST: Step 3 - Set Tech Tracking ===');
@@ -155,7 +153,7 @@ XML;
 
         $this->debug("Adaptor: {$techTracking->adaptorName} v{$techTracking->adaptorVersion}");
 
-        $updatedSubmission = $this->client->putSubmissionTechTracking($submissionId, $techTracking);
+        $updatedSubmission = $this->client->putSubmissionTechTracking($submissionId, $techTracking)->submission;
 
         $this->assertInstanceOf(SubmissionInfo::class, $updatedSubmission);
         $this->assertNotNull($updatedSubmission->techTracking);
@@ -168,16 +166,15 @@ XML;
 
     /**
      * Step 4: Save the submission (start processing).
-     *
-     * @depends testStep3SetTechTracking
      */
+    #[Depends('testStep3SetTechTracking')]
     public function testStep4SaveSubmission(int $submissionId): int
     {
         $this->debug('=== WORKFLOW TEST: Step 4 - Save Submission ===');
         $this->debug("Submission ID: {$submissionId}");
 
         // Verify submission state before save
-        $submission = $this->client->getSubmission($submissionId);
+        $submission = $this->client->getSubmission($submissionId)->submission;
         $this->debug("Pre-save status: {$submission->status}");
         $this->debug("File count: {$submission->fileCount}");
 
@@ -189,55 +186,25 @@ XML;
         $this->debug('Save messages: ' . implode(', ', $saveResponse->messages));
 
         // Verify post-save state
-        $savedSubmission = $this->client->getSubmission($submissionId);
+        $savedSubmission = $this->client->getSubmission($submissionId)->submission;
         $this->debug("Post-save status: {$savedSubmission->status}");
 
-        $validStatuses = ['SAVED', 'ANALYZE', 'TRANSLATE', 'PENDING', 'WAITING', 'IN_PROCESS', 'PROCESSING'];
+        $validStatuses = ['SAVED', 'READY', 'ANALYZE', 'TRANSLATE', 'PENDING', 'WAITING', 'IN_PROCESS', 'PROCESSING'];
         $this->assertContains($savedSubmission->status, $validStatuses);
 
         return $submissionId;
     }
 
     /**
-     * Step 5: Poll for targets (check processing status).
-     *
-     * Note: In real scenarios, you would poll periodically until targets are PROCESSED.
-     * For testing, we just verify the polling mechanism works.
-     *
-     * @depends testStep4SaveSubmission
+     * Step 5: Poll until the submission's targets are PROCESSED.
      */
+    #[Depends('testStep4SaveSubmission')]
     public function testStep5PollForTargets(int $submissionId): array
     {
         $this->debug('=== WORKFLOW TEST: Step 5 - Poll for Targets ===');
         $this->debug("Submission ID: {$submissionId}");
 
-        // Check for any targets (regardless of status)
-        $request = new GetTargetsRequest(
-            targetStatus: 'PROCESSED',
-            submissionIds: [$submissionId],
-            pageSize: 50
-        );
-
-        $targets = $this->client->getTargets($request);
-
-        $this->assertIsArray($targets);
-        $this->debug('Found ' . count($targets) . ' PROCESSED targets for this submission');
-
-        // If no processed targets yet, that's expected for new submissions
-        if (empty($targets)) {
-            $this->debug('No processed targets yet (submission may still be processing)');
-            $this->debug('Checking for existing processed targets in the system...');
-
-            // Fall back to getting any processed targets for download testing
-            $fallbackRequest = new GetTargetsRequest(
-                targetStatus: 'PROCESSED',
-                projectIds: [$this->getTestProjectId()],
-                pageSize: 20
-            );
-
-            $targets = $this->client->getTargets($fallbackRequest);
-            $this->debug('Found ' . count($targets) . ' processed targets in project');
-        }
+        $targets = $this->waitForProcessedTargets($submissionId, count($this->getTargetLanguages()));
 
         foreach ($targets as $target) {
             $this->assertInstanceOf(Target::class, $target);
@@ -252,9 +219,8 @@ XML;
 
     /**
      * Step 6: Download deliverables.
-     *
-     * @depends testStep5PollForTargets
      */
+    #[Depends('testStep5PollForTargets')]
     public function testStep6DownloadDeliverables(array $data): array
     {
         $this->debug('=== WORKFLOW TEST: Step 6 - Download Deliverables ===');
@@ -272,18 +238,24 @@ XML;
         $this->debug("Downloading target {$target->targetId} from submission {$submissionId}...");
 
         // Download individual target
-        $content = $this->client->downloadTargetDeliverable($submissionId, $target->targetId);
-
-        $this->assertIsString($content);
+        $download = $this->client->downloadTargetDeliverable($submissionId, $target->targetId);
+        $this->assertTrue(
+            $download->isSuccess(),
+            "Download failed ({$download->responseCode}): {$download->errorMessage}"
+        );
+        $content = $download->content;
         $this->assertNotEmpty($content);
 
         $this->debug('Downloaded ' . strlen($content) . ' bytes');
 
         // Also test bulk download
         $this->debug('Testing bulk download...');
-        $bulkContent = $this->client->downloadSubmissionDeliverables($submissionId);
-
-        $this->assertIsString($bulkContent);
+        $bulkDownload = $this->client->downloadSubmissionDeliverables($submissionId);
+        $this->assertTrue(
+            $bulkDownload->isSuccess(),
+            "Bulk download failed ({$bulkDownload->responseCode}): {$bulkDownload->errorMessage}"
+        );
+        $bulkContent = $bulkDownload->content;
         $this->assertNotEmpty($bulkContent);
 
         // Check response type
@@ -305,9 +277,8 @@ XML;
 
     /**
      * Step 7: Confirm delivery.
-     *
-     * @depends testStep6DownloadDeliverables
      */
+    #[Depends('testStep6DownloadDeliverables')]
     public function testStep7ConfirmDelivery(array $data): void
     {
         $this->debug('=== WORKFLOW TEST: Step 7 - Confirm Delivery ===');
@@ -317,35 +288,21 @@ XML;
 
         $this->debug("Confirming delivery for target {$target->targetId}...");
 
-        try {
-            $response = $this->client->confirmTargetDelivery($submissionId, [$target->targetId]);
+        $response = $this->client->confirmTargetDelivery($submissionId, [$target->targetId]);
 
-            $this->assertIsArray($response->successfullyDeliveredTargets);
-            $this->assertIsArray($response->failedToDeliverTargets);
-
-            $this->debug('Successfully delivered: ' . count($response->successfullyDeliveredTargets));
-            $this->debug('Failed to deliver: ' . count($response->failedToDeliverTargets));
-
-            $this->debug('=== WORKFLOW TEST COMPLETE ===');
-        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
+        if ($response->isError()) {
             // Target may already be delivered
-            $this->debug('Delivery confirmation skipped: ' . $e->getMessage());
+            $this->debug('Delivery confirmation skipped: ' . $response->errorMessage);
             $this->debug('=== WORKFLOW TEST COMPLETE (with skip) ===');
-        }
-    }
-
-    /**
-     * Get the default workflow ID for the test project.
-     */
-    private function getDefaultWorkflowId(): int
-    {
-        $projectId = $this->getTestProjectId();
-        $workflows = $this->client->getProjectWorkflows($projectId);
-
-        if (empty($workflows)) {
-            $this->markTestSkipped('No workflows available for testing');
+            return;
         }
 
-        return $workflows[0]->id;
+        $this->assertIsArray($response->successfullyDeliveredTargets);
+        $this->assertIsArray($response->failedToDeliverTargets);
+
+        $this->debug('Successfully delivered: ' . count($response->successfullyDeliveredTargets));
+        $this->debug('Failed to deliver: ' . count($response->failedToDeliverTargets));
+
+        $this->debug('=== WORKFLOW TEST COMPLETE ===');
     }
 }

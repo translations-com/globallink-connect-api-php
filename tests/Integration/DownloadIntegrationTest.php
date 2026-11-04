@@ -18,9 +18,9 @@ use GlobalLink\RestClient\Response\ConfirmTargetDeliveredResponse;
  * 3. Downloading submission deliverables (all, by language, by target ID)
  * 4. Marking targets as delivered
  *
- * Note: These tests require existing completed submissions/targets to fully test
- * download functionality. If no completed content is available, some tests will
- * be skipped.
+ * Note: The download tests create their own submission and wait for its targets
+ * to be PROCESSED (see GLE_TEST_PROCESSING_TIMEOUT). The test project's default
+ * workflow should therefore complete automatically, e.g. a pseudo-translation workflow.
  *
  * @see https://onlinehelp.transperfect.com/GLE/RESTAPI/4-endpoint-reference.html
  */
@@ -32,11 +32,11 @@ class DownloadIntegrationTest extends IntegrationTestCase
     private const NO_PROCESSED_TARGETS_MSG = 'No processed targets available for download testing';
 
     /**
-     * Cache for processed targets to avoid multiple API calls.
+     * PROCESSED targets of the submission created for this test class.
      *
      * @var list<Target>|null
      */
-    private ?array $processedTargetsCache = null;
+    private static ?array $processedTargets = null;
 
     /**
      * Test polling for completed (PROCESSED) targets.
@@ -79,7 +79,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             pageSize: 20,
             pageNumber: 0
         );
-        $submissions = $this->client->getSubmissions($submissionRequest);
+        $submissions = $this->client->getSubmissions($submissionRequest)->submissions;
 
         if (empty($submissions)) {
             $this->markTestSkipped('No submissions available for cancelled targets testing');
@@ -88,24 +88,26 @@ class DownloadIntegrationTest extends IntegrationTestCase
         $submissionIds = array_map(fn($s) => $s->submissionId, array_slice($submissions, 0, 10));
         $this->debug('Checking ' . count($submissionIds) . ' submissions for cancelled targets...');
 
-        try {
-            $request = new GetTargetsRequest(
-                targetStatus: 'CANCELLED',
-                submissionIds: $submissionIds,
-                pageSize: 20 // Minimum allowed by API
-            );
+        $request = new GetTargetsRequest(
+            targetStatus: 'CANCELLED',
+            submissionIds: $submissionIds,
+            pageSize: 20 // Minimum allowed by API
+        );
 
-            $targets = $this->client->getTargets($request);
+        $targetsResponse = $this->client->getTargets($request);
 
-            $this->assertIsArray($targets);
-            $this->debug('Found ' . count($targets) . ' cancelled targets');
+        if ($targetsResponse->isError()) {
+            $this->markTestSkipped('Cancelled status polling not available: ' . $targetsResponse->errorMessage);
+        }
 
-            foreach ($targets as $target) {
-                $this->assertInstanceOf(Target::class, $target);
-                $this->assertSame('CANCELLED', $target->status);
-            }
-        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
-            $this->markTestSkipped('Cancelled status polling not available: ' . $e->getMessage());
+        $targets = $targetsResponse->targets;
+
+        $this->assertIsArray($targets);
+        $this->debug('Found ' . count($targets) . ' cancelled targets');
+
+        foreach ($targets as $target) {
+            $this->assertInstanceOf(Target::class, $target);
+            $this->assertSame('CANCELLED', $target->status);
         }
     }
 
@@ -125,13 +127,16 @@ class DownloadIntegrationTest extends IntegrationTestCase
         $this->debug("Downloading target {$target->targetId} from submission {$target->submissionId}...");
 
         // Download the individual target deliverable
-        $content = $this->client->downloadTargetDeliverable(
+        $response = $this->client->downloadTargetDeliverable(
             $target->submissionId,
             $target->targetId
         );
 
-        // Verify we received content
-        $this->assertIsString($content);
+        $this->assertTrue(
+            $response->isSuccess(),
+            "Download failed ({$response->responseCode}): {$response->errorMessage}"
+        );
+        $content = $response->content;
         $this->assertNotEmpty($content);
         $this->debug('Downloaded ' . strlen($content) . ' bytes');
     }
@@ -161,7 +166,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             $submissionId,
             downloadAllDeliverables: true,
             includeManifest: true
-        );
+        )->content;
 
         // Verify we received content
         $this->assertIsString($content);
@@ -205,7 +210,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             $submissionId,
             downloadOnlyDeliverables: true,
             includeManifest: false
-        );
+        )->content;
 
         $this->assertIsString($content);
         $this->assertNotEmpty($content);
@@ -232,7 +237,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             $submissionId,
             deliverableLanguages: [$targetLanguage],
             includeManifest: true
-        );
+        )->content;
 
         $this->assertIsString($content);
         $this->assertNotEmpty($content);
@@ -270,7 +275,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             $submissionId,
             deliverableTargetIds: $targetIds,
             includeManifest: true
-        );
+        )->content;
 
         $this->assertIsString($content);
         $this->assertNotEmpty($content);
@@ -296,20 +301,20 @@ class DownloadIntegrationTest extends IntegrationTestCase
         $target = $processedTargets[0];
         $this->debug("Confirming delivery for target {$target->targetId}...");
 
-        try {
-            $response = $this->client->confirmTargetDelivery(
-                $target->submissionId,
-                [$target->targetId]
-            );
+        $response = $this->client->confirmTargetDelivery(
+            $target->submissionId,
+            [$target->targetId]
+        );
 
-            $this->assertInstanceOf(ConfirmTargetDeliveredResponse::class, $response);
-            $this->assertIsArray($response->successfullyDeliveredTargets);
-            $this->assertIsArray($response->failedToDeliverTargets);
-
-            $this->debug('Success: ' . count($response->successfullyDeliveredTargets) . ', Failed: ' . count($response->failedToDeliverTargets));
-        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
-            $this->markTestSkipped('Target delivery confirmation not available: ' . $e->getMessage());
+        if ($response->isError()) {
+            $this->markTestSkipped('Target delivery confirmation not available: ' . $response->errorMessage);
         }
+
+        $this->assertInstanceOf(ConfirmTargetDeliveredResponse::class, $response);
+        $this->assertIsArray($response->successfullyDeliveredTargets);
+        $this->assertIsArray($response->failedToDeliverTargets);
+
+        $this->debug('Success: ' . count($response->successfullyDeliveredTargets) . ', Failed: ' . count($response->failedToDeliverTargets));
     }
 
     /**
@@ -325,7 +330,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             pageSize: 20, // Minimum allowed by API
             pageNumber: 0
         );
-        $submissions = $this->client->getSubmissions($submissionRequest);
+        $submissions = $this->client->getSubmissions($submissionRequest)->submissions;
 
         if (empty($submissions)) {
             $this->markTestSkipped('No submissions available for testing');
@@ -345,7 +350,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             pageSize: 50
         );
 
-        $targets = $this->client->getTargets($request);
+        $targets = $this->client->getTargets($request)->targets;
 
         $this->assertIsArray($targets);
         $this->debug('Found ' . count($targets) . ' targets');
@@ -401,7 +406,7 @@ class DownloadIntegrationTest extends IntegrationTestCase
             pageSize: 20,
             pageNumber: 0
         );
-        $submissions = $this->client->getSubmissions($submissionRequest);
+        $submissions = $this->client->getSubmissions($submissionRequest)->submissions;
 
         if (empty($submissions)) {
             $this->markTestSkipped('No submissions available for pagination testing');
@@ -411,122 +416,82 @@ class DownloadIntegrationTest extends IntegrationTestCase
         $submissionIds = array_map(fn($s) => $s->submissionId, array_slice($submissions, 0, 10));
         $this->debug('Using ' . count($submissionIds) . ' submission IDs for filtering');
 
-        try {
-            // Request first page with minimum allowed page size (20)
+        // Request first page with minimum allowed page size (20)
+        $request = new GetTargetsRequest(
+            targetStatus: 'PROCESSED',
+            submissionIds: $submissionIds,
+            pageSize: 20,
+            pageNumber: 0
+        );
+
+        $firstPageResponse = $this->client->getTargets($request);
+
+        if ($firstPageResponse->isError()) {
+            $this->markTestSkipped('Pagination not supported: ' . $firstPageResponse->errorMessage);
+        }
+
+        $firstPage = $firstPageResponse->targets;
+
+        $this->assertIsArray($firstPage);
+        $this->assertLessThanOrEqual(20, count($firstPage));
+        $this->debug('Page 0: ' . count($firstPage) . ' targets');
+
+        // If we got a full page of results, try second page
+        if (count($firstPage) === 20) {
+            $this->debug('Full page received, fetching page 1...');
             $request = new GetTargetsRequest(
                 targetStatus: 'PROCESSED',
                 submissionIds: $submissionIds,
                 pageSize: 20,
-                pageNumber: 0
+                pageNumber: 1
             );
 
-            $firstPage = $this->client->getTargets($request);
+            $secondPageResponse = $this->client->getTargets($request);
 
-            $this->assertIsArray($firstPage);
-            $this->assertLessThanOrEqual(20, count($firstPage));
-            $this->debug('Page 0: ' . count($firstPage) . ' targets');
-
-            // If we got a full page of results, try second page
-            if (count($firstPage) === 20) {
-                $this->debug('Full page received, fetching page 1...');
-                $request = new GetTargetsRequest(
-                    targetStatus: 'PROCESSED',
-                    submissionIds: $submissionIds,
-                    pageSize: 20,
-                    pageNumber: 1
-                );
-
-                $secondPage = $this->client->getTargets($request);
-
-                $this->assertIsArray($secondPage);
-                $this->debug('Page 1: ' . count($secondPage) . ' targets');
-
-                // Verify pages don't overlap (if both have results)
-                if (!empty($secondPage)) {
-                    $firstPageIds = array_map(fn($t) => $t->targetId, $firstPage);
-                    foreach ($secondPage as $target) {
-                        $this->assertNotContains(
-                            $target->targetId,
-                            $firstPageIds,
-                            'Second page should not contain targets from first page'
-                        );
-                    }
-                    $this->debug('Verified no overlap between pages');
-                }
+            if ($secondPageResponse->isError()) {
+                $this->markTestSkipped('Pagination not supported: ' . $secondPageResponse->errorMessage);
             }
-        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
-            $this->markTestSkipped('Pagination not supported: ' . $e->getMessage());
+
+            $secondPage = $secondPageResponse->targets;
+
+            $this->assertIsArray($secondPage);
+            $this->debug('Page 1: ' . count($secondPage) . ' targets');
+
+            // Verify pages don't overlap (if both have results)
+            if (!empty($secondPage)) {
+                $firstPageIds = array_map(fn($t) => $t->targetId, $firstPage);
+                foreach ($secondPage as $target) {
+                    $this->assertNotContains(
+                        $target->targetId,
+                        $firstPageIds,
+                        'Second page should not contain targets from first page'
+                    );
+                }
+                $this->debug('Verified no overlap between pages');
+            }
         }
     }
 
     /**
-     * Get processed targets, using cache if available.
+     * Get the PROCESSED targets of a submission created for this test class.
+     *
+     * Downloading a deliverable marks its target as delivered, and older
+     * deliverables may no longer be downloadable, so the class creates its
+     * own submission once and every test reuses its targets.
      *
      * @return list<Target>
      */
     private function getProcessedTargets(): array
     {
-        if ($this->processedTargetsCache !== null) {
-            return $this->processedTargetsCache;
-        }
-
-        $targets = $this->fetchProcessedTargets();
-        $this->processedTargetsCache = $targets;
-
-        return $targets;
-    }
-
-    /**
-     * Fetch processed targets from the API.
-     *
-     * @return list<Target>
-     */
-    private function fetchProcessedTargets(): array
-    {
-        // Try using project IDs first
-        try {
-            $projectId = $this->getTestProjectId();
-
-            $request = new GetTargetsRequest(
-                targetStatus: 'PROCESSED',
-                projectIds: [$projectId],
-                pageSize: 50
+        if (self::$processedTargets === null) {
+            $submissionId = $this->createStartedSubmission('Download Test');
+            $this->debug("Created submission {$submissionId} for download tests");
+            self::$processedTargets = $this->waitForProcessedTargets(
+                $submissionId,
+                count($this->getTargetLanguages())
             );
-
-            return $this->client->getTargets($request);
-        } catch (\GlobalLink\RestClient\Exception\ApiException $e) {
-            // If project-based filtering fails, try submission-based
-            return $this->fetchProcessedTargetsBySubmission();
-        }
-    }
-
-    /**
-     * Fetch processed targets using submission IDs.
-     *
-     * @return list<Target>
-     */
-    private function fetchProcessedTargetsBySubmission(): array
-    {
-        // Filter submissions by status to find those likely to have PROCESSED targets
-        $submissionRequest = new GetSubmissionsRequest(
-            statuses: ['IN_PROCESS', 'READY', 'PROCESSED', 'DELIVERED'],
-            pageSize: 30,
-            pageNumber: 0
-        );
-        $submissions = $this->client->getSubmissions($submissionRequest);
-
-        if (empty($submissions)) {
-            return [];
         }
 
-        $submissionIds = array_map(fn($s) => $s->submissionId, array_slice($submissions, 0, 20));
-
-        $request = new GetTargetsRequest(
-            targetStatus: 'PROCESSED',
-            submissionIds: $submissionIds,
-            pageSize: 50
-        );
-
-        return $this->client->getTargets($request);
+        return self::$processedTargets;
     }
 }

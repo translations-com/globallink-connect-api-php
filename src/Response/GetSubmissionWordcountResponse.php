@@ -9,22 +9,57 @@ use GlobalLink\RestClient\Model\SubmissionWordcount;
 /**
  * Response for GET /submissions/{submission-id}/wordcount.
  */
-final class GetSubmissionWordcountResponse
+readonly class GetSubmissionWordcountResponse extends ApiResponse
 {
     /**
-     * Parse JSON response into SubmissionWordcount.
-     *
-     * @throws \InvalidArgumentException If JSON is invalid
+     * @param array<string, list<string>> $headers
      */
-    public static function fromJson(string $json): SubmissionWordcount
-    {
-        if (!json_validate($json)) {
-            throw new \InvalidArgumentException('Invalid JSON provided');
+    public function __construct(
+        public ?SubmissionWordcount $wordcount = null,
+        int $responseCode = 200,
+        ?string $errorMessage = null,
+        array $headers = [],
+        string $responseBody = '',
+    ) {
+        parent::__construct($responseCode, $errorMessage, $headers, $responseBody);
+    }
+
+    /**
+     * @param array<string, list<string>> $headers
+     */
+    public static function fromJson(
+        string $json,
+        int $responseCode = 200,
+        array $headers = [],
+    ): self {
+        $errorMessage = self::extractErrorMessage($json, $responseCode);
+        if ($errorMessage !== null) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: $errorMessage,
+                headers: $headers,
+                responseBody: $json,
+            );
+        }
+
+        $unusable = self::unusableSuccessBodyMessage($json, allowEmpty: false);
+        if ($unusable !== null) {
+            return new self(
+                responseCode: $responseCode,
+                errorMessage: $unusable,
+                headers: $headers,
+                responseBody: $json,
+            );
         }
 
         /** @var array<string, mixed> $data */
         $data = json_decode($json, true) ?? [];
 
-        return SubmissionWordcount::fromArray($data);
+        return new self(
+            wordcount: SubmissionWordcount::fromArray($data),
+            responseCode: $responseCode,
+            headers: $headers,
+            responseBody: $json,
+        );
     }
 }
