@@ -70,6 +70,7 @@ class GlobalLinkClient
 
     private ?string $accessToken = null;
     private ?int $tokenExpiresAt = null;
+    private ?LoginResponse $lastAuthenticationResponse = null;
 
     /** @var array{limit: ?int, remaining: ?int, reset: ?int}|null */
     private ?array $lastRateLimitInfo = null;
@@ -78,9 +79,10 @@ class GlobalLinkClient
      * Create a new GlobalLink client.
      *
      * Initial OAuth login runs during construction. By default, a failed login does not throw;
-     * the client is constructed without a token — check `isTokenExpired()` (or the next API
-     * Response). Subsequent calls retry authentication and return error Responses on failure.
-     * Pass `$throwOnAuthenticationFailure = true` to throw on failed initial login instead.
+     * the client is constructed without a token — inspect `getAuthenticationResponse()` (same
+     * shape as other Responses: responseCode, errorMessage, headers, responseBody) or check
+     * `isTokenExpired()`. Subsequent calls retry authentication and return error Responses
+     * on failure. Pass `$throwOnAuthenticationFailure = true` to throw on failed initial login.
      *
      * @param string $baseUrl Base URL of the GlobalLink API (e.g., https://example.globallink.com)
      * @param string $username GlobalLink username
@@ -151,6 +153,19 @@ class GlobalLinkClient
 
         // Add a 60-second buffer to account for clock skew
         return time() >= ($this->tokenExpiresAt - 60);
+    }
+
+    /**
+     * Get the result of the most recent authentication attempt.
+     *
+     * Always a {@see LoginResponse} (extends ApiResponse) after construction or token refresh,
+     * including failures when `$throwOnAuthenticationFailure` is false — use `isSuccess()`,
+     * `responseCode`, `errorMessage`, `headers`, and `responseBody` the same way as other
+     * API Responses.
+     */
+    public function getAuthenticationResponse(): ?LoginResponse
+    {
+        return $this->lastAuthenticationResponse;
     }
 
     /**
@@ -786,11 +801,13 @@ class GlobalLinkClient
     /**
      * Authenticate with the API and store the access token.
      *
-     * @param bool $throwOnFailure When true (constructor), throw on HTTP/auth failure.
-     *                             When false (token refresh), return the error payload.
+     * Always updates {@see $lastAuthenticationResponse} with a LoginResponse (success or error).
+     *
+     * @param bool $throwOnFailure When true (constructor option), throw on HTTP/auth failure.
+     *                             When false, return the error payload without throwing.
      * @return array{body: string, status: int, headers: array<string, list<string>>}|null
      *         null on success; error payload when $throwOnFailure is false and auth fails
-     * @throws AuthenticationException|ApiException When $throwOnFailure is true and auth fails
+     * @throws AuthenticationException|ApiException|GlobalLinkException When $throwOnFailure is true and auth fails
      */
     private function authenticate(bool $throwOnFailure = true): ?array
     {
@@ -806,6 +823,12 @@ class GlobalLinkClient
         $response = $this->sendHttp('POST', $this->baseUrl . '/oauth/token', $headers, $body);
 
         if (!ApiResponse::isHttpSuccessStatus($response->statusCode)) {
+            $this->lastAuthenticationResponse = LoginResponse::fromJson(
+                $response->body,
+                $response->statusCode,
+                $response->headers,
+            );
+
             if ($throwOnFailure) {
                 $this->throwAuthenticationError($response);
             }
@@ -820,17 +843,28 @@ class GlobalLinkClient
         $loginResponse = LoginResponse::fromJson($response->body, $response->statusCode, $response->headers);
 
         if ($loginResponse->accessToken === null) {
+            $errorBody = $response->body !== ''
+                ? $response->body
+                : '{"message":"Authentication failed: No access token received"}';
+            $this->lastAuthenticationResponse = new LoginResponse(
+                responseCode: 401,
+                errorMessage: 'Authentication failed: No access token received',
+                headers: $response->headers,
+                responseBody: $errorBody,
+            );
+
             if ($throwOnFailure) {
                 throw new AuthenticationException('Authentication failed: No access token received');
             }
 
             return [
-                'body' => $response->body !== '' ? $response->body : '{"message":"Authentication failed: No access token received"}',
+                'body' => $errorBody,
                 'status' => 401,
                 'headers' => $response->headers,
             ];
         }
 
+        $this->lastAuthenticationResponse = $loginResponse;
         $this->accessToken = $loginResponse->accessToken;
         $this->tokenExpiresAt = $loginResponse->expiresIn !== null
             ? time() + $loginResponse->expiresIn

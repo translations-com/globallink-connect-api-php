@@ -201,15 +201,18 @@ foreach ($targetsResponse->targets as $target) {
 
 The client automatically handles OAuth2 authentication and token refresh. Tokens are refreshed automatically when they expire.
 
-By default, a failed initial login does **not** throw — the client is constructed without a token. Check `isTokenExpired()` or handle the error Response on the next API call. Pass `throwOnAuthenticationFailure: true` if you want construction to throw instead (`AuthenticationException`, or `RateLimitException` when the login is rate limited):
+By default, a failed initial login does **not** throw — the client is constructed without a token. Inspect `getAuthenticationResponse()` (a `LoginResponse` with the same metadata as other Responses) or check `isTokenExpired()`. Pass `throwOnAuthenticationFailure: true` if you want construction to throw instead (`AuthenticationException`, or `RateLimitException` when the login is rate limited):
 
 ```php
 $client = new GlobalLinkClient(
     $url, $user, $pass, $clientId, $clientSecret,
     // throwOnAuthenticationFailure: true, // optional: throw on failed initial login
 );
-if ($client->isTokenExpired()) {
-    // Initial login failed; the next API call will retry auth and return an error Response
+
+$auth = $client->getAuthenticationResponse();
+if ($auth !== null && $auth->isError()) {
+    // Same fields as other Responses: responseCode, errorMessage, headers, responseBody
+    echo "Login failed ({$auth->responseCode}): {$auth->errorMessage}\n";
 }
 ```
 

@@ -129,8 +129,9 @@ class GlobalLinkClientTest extends TestCase
 
     public function testAuthenticationFailureDoesNotThrowByDefault(): void
     {
+        $body = '{"error": "invalid_credentials"}';
         $this->httpClient->enqueue(
-            new HttpResponse(401, '{"error": "invalid_credentials"}')
+            new HttpResponse(401, $body)
         );
 
         $client = new GlobalLinkClient(
@@ -143,6 +144,14 @@ class GlobalLinkClientTest extends TestCase
         );
 
         $this->assertTrue($client->isTokenExpired());
+
+        $authResponse = $client->getAuthenticationResponse();
+        $this->assertNotNull($authResponse);
+        $this->assertTrue($authResponse->isError());
+        $this->assertSame(401, $authResponse->responseCode);
+        $this->assertSame('invalid_credentials', $authResponse->errorMessage);
+        $this->assertSame($body, $authResponse->responseBody);
+        $this->assertNull($authResponse->accessToken);
     }
 
     public function testGetProjectsReturnsProjects(): void
